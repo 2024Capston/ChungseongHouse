@@ -18,10 +18,6 @@ public class NetworkSyncInterpolator : MonoBehaviour
     {
         if (_target)
         {
-            if (gameObject.name == "Elevator")
-            {
-                Debug.Log($"{_target.transform.position.y}");
-            }
             float posDif = Vector3.Distance(transform.position, _target.transform.position);
             float rotDif = 1f - Quaternion.Dot(transform.rotation, _target.transform.rotation);
 

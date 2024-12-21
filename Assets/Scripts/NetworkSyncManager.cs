@@ -178,7 +178,7 @@ public class NetworkSyncManager : NetworkBehaviour
 
                 _reconcileTick++;
 
-                while (_reconcileTick < _currentTick)
+                while (_reconcileTick <= _currentTick)
                 {
                     _getReconcileInput.Invoke(_reconcileTick);
                     Physics.Simulate(Time.fixedDeltaTime);

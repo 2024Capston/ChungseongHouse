@@ -3,10 +3,91 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+public struct PlayerInputPayload : IInputPayload
+{
+    private int _tick;
+    public int Tick
+    {
+        get => _tick;
+        set => _tick = value;
+    }
+
+    private Vector3 _moveInput;
+    public Vector3 MoveInput
+    {
+        get => _moveInput;
+        set => _moveInput = value;
+    }
+
+    private Vector3 _rotateInput;
+    public Vector3 RotateInput
+    {
+        get => _rotateInput;
+        set => _rotateInput = value;
+    }
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref _tick);
+        serializer.SerializeValue(ref _moveInput);
+        serializer.SerializeValue(ref _rotateInput);
+    }
+}
+
+public struct PlayerStatePayload : IStatePayload
+{
+    private int _tick;
+    public int Tick
+    {
+        get => _tick;
+        set => _tick = value;
+    }
+
+    private Vector3 _position;
+    public Vector3 Position
+    {
+        get => _position;
+        set => _position = value;
+    }
+
+    private Quaternion _rotation;
+    public Quaternion Rotation
+    {
+        get => _rotation;
+        set => _rotation = value;
+    }
+
+    private Vector3 _velocity;
+    public Vector3 Velocity
+    {
+        get => _velocity;
+        set => _velocity = value;
+    }
+
+    private Vector3 _angularVelocity;
+    public Vector3 AngularVelocity
+    {
+        get => _angularVelocity;
+        set => _angularVelocity = value;
+    }
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref _tick);
+        serializer.SerializeValue(ref _position);
+        serializer.SerializeValue(ref _rotation);
+        serializer.SerializeValue(ref _velocity);
+        serializer.SerializeValue(ref _angularVelocity);
+    }
+}
+
+
 /// <summary>
 /// 플레이어 조작과 정보에 대한 클래스.
 /// </summary>
-public class PlayerController : NetworkSyncObject
+[GenerateSerializationForTypeAttribute(typeof(PlayerInputPayload))]
+[GenerateSerializationForTypeAttribute(typeof(PlayerStatePayload))]
+public class PlayerController : NetworkSyncObject<PlayerInputPayload, PlayerStatePayload>
 {
     // 이동 속력, 최대 이동 속력, 회전 속력, 점프력
     [SerializeField] private float _walkSpeed = 10;
@@ -15,6 +96,7 @@ public class PlayerController : NetworkSyncObject
 
     [SerializeField] private GameObject _bulletPrefab;
 
+    private Rigidbody _rigidbody;
     private CapsuleCollider _capsuleCollider;
 
     // 플레이어 조작에 쓰이는 보조 변수
@@ -79,6 +161,7 @@ public class PlayerController : NetworkSyncObject
     {
         base.OnNetworkSpawn();
 
+        _rigidbody = GetComponent<Rigidbody>();
         _capsuleCollider = GetComponent<CapsuleCollider>();
 
         _height = _capsuleCollider.height * transform.localScale.y;
@@ -223,13 +306,13 @@ public class PlayerController : NetworkSyncObject
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SendInputPayloadServerRpc(InputPayload inputPayload)
+    private void SendInputPayloadServerRpc(PlayerInputPayload inputPayload)
     {
         _inputQueue.Enqueue(inputPayload);
     }
 
     [ClientRpc]
-    private void SendStatePayloadClientRpc(StatePayload statePayload)
+    private void SendStatePayloadClientRpc(PlayerStatePayload statePayload)
     {
         _stateQueue.Enqueue(statePayload);
     }
@@ -250,13 +333,19 @@ public class PlayerController : NetworkSyncObject
 
             _pitchAngle = Mathf.Clamp(_pitchAngle + verticalMouse * _rotateSpeed, -90, 90);
 
-            _processingInput.tick = NetworkSyncManager.Instance.CurrentTick;
+            _processingInput.Tick = NetworkSyncManager.Instance.CurrentTick;
 
-            _processingInput.inputVector.x = moveDirection.x;
-            _processingInput.inputVector.y = jumpPushed ? _jumpSpeed : 0;
-            _processingInput.inputVector.z = moveDirection.z;
+            Vector3 inputVector = _processingInput.MoveInput;
+            Vector3 subVector = _processingInput.RotateInput;
 
-            _processingInput.subVector.y = horizontalMouse * _rotateSpeed;
+            inputVector.x = moveDirection.x;
+            inputVector.y = jumpPushed ? _jumpSpeed : 0;
+            inputVector.z = moveDirection.z;
+
+            subVector.y = horizontalMouse * _rotateSpeed;
+
+            _processingInput.MoveInput = inputVector;
+            _processingInput.RotateInput = subVector;
 
             Vector3 cameraRotation = _mainCamera.transform.rotation.eulerAngles;
             _mainCamera.transform.rotation = Quaternion.Euler(_pitchAngle, cameraRotation.y, cameraRotation.z);
@@ -269,10 +358,48 @@ public class PlayerController : NetworkSyncObject
         }
     }
 
-    public override void ApplyInput(InputPayload inputPayload)
+    public override void ApplyInput(PlayerInputPayload inputPayload)
     {
-        _rigidbody.velocity = new Vector3(inputPayload.inputVector.x, inputPayload.inputVector.y > 0 ? (IsGrounded() ? _jumpSpeed : _rigidbody.velocity.y) : _rigidbody.velocity.y, inputPayload.inputVector.z);
-        transform.Rotate(inputPayload.subVector);
+        _rigidbody.velocity = new Vector3(inputPayload.MoveInput.x, inputPayload.MoveInput.y > 0 ? (IsGrounded() ? _jumpSpeed : _rigidbody.velocity.y) : _rigidbody.velocity.y, inputPayload.MoveInput.z);
+        transform.Rotate(inputPayload.RotateInput);
+    }
+
+    public override void ApplyReconcileInput(PlayerInputPayload inputPayload)
+    {
+        _rigidbody.velocity = new Vector3(inputPayload.MoveInput.x, inputPayload.MoveInput.y > 0 ? (IsGrounded() ? _jumpSpeed : _rigidbody.velocity.y) : _rigidbody.velocity.y, inputPayload.MoveInput.z);
+
+        if (!IsOwner)
+        {
+            transform.Rotate(inputPayload.RotateInput);
+        }
+    }
+
+    public override void ApplyPreReconcile(PlayerStatePayload newState)
+    {
+        _rigidbody.position = newState.Position;
+        // _rigidbody.rotation = newState.Rotation;
+        _rigidbody.velocity = newState.Velocity;
+        _rigidbody.angularVelocity = newState.AngularVelocity;
+    }
+
+    public override PlayerStatePayload GetState()
+    {
+        PlayerStatePayload statePayload = new PlayerStatePayload();
+
+        statePayload.Position = _rigidbody.position;
+        statePayload.Rotation = _rigidbody.rotation;
+        statePayload.Velocity = _rigidbody.velocity;
+        statePayload.AngularVelocity = _rigidbody.angularVelocity;
+
+        return statePayload;
+    }
+
+    public override bool GetReconcilePredicate(PlayerStatePayload oldState, PlayerStatePayload newState)
+    {
+        float posDif = Vector3.Distance(oldState.Position, newState.Position);
+        //float rotDif = 1f - Quaternion.Dot(oldState.Rotation, newState.Rotation);
+
+        return posDif > 0.0001f;
     }
 
     /// <summary>
@@ -429,5 +556,74 @@ public class PlayerController : NetworkSyncObject
         {
             NetworkUI.Instance.UpdateYourColorText(after);
         }
+    }
+
+    void OnGUI()
+    {
+        Color originalColor = GUI.backgroundColor;
+        GUI.backgroundColor = Color.black;
+
+        GUIStyle customLabelStyle = new GUIStyle(GUI.skin.label);
+        customLabelStyle.padding = new RectOffset(2, 2, 2, 2);
+        customLabelStyle.margin = new RectOffset(0, 0, 0, 0);
+
+
+        if (gameObject.TryGetComponent<PlayerController>(out PlayerController pc))
+        {
+            if (pc.PlayerColor.Value == ColorType.Red || pc.PlayerColor.Value == ColorType.Blue)
+            {
+                if (pc.PlayerColor.Value == ColorType.Red)
+                {
+                    GUI.Box(new Rect(45, 55, 260, 300), GUIContent.none);
+                    GUILayout.BeginArea(new Rect(50, 60, 250, 290));
+
+                    GUILayout.Label("Red:", customLabelStyle);
+                }
+                else if (pc.PlayerColor.Value == ColorType.Blue)
+                {
+                    GUI.Box(new Rect(315, 55, 260, 300), GUIContent.none);
+                    GUILayout.BeginArea(new Rect(320, 60, 250, 290));
+                    GUILayout.Label("Blue:");
+                }
+                GUILayout.Label($"Processing Tick: {_processingTick}");
+                GUILayout.Label($"Reconcile Target: {_reconcileTarget.Tick}");
+
+                GUILayout.Label($"Input: \t\t State:");
+
+                if (NetworkSyncManager.Instance.CurrentTick >= 10)
+                {
+                    for (int j = NetworkSyncManager.Instance.CurrentTick - 10; j < NetworkSyncManager.Instance.CurrentTick; j++)
+                    {
+                        int i = j % 1024;
+                        GUILayout.Label($"{_inputBuffer[i].Tick % 1000}: {_inputBuffer[i].MoveInput.x:0.0} {_inputBuffer[i].MoveInput.y:0.0} {_inputBuffer[i].MoveInput.z:0.0} \t {_stateBuffer[i].Tick % 1000}: {_stateBuffer[i].Position.x:0.0} {_stateBuffer[i].Position.y:0.0} {_stateBuffer[i].Position.z:0.0}", customLabelStyle);
+                    }
+                }
+                GUILayout.EndArea();
+            }
+        }
+
+        if (gameObject.TryGetComponent<PlatformMover>(out PlatformMover pm))
+        {
+            GUI.Box(new Rect(585, 55, 260, 300), GUIContent.none);
+            GUILayout.BeginArea(new Rect(590, 60, 250, 290));
+
+            GUILayout.Label("Platform:", customLabelStyle);
+            GUILayout.Label($"Processing Tick: {_processingTick}");
+            GUILayout.Label($"Reconcile Target: {_reconcileTarget.Tick}");
+
+            GUILayout.Label($"Input: \t\t State:");
+
+            if (NetworkSyncManager.Instance.CurrentTick >= 10)
+            {
+                for (int j = NetworkSyncManager.Instance.CurrentTick - 10; j < NetworkSyncManager.Instance.CurrentTick; j++)
+                {
+                    int i = j % 1024;
+                    GUILayout.Label($"{_inputBuffer[i].Tick % 1000}: {_inputBuffer[i].MoveInput.x:0.0} {_inputBuffer[i].MoveInput.y:0.0} {_inputBuffer[i].MoveInput.z:0.0} \t {_stateBuffer[i].Tick % 1000}: {_stateBuffer[i].Position.x:0.0} {_stateBuffer[i].Position.y:0.0} {_stateBuffer[i].Position.z:0.0}", customLabelStyle);
+                }
+            }
+            GUILayout.EndArea();
+        }
+
+        GUI.backgroundColor = originalColor;
     }
 }
