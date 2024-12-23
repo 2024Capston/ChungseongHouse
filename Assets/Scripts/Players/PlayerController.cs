@@ -252,10 +252,10 @@ public class PlayerController : NetworkSyncObject<PlayerInputPayload, PlayerStat
             ChangePlayerColorServerRpc(newColor);
         }
 
-        // 테스트용: P를 누르면 화면 회전 고정
+        // 테스트용
         if (Input.GetKeyDown(KeyCode.P))
         {
-            _isFixed = !_isFixed;
+            Time.timeScale = 1 - Time.timeScale;
         }
 
         if (Input.GetKeyDown(KeyCode.F))
@@ -399,7 +399,7 @@ public class PlayerController : NetworkSyncObject<PlayerInputPayload, PlayerStat
         float posDif = Vector3.Distance(oldState.Position, newState.Position);
         //float rotDif = 1f - Quaternion.Dot(oldState.Rotation, newState.Rotation);
 
-        return posDif > 0.0001f;
+        return posDif > 0.0000000001f;
     }
 
     /// <summary>

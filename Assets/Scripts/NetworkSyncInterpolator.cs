@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class NetworkSyncInterpolator : MonoBehaviour
 {
-    private float _lerpSpeed = 20f;
+    [SerializeField] private float _lerpSpeed = 10f;
 
     public GameObject Target
     {

@@ -150,6 +150,10 @@ public class NetworkSyncObject<InputPayload, StatePayload> : NetworkBehaviour wh
 
                     _reconcileTarget = statePayload;
                 }
+                else
+                {
+                    _reconcileTarget = statePayload; // ?
+                }
             }
         }
     }
@@ -175,17 +179,23 @@ public class NetworkSyncObject<InputPayload, StatePayload> : NetworkBehaviour wh
 
     public virtual void ApplyReconcileInput(InputPayload inputPayload)
     {
-        ApplyInput(inputPayload);
         return;
     }
 
     protected void GetReconcileInput(int reconcileTick)
     {
+        if (reconcileTick == _reconcileTarget.Tick)
+        {
+            ApplyPreReconcile(_reconcileTarget);
+            return;
+        }
+
         int bufferIndex = reconcileTick % BUFFER_SIZE;
 
         if (reconcileTick == _inputBuffer[bufferIndex].Tick)
         {
             _processingInput = _inputBuffer[bufferIndex];
+
             ApplyReconcileInput(_processingInput);
         }
     }

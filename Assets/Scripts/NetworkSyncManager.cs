@@ -1,7 +1,5 @@
 using System;
-using TMPro;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class NetworkSyncManager : NetworkBehaviour
@@ -94,6 +92,9 @@ public class NetworkSyncManager : NetworkBehaviour
     }
     private Action _getReconcileState;
 
+    private int _pastTick = 0;
+    private int _tickSpeed;
+
     private void Awake()
     {
         if (Instance == null)
@@ -143,6 +144,7 @@ public class NetworkSyncManager : NetworkBehaviour
         }
 
         _timer += Time.deltaTime;
+        _pastTick = _reconcileTick;
 
         while (_timer >= Time.fixedDeltaTime)
         {
@@ -190,6 +192,8 @@ public class NetworkSyncManager : NetworkBehaviour
                 _needReconcile = false;
             }
         }
+
+        _tickSpeed = _reconcileTick - _pastTick;
     }
 
     void OnGUI()
@@ -200,7 +204,7 @@ public class NetworkSyncManager : NetworkBehaviour
         GUI.Box(new Rect(45, 15, 410, 30), GUIContent.none);
 
         GUILayout.BeginArea(new Rect(50, 20, 400, 100));
-        GUILayout.Label($"CurrentTick: {_currentTick}\t Reconcile Tick: {_reconcileTick}");
+        GUILayout.Label($"CurrentTick: {_currentTick}\t Reconcile Tick: {_reconcileTick}\t Tick Speed: {_tickSpeed}");
         GUILayout.EndArea();
 
         GUI.backgroundColor = originalColor;

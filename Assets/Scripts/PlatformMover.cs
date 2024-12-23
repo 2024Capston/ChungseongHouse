@@ -124,7 +124,7 @@ public class PlatformMover : NetworkSyncObject<PlatformInputPayload, PlatformSta
     {
         float posDif = Mathf.Abs(oldState.Y - newState.Y);
 
-        return posDif > 0.00001f;
+        return posDif > 0.0000000001f;
     }
 
     void OnGUI()
