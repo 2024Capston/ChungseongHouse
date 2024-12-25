@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -21,6 +22,61 @@ public struct PlatformInputPayload : IInputPayload
     {
         serializer.SerializeValue(ref _tick);
         serializer.SerializeValue(ref _y);
+    }
+
+    public bool Equals(IInputPayload other)
+    {
+        return _tick == other.Tick;
+    }
+}
+
+public struct PlatformInputPayloadArray : IInputPayloadArray<PlatformInputPayload>
+{
+    private PlatformInputPayload[] _array;
+    PlatformInputPayload[] IInputPayloadArray<PlatformInputPayload>.Array
+    {
+        get => _array;
+        set => _array = value;
+    }
+
+    public bool Equals(IInputPayloadArray<PlatformInputPayload> other)
+    {
+        if (_array.Length != other.Array.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < _array.Length; i++)
+        {
+            if (!_array[i].Equals(other.Array[i]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        int length = 0;
+
+        if (!serializer.IsReader)
+        {
+            length = _array.Length;
+        }
+
+        serializer.SerializeValue(ref length);
+
+        if (serializer.IsReader)
+        {
+            _array = new PlatformInputPayload[length];
+        }
+
+        for (int i = 0; i < length; i++)
+        {
+            serializer.SerializeValue(ref _array[i]);
+        }
     }
 }
 
@@ -47,9 +103,59 @@ public struct PlatformStatePayload : IStatePayload
     }
 }
 
-[GenerateSerializationForTypeAttribute(typeof(PlatformInputPayload))]
-[GenerateSerializationForTypeAttribute(typeof(PlatformStatePayload))]
-public class PlatformMover : NetworkSyncObject<PlatformInputPayload, PlatformStatePayload>
+public struct PlatformStatePayloadArray : IStatePayloadArray<PlatformStatePayload>
+{
+    private PlatformStatePayload[] _array;
+    PlatformStatePayload[] IStatePayloadArray<PlatformStatePayload>.Array
+    {
+        get => _array;
+        set => _array = value;
+    }
+
+    public bool Equals(IStatePayloadArray<PlatformStatePayload> other)
+    {
+        if (_array.Length != other.Array.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < _array.Length; i++)
+        {
+            if (!_array[i].Equals(other.Array[i]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        int length = 0;
+
+        if (!serializer.IsReader)
+        {
+            length = _array.Length;
+        }
+
+        serializer.SerializeValue(ref length);
+
+        if (serializer.IsReader)
+        {
+            _array = new PlatformStatePayload[length];
+        }
+
+        for (int i = 0; i < length; i++)
+        {
+            serializer.SerializeValue(ref _array[i]);
+        }
+    }
+}
+
+[GenerateSerializationForTypeAttribute(typeof(PlatformInputPayloadArray))]
+[GenerateSerializationForTypeAttribute(typeof(PlatformStatePayloadArray))]
+public class PlatformMover : NetworkSyncObject<PlatformInputPayload, PlatformInputPayloadArray, PlatformStatePayload, PlatformStatePayloadArray>
 {
     float acc_time = 0f;
 
@@ -59,14 +165,14 @@ public class PlatformMover : NetworkSyncObject<PlatformInputPayload, PlatformSta
         GameObject.Find("Elevator").GetComponent<NetworkSyncInterpolator>().Target = gameObject                             ;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (!IsServer)
         {
             return;
         }
 
-        acc_time += Time.deltaTime;
+        acc_time += Time.fixedDeltaTime;
 
         if (acc_time > 2 * Mathf.PI)
         {
@@ -94,14 +200,14 @@ public class PlatformMover : NetworkSyncObject<PlatformInputPayload, PlatformSta
     {
         Vector3 pos = GetComponent<Rigidbody>().position;
         pos.y = inputPayload.Y;
-        GetComponent<Rigidbody>().MovePosition(Vector3.MoveTowards(GetComponent<Rigidbody>().position, pos, Time.deltaTime * 5f));
+        GetComponent<Rigidbody>().MovePosition(Vector3.MoveTowards(GetComponent<Rigidbody>().position, pos, Time.fixedDeltaTime * 5f));
     }
 
     public override void ApplyReconcileInput(PlatformInputPayload inputPayload)
     {
         Vector3 pos = GetComponent<Rigidbody>().position;
         pos.y = inputPayload.Y;
-        GetComponent<Rigidbody>().MovePosition(Vector3.MoveTowards(GetComponent<Rigidbody>().position, pos, Time.deltaTime * 5f));
+        GetComponent<Rigidbody>().MovePosition(Vector3.MoveTowards(GetComponent<Rigidbody>().position, pos, Time.fixedDeltaTime * 5f));
     }
 
     public override void ApplyPreReconcile(PlatformStatePayload newState)
@@ -124,7 +230,7 @@ public class PlatformMover : NetworkSyncObject<PlatformInputPayload, PlatformSta
     {
         float posDif = Mathf.Abs(oldState.Y - newState.Y);
 
-        return posDif > 0.0000000001f;
+        return posDif > 0.0000001f;
     }
 
     void OnGUI()

@@ -1,8 +1,12 @@
-using System.Runtime.InteropServices.WindowsRuntime;
+using System;
 using Unity.Netcode;
-using UnityEngine;
 
-public interface IInputPayload : INetworkSerializable
+public interface IInputPayload : INetworkSerializable, IEquatable<IInputPayload>
 {
     public int Tick { get; set; }
+}
+
+public interface IInputPayloadArray<InputPayload> : INetworkSerializable, IEquatable<IInputPayloadArray<InputPayload>>
+{
+    public InputPayload[] Array { get; set; }
 }

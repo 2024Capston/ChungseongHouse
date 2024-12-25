@@ -1,4 +1,9 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using TMPro.SpriteAssetUtilities;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -31,6 +36,61 @@ public struct PlayerInputPayload : IInputPayload
         serializer.SerializeValue(ref _tick);
         serializer.SerializeValue(ref _moveInput);
         serializer.SerializeValue(ref _rotateInput);
+    }
+
+    public bool Equals(IInputPayload other)
+    {
+        return _tick == other.Tick;
+    }
+}
+
+public struct PlayerInputPayloadArray : IInputPayloadArray<PlayerInputPayload>
+{
+    private PlayerInputPayload[] _array;
+    PlayerInputPayload[] IInputPayloadArray<PlayerInputPayload>.Array
+    {
+        get => _array;
+        set => _array = value;
+    }
+
+    public bool Equals(IInputPayloadArray<PlayerInputPayload> other)
+    {
+        if (_array.Length != other.Array.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < _array.Length; i++)
+        {
+            if (!_array[i].Equals(other.Array[i]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        int length = 0;
+
+        if (!serializer.IsReader)
+        {
+            length = _array.Length;
+        }
+
+        serializer.SerializeValue(ref length);
+
+        if (serializer.IsReader)
+        {
+            _array = new PlayerInputPayload[length];
+        }
+
+        for (int i = 0; i < length; i++)
+        {
+            serializer.SerializeValue(ref _array[i]);
+        }
     }
 }
 
@@ -81,13 +141,62 @@ public struct PlayerStatePayload : IStatePayload
     }
 }
 
+public struct PlayerStatePayloadArray : IStatePayloadArray<PlayerStatePayload>
+{
+    private PlayerStatePayload[] _array;
+    PlayerStatePayload[] IStatePayloadArray<PlayerStatePayload>.Array
+    {
+        get => _array;
+        set => _array = value;
+    }
+
+    public bool Equals(IStatePayloadArray<PlayerStatePayload> other)
+    {
+        if (_array.Length != other.Array.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < _array.Length; i++)
+        {
+            if (!_array[i].Equals(other.Array[i]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        int length = 0;
+
+        if (!serializer.IsReader)
+        {
+            length = _array.Length;
+        }
+
+        serializer.SerializeValue(ref length);
+
+        if (serializer.IsReader)
+        {
+            _array = new PlayerStatePayload[length];
+        }
+
+        for (int i = 0; i < length; i++)
+        {
+            serializer.SerializeValue(ref _array[i]);
+        }
+    }
+}
 
 /// <summary>
 /// 플레이어 조작과 정보에 대한 클래스.
 /// </summary>
-[GenerateSerializationForTypeAttribute(typeof(PlayerInputPayload))]
-[GenerateSerializationForTypeAttribute(typeof(PlayerStatePayload))]
-public class PlayerController : NetworkSyncObject<PlayerInputPayload, PlayerStatePayload>
+[GenerateSerializationForTypeAttribute(typeof(PlayerInputPayloadArray))]
+[GenerateSerializationForTypeAttribute(typeof(PlayerStatePayloadArray))]
+public class PlayerController : NetworkSyncObject<PlayerInputPayload, PlayerInputPayloadArray, PlayerStatePayload, PlayerStatePayloadArray>
 {
     // 이동 속력, 최대 이동 속력, 회전 속력, 점프력
     [SerializeField] private float _walkSpeed = 10;
@@ -305,18 +414,6 @@ public class PlayerController : NetworkSyncObject<PlayerInputPayload, PlayerStat
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void SendInputPayloadServerRpc(PlayerInputPayload inputPayload)
-    {
-        _inputQueue.Enqueue(inputPayload);
-    }
-
-    [ClientRpc]
-    private void SendStatePayloadClientRpc(PlayerStatePayload statePayload)
-    {
-        _stateQueue.Enqueue(statePayload);
-    }
-
     public override bool GetInput()
     {
         if (IsOwner)
@@ -397,9 +494,10 @@ public class PlayerController : NetworkSyncObject<PlayerInputPayload, PlayerStat
     public override bool GetReconcilePredicate(PlayerStatePayload oldState, PlayerStatePayload newState)
     {
         float posDif = Vector3.Distance(oldState.Position, newState.Position);
+        float velDif = Vector3.Distance(oldState.Velocity, newState.Velocity);
         //float rotDif = 1f - Quaternion.Dot(oldState.Rotation, newState.Rotation);
 
-        return posDif > 0.0000000001f;
+        return posDif > 0.0000001f || velDif > 0.0000001f;
     }
 
     /// <summary>

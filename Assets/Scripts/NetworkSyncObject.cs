@@ -1,20 +1,24 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class NetworkSyncObject<InputPayload, StatePayload> : NetworkBehaviour where InputPayload : struct, IInputPayload where StatePayload : struct, IStatePayload
+public class NetworkSyncObject<InputPayload, InputPayloadArray, StatePayload, StatePayloadArray> : NetworkBehaviour where InputPayload : struct, IInputPayload where InputPayloadArray : struct, IInputPayloadArray<InputPayload> where StatePayload : struct, IStatePayload where StatePayloadArray : struct, IStatePayloadArray<StatePayload>
 {
     protected const int BUFFER_SIZE = 1024;
 
     protected InputPayload[] _inputBuffer = new InputPayload[BUFFER_SIZE];
     protected StatePayload[] _stateBuffer = new StatePayload[BUFFER_SIZE];
 
-    protected Queue<InputPayload> _inputQueue = new Queue<InputPayload>();
-    protected Queue<StatePayload> _stateQueue = new Queue<StatePayload>();
+    protected Queue<InputPayload[]> _inputQueue = new Queue<InputPayload[]>();
+    protected Queue<StatePayload[]> _stateQueue = new Queue<StatePayload[]>();
 
     protected InputPayload _processingInput;
     protected StatePayload _reconcileTarget;
     protected int _processingTick = 0;
+
+    protected int _lastReceivedInputTick = 0;
+    protected int _lastReceivedStateTick = 0;
 
     public override void OnNetworkSpawn()
     {
@@ -69,13 +73,30 @@ public class NetworkSyncObject<InputPayload, StatePayload> : NetworkBehaviour wh
         if (GetInput())
         {
             ApplyInput(_processingInput);
+
+            List<InputPayload> inputs = new List<InputPayload>();
+            inputs.Add(_processingInput);
+
+            for (int i = 1; i < 10; i++)
+            {
+                int bufferIndex = (_processingInput.Tick - i) % BUFFER_SIZE;
+
+                if (bufferIndex >= 0 && _inputBuffer[bufferIndex].Tick == _processingInput.Tick - i)
+                {
+                    inputs.Insert(0, _inputBuffer[bufferIndex]);
+                }
+            }
+
+            InputPayloadArray inputPayloadArray = new InputPayloadArray();
+            inputPayloadArray.Array = inputs.ToArray();
+
             if (IsServer)
             {
-                SendInputClientRpc(_processingInput);
+                SendInputClientRpc(inputPayloadArray);
             }
             else
             {
-                SendInputServerRpc(_processingInput);
+                SendInputServerRpc(inputPayloadArray);
             }
         }
     }
@@ -96,10 +117,40 @@ public class NetworkSyncObject<InputPayload, StatePayload> : NetworkBehaviour wh
 
     protected void GetServerInput()
     {
-        while (_inputQueue.Count > 0)
+        if (_inputQueue.Count > 0)
         {
-            _processingInput = _inputQueue.Dequeue();
-            ApplyInput(_processingInput);
+            while (_inputQueue.Count > 0)
+            {
+                InputPayload[] inputs = _inputQueue.Dequeue();
+
+                for (int i = 0; i < inputs.Length; i++)
+                {
+                    if (inputs[i].Tick > _lastReceivedInputTick)
+                    {
+                        _lastReceivedInputTick = inputs[i].Tick;
+                        _processingInput = inputs[i];
+                        ApplyInput(_processingInput);
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int i = 1; i < 10; i++)
+            {
+                int bufferIndex = (NetworkSyncManager.Instance.CurrentTick - i) % BUFFER_SIZE;
+
+                if (bufferIndex < 0)
+                {
+                    break;
+                }
+                else if (_inputBuffer[bufferIndex].Tick == NetworkSyncManager.Instance.CurrentTick - i)
+                {
+                    _processingInput = _inputBuffer[bufferIndex];
+                    ApplyInput(_processingInput);
+                }
+            }
         }
     }
 
@@ -109,7 +160,23 @@ public class NetworkSyncObject<InputPayload, StatePayload> : NetworkBehaviour wh
 
         statePayload.Tick = _processingInput.Tick;
 
-        SendStateClientRpc(statePayload);
+        List<StatePayload> states = new List<StatePayload>();
+        states.Add(statePayload);
+
+        for (int i = 1; i < 10; i++)
+        {
+            int bufferIndex = (statePayload.Tick - i) % BUFFER_SIZE;
+
+            if (bufferIndex >= 0 && _stateBuffer[bufferIndex].Tick == statePayload.Tick - i)
+            {
+                states.Insert(0, _stateBuffer[bufferIndex]);
+            }
+        }
+
+        StatePayloadArray statePayloadArray = new StatePayloadArray();
+        statePayloadArray.Array = states.ToArray();
+
+        SendStateClientRpc(statePayloadArray);
     }
 
     public virtual bool GetReconcilePredicate(StatePayload oldState, StatePayload newState)
@@ -121,16 +188,23 @@ public class NetworkSyncObject<InputPayload, StatePayload> : NetworkBehaviour wh
     {
         while (_stateQueue.Count > 0)
         {
-            StatePayload statePayload = _stateQueue.Dequeue();
+            StatePayload[] states = _stateQueue.Dequeue();
 
-            if (statePayload.Tick < NetworkSyncManager.Instance.LastReconciledTick)
+            StatePayload statePayload = new StatePayload();
+            statePayload.Tick = -1;
+
+            for (int i = 0; i < states.Length; i++)
             {
-                continue;
+                if (states[i].Tick > _lastReceivedStateTick)
+                {
+                    _lastReceivedStateTick = states[i].Tick;
+                    statePayload = states[i];
+                }
             }
 
             int bufferIndex = statePayload.Tick % BUFFER_SIZE;
 
-            if (_stateBuffer[bufferIndex].Tick != statePayload.Tick)
+            if (bufferIndex == -1 || _stateBuffer[bufferIndex].Tick != statePayload.Tick)
             {
                 continue;
             }
@@ -152,7 +226,7 @@ public class NetworkSyncObject<InputPayload, StatePayload> : NetworkBehaviour wh
                 }
                 else
                 {
-                    _reconcileTarget = statePayload; // ?
+                    _reconcileTarget = statePayload;
                 }
             }
         }
@@ -210,22 +284,25 @@ public class NetworkSyncObject<InputPayload, StatePayload> : NetworkBehaviour wh
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SendInputServerRpc(InputPayload inputPayload) {
-        _inputQueue.Enqueue(inputPayload);
+    private void SendInputServerRpc(InputPayloadArray inputPayload) {
+        _inputQueue.Enqueue(inputPayload.Array);
         SendInputClientRpc(inputPayload);
     }
 
     [ClientRpc(RequireOwnership = false)]
-    private void SendInputClientRpc(InputPayload inputPayload)
+    private void SendInputClientRpc(InputPayloadArray inputPayload)
     {
-        int bufferIndex = inputPayload.Tick % BUFFER_SIZE;
+        for (int i = 0; i < inputPayload.Array.Length; i++)
+        {
+            int bufferIndex = inputPayload.Array[i].Tick % BUFFER_SIZE;
 
-        _inputBuffer[bufferIndex] = inputPayload;
+            _inputBuffer[bufferIndex] = inputPayload.Array[i];
+        }
     }
 
     [ClientRpc(RequireOwnership = false)]
-    private void SendStateClientRpc(StatePayload statePayload)
+    private void SendStateClientRpc(StatePayloadArray statePayload)
     {
-        _stateQueue.Enqueue(statePayload);
+        _stateQueue.Enqueue(statePayload.Array);
     }
 }
