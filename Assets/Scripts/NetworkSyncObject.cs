@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 
 public class NetworkSyncObject<InputPayload, InputPayloadArray, StatePayload, StatePayloadArray> : NetworkBehaviour where InputPayload : struct, IInputPayload where InputPayloadArray : struct, IInputPayloadArray<InputPayload> where StatePayload : struct, IStatePayload where StatePayloadArray : struct, IStatePayloadArray<StatePayload>
@@ -119,15 +120,17 @@ public class NetworkSyncObject<InputPayload, InputPayloadArray, StatePayload, St
     {
         if (_inputQueue.Count > 0)
         {
+            int currentInputTick = int.MaxValue;
+
             while (_inputQueue.Count > 0)
             {
                 InputPayload[] inputs = _inputQueue.Dequeue();
 
                 for (int i = 0; i < inputs.Length; i++)
                 {
-                    if (inputs[i].Tick > _lastReceivedInputTick)
+                    if (inputs[i].Tick > _lastReceivedInputTick && inputs[i].Tick < currentInputTick)
                     {
-                        _lastReceivedInputTick = inputs[i].Tick;
+                        currentInputTick = inputs[i].Tick;
                         _processingInput = inputs[i];
                         ApplyInput(_processingInput);
                         break;
@@ -137,20 +140,20 @@ public class NetworkSyncObject<InputPayload, InputPayloadArray, StatePayload, St
         }
         else
         {
-            for (int i = 1; i < 10; i++)
-            {
-                int bufferIndex = (NetworkSyncManager.Instance.CurrentTick - i) % BUFFER_SIZE;
+            //for (int i = 1; i < 10; i++)
+            //{
+            //    int bufferIndex = (NetworkSyncManager.Instance.CurrentTick - i) % BUFFER_SIZE;
 
-                if (bufferIndex < 0)
-                {
-                    break;
-                }
-                else if (_inputBuffer[bufferIndex].Tick == NetworkSyncManager.Instance.CurrentTick - i)
-                {
-                    _processingInput = _inputBuffer[bufferIndex];
-                    ApplyInput(_processingInput);
-                }
-            }
+            //    if (bufferIndex < 0)
+            //    {
+            //        break;
+            //    }
+            //    else if (_inputBuffer[bufferIndex].Tick == NetworkSyncManager.Instance.CurrentTick - i)
+            //    {
+            //        _processingInput = _inputBuffer[bufferIndex];
+            //        ApplyInput(_processingInput);
+            //    }
+            //}
         }
     }
 
@@ -159,6 +162,7 @@ public class NetworkSyncObject<InputPayload, InputPayloadArray, StatePayload, St
         StatePayload statePayload = GetState();
 
         statePayload.Tick = _processingInput.Tick;
+        _lastReceivedInputTick = _processingInput.Tick;
 
         List<StatePayload> states = new List<StatePayload>();
         states.Add(statePayload);
@@ -199,6 +203,14 @@ public class NetworkSyncObject<InputPayload, InputPayloadArray, StatePayload, St
                 {
                     _lastReceivedStateTick = states[i].Tick;
                     statePayload = states[i];
+                }
+            }
+
+            for (int i = 0; i < states.Length; i++)
+            {
+                if (states[i].Tick != _lastReceivedStateTick)
+                {
+                    _stateBuffer[states[i].Tick % BUFFER_SIZE] = states[i];
                 }
             }
 

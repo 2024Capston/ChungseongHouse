@@ -1,9 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using TMPro.SpriteAssetUtilities;
-using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -476,7 +470,7 @@ public class PlayerController : NetworkSyncObject<PlayerInputPayload, PlayerInpu
         _rigidbody.position = newState.Position;
         // _rigidbody.rotation = newState.Rotation;
         _rigidbody.velocity = newState.Velocity;
-        _rigidbody.angularVelocity = newState.AngularVelocity;
+        // _rigidbody.angularVelocity = newState.AngularVelocity;
     }
 
     public override PlayerStatePayload GetState()
@@ -496,6 +490,8 @@ public class PlayerController : NetworkSyncObject<PlayerInputPayload, PlayerInpu
         float posDif = Vector3.Distance(oldState.Position, newState.Position);
         float velDif = Vector3.Distance(oldState.Velocity, newState.Velocity);
         //float rotDif = 1f - Quaternion.Dot(oldState.Rotation, newState.Rotation);
+
+        Debug.DrawLine(oldState.Position, newState.Position, Random.ColorHSV(), 3f);
 
         return posDif > 0.0000001f || velDif > 0.0000001f;
     }
