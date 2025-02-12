@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class UIManager : SingletonBehavior<UIManager>
 {
@@ -146,6 +147,49 @@ public class UIManager : SingletonBehavior<UIManager>
         while (_frontUI)
         {
             _frontUI.CloseUI();
+        }
+    }
+}
+
+namespace CustomUI
+{
+    public class UIManager : SingletonBehavior<UIManager>
+    {
+        private BaseUI _frontUI;
+
+        private Dictionary<System.Type, BaseUI> _openUIPool = new Dictionary<System.Type, BaseUI>();
+
+        private Dictionary<System.Type, BaseUI> _closedUIPool = new Dictionary<System.Type, BaseUI>();
+
+        public void OpenUI<T>(BaseUIData uiData)
+        {
+            System.Type uiType = typeof(T);
+
+            bool isAlreadyOpen = false;
+            BaseUI ui = GetUI<T>(out isAlreadyOpen);
+        }
+
+        private BaseUI GetUI<T>(out bool isAlreadyOpen) 
+        {
+            System.Type uiType = typeof(T);
+            BaseUI ui = null;
+
+            if (_openUIPool.ContainsKey(uiType))
+            {
+                ui = _openUIPool[uiType];
+                isAlreadyOpen = true;
+            }
+            else if (_closedUIPool.ContainsKey(uiType))
+            {
+                ui = _closedUIPool[uiType];
+                _closedUIPool.Remove(uiType);
+            }
+            else
+            {
+                VisualTreeAsset visualTreeAsset = Resources.Load<VisualTreeAsset>($"Prefabs/UI/{uiType}");
+                VisualElement visualElement = visualTreeAsset.CloneTree();
+               
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// BaseUI를 사용할 때 필요한 Data Class
@@ -77,5 +78,76 @@ public class BaseUI : MonoBehaviour
         _onClose = null;
 
         UIManager.Instance.CloseUI(this);
+    }
+}
+
+namespace CustomUI
+{
+    public class BaseUIData
+    {
+        public Action OnShow;
+        public Action OnClose;
+    }
+
+    /// <summary>
+    /// UIManager에서 사용하기 위한 UI Class
+    /// </summary>
+    public class BaseUI 
+    {
+        private Action _onShow;
+        private Action _onClose;
+
+        private VisualElement _visualElement;
+        public VisualElement VisualElement
+        {
+            get => _visualElement;
+            set => _visualElement = value;
+        }
+
+        /// <summary>
+        /// BaseUI를 초기화 하는 메소드
+        /// </summary>
+        public virtual void Init()
+        {
+            Logger.Log($"{GetType()}::Init()");
+
+            _onShow = null;
+            _onClose = null;
+
+            // Position 조정이 필요하면 여기에서 this.transform.position으로 초기 기본 상태 관리할 수 있다.
+        }
+
+        /// <summary>
+        /// BaseUIData를 BaseUI에 전달하는 메소드
+        /// </summary>
+        public virtual void SetInfo(BaseUIData uiData)
+        {
+            Logger.Log($"{GetType()}::SetInfo()");
+
+            _onShow = uiData.OnShow;
+            _onClose = uiData.OnClose;
+        }
+
+        /// <summary>
+        /// UI를 화면에 보일때 등록된 이벤트 호출
+        /// </summary>
+        public virtual void ShowUI()
+        {
+            _onShow?.Invoke();
+            _onShow = null;
+        }
+
+        /// <summary>
+        /// UI를 화면에서 지우는 메소드
+        /// </summary>
+        public virtual void CloseUI(bool isCloseAll = false)
+        {
+            if (!isCloseAll)
+            {
+                _onClose?.Invoke();
+            }
+            _onClose = null;
+
+        }
     }
 }
