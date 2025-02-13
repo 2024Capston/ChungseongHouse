@@ -58,7 +58,7 @@ public class PlayDataSelectUI : BaseUI
         {
             ConfirmType = ConfirmType.OK_Cancel,
             TitleText = "확인",
-            DescText = $"{descText}을\n시작하겠습니까?",
+            ParagraphText = $"{descText}을\n시작하겠습니까?",
             OKButtonText = "확인",
             CancelButtonText = "취소",
             OnClickOKButton = () =>

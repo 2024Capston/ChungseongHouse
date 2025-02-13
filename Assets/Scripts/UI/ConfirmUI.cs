@@ -1,7 +1,7 @@
 using System;
+using UnityEngine.UIElements;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public enum ConfirmType
 {
@@ -13,7 +13,7 @@ public class ConfirmUIData : BaseUIData
 {
     public ConfirmType ConfirmType;
     public string TitleText;
-    public string DescText;
+    public string ParagraphText;
 
     public string OKButtonText;
     public Action OnClickOKButton;
@@ -24,43 +24,48 @@ public class ConfirmUIData : BaseUIData
 
 public class ConfirmUI : BaseUI
 {
-    [SerializeField]
-    private TMP_Text _titleText;
-
-    [SerializeField]
-    private TMP_Text _descText;
-
-    [SerializeField]
+    private Label _title;
+    private Label _paragraph;
     private Button _okButton;
-
-    [SerializeField]
-    private TMP_Text _okButtonText;
-
-    [SerializeField]
     private Button _cancelButton;
 
-    [SerializeField]
-    private TMP_Text _cancelButtonText;
-
-    private ConfirmUIData _confirmUIData;
     private Action _onClickOKButton;
     private Action _onClickCancelButton;
+    
+    private ConfirmUIData _confirmUIData;
 
+    public override void Init(VisualTreeAsset visualTree)
+    {
+        base.Init(visualTree);
+
+        _title = _root.Q<Label>("Popup_Title");
+        _paragraph = _root.Q<Label>("Popup_Paragraph");
+        
+        _okButton = _root.Q<Button>("Ok_Button");
+        _onClickOKButton += OnClickOKButton;
+        
+        _cancelButton = _root.Q<Button>("Cancel_Button");
+        _onClickCancelButton += OnClickCancelButton;
+        _cancelButton.style.display = DisplayStyle.None;
+    }
+    
     public override void SetInfo(BaseUIData uiData)
     {
         base.SetInfo(uiData);
-
+        
         _confirmUIData = uiData as ConfirmUIData;
-
-        _titleText.text = _confirmUIData.TitleText;
-        _descText.text = _confirmUIData.DescText;
-        _okButtonText.text = _confirmUIData.OKButtonText;
+        _title.text = _confirmUIData.TitleText;
+        _paragraph.text = _confirmUIData.ParagraphText;
+        
+        _okButton.text = _confirmUIData.OKButtonText;
         _onClickOKButton = _confirmUIData.OnClickOKButton;
-        _cancelButtonText.text = _confirmUIData.CancelButtonText;
+        
+        _cancelButton.text = _confirmUIData.CancelButtonText;
         _onClickCancelButton = _confirmUIData.OnClickCancelButton;
-
-        _okButton.gameObject.SetActive(true);
-        _cancelButton.gameObject.SetActive(_confirmUIData.ConfirmType == ConfirmType.OK_Cancel);
+        if (_confirmUIData.ConfirmType == ConfirmType.OK_Cancel)
+        {
+            _cancelButton.style.display = DisplayStyle.Flex;
+        }
     }
 
     public void OnClickOKButton()

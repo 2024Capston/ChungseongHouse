@@ -12,12 +12,12 @@ public class LoadingUI : BaseUI
     public override void SetInfo(BaseUIData uiData)
     {
         base.SetInfo(uiData);
-        StartCoroutine(CoChangeText());
+        //StartCoroutine(CoChangeText());
     }
 
     public override void CloseUI(bool isCloseAll = false)
     {
-        StopCoroutine(CoChangeText());
+        //StopCoroutine(CoChangeText());
         base.CloseUI(isCloseAll);
     }
 

@@ -63,7 +63,7 @@ public class TitleManager : MonoBehaviour
             {
                 ConfirmType = ConfirmType.OK,
                 TitleText = "네트워크 연결 실패",
-                DescText = $"[{nameof(FacepunchTransport)}] - Caught an exeption during initialization of Steam client: {e}",
+                ParagraphText = $"[{nameof(FacepunchTransport)}] - Caught an exeption during initialization of Steam client: {e}",
                 OKButtonText = "종료",
                 OnClickOKButton = () =>
                 {

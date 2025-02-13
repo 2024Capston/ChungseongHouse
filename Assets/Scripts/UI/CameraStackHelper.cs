@@ -20,7 +20,7 @@ public class CameraStackHelper : MonoBehaviour
         var mainCameraData = mainCamera.GetUniversalAdditionalCameraData();
         mainCameraData.renderType = CameraRenderType.Base;
 
-        var camera = GetComponent<Camera>();
+        /*var camera = GetComponent<Camera>();
         var cameraData = camera.GetUniversalAdditionalCameraData();
         cameraData.renderType = CameraRenderType.Overlay;
         mainCameraData.cameraStack.Add(camera);
@@ -28,6 +28,6 @@ public class CameraStackHelper : MonoBehaviour
         var uiManagerCameara = UIManager.Instance.UICamara;
         var uiManagerCameraData = uiManagerCameara.GetUniversalAdditionalCameraData();
         uiManagerCameraData.renderType = CameraRenderType.Overlay;
-        mainCameraData.cameraStack.Add(uiManagerCameara);
+        mainCameraData.cameraStack.Add(uiManagerCameara);*/
     }
 }
