@@ -7,17 +7,12 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class TitleManager : MonoBehaviour
 {
     [SerializeField]
     private FacepunchTransport _facepunch;
-
-    [SerializeField]
-    private GameObject _title;
-
-    [SerializeField]
-    private TMP_Text _progressText;
 
     private AsyncOperation _asyncOperation;
 
@@ -25,22 +20,25 @@ public class TitleManager : MonoBehaviour
 
     private bool _isSteamClientInitialized;
 
+    private ProgressBar _progressBar;
+
     private void Awake()
     {
-        _title.SetActive(true);
         _isSteamClientInitialized = false;
         InitSteamClient();
     }
 
     private void Start()
     {
+        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
+        _progressBar = root.Q<ProgressBar>("ProgressBar");
+        
         if (_isSteamClientInitialized)
         {
             LoadUserData();
 
             StartCoroutine(CoLoadHome());
         }
-
     }
 
     /// <summary>
@@ -99,12 +97,14 @@ public class TitleManager : MonoBehaviour
     {
         Logger.Log($"{GetType()}::CoLoadHome");
 
-        _progressText.text = "0%";
+        _progressBar.title = "0%";
+        _progressBar.value = 0;
 
         // NetworkManager Instance가 생성될 때까지 대기한다.
         yield return new WaitUntil(() => NetworkManager.Singleton != null);
 
-        _progressText.text = "10%";
+        _progressBar.title = "10%";
+        _progressBar.value = 10;
 
         // Home Scene을 비동기적으로 불러오기 위해 시도한다.
         _asyncOperation = SceneLoadManager.Instance.LoadScene(SceneType.Home.ToString(), false);
@@ -121,14 +121,16 @@ public class TitleManager : MonoBehaviour
         // asyncOperation이 완료될 때까지 반복한다.
         while (!_asyncOperation.isDone)
         {
-            _progressText.text = $"{(int)((_asyncOperation.progress < 0.5f ? 0.5f : _asyncOperation.progress) * 100)}%";
+            _progressBar.title = $"{(int)((_asyncOperation.progress < 0.5f ? 0.5f : _asyncOperation.progress) * 100)}%";
+            _progressBar.value = (int)((_asyncOperation.progress < 0.5f ? 0.5f : _asyncOperation.progress) * 100);
 
             // asyncOperation이 완료되었다면 
             if (_asyncOperation.progress >= 0.9f)
             {
 
                 // 약간 대기 한 뒤 Home Scene으로 넘어간다.
-                _progressText.text = "100%";
+                _progressBar.title = "100%";
+                _progressBar.value = 100;
                 yield return new WaitForSecondsRealtime(0.5f);
 
                 _asyncOperation.allowSceneActivation = true;

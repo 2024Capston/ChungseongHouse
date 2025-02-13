@@ -17,6 +17,7 @@ public class UIManager : SingletonBehavior<UIManager>
     {
         base.Init();
         _root = _uiDocument.rootVisualElement;
+        _root.style.display = DisplayStyle.None;
     }
 
     public void OpenUI<T>(BaseUIData uiData) where T : BaseUI, new()
@@ -39,6 +40,7 @@ public class UIManager : SingletonBehavior<UIManager>
         
         ui.SetInfo(uiData);
         _root.Add(ui.Root);
+        _root.style.display = DisplayStyle.Flex;
         ui.ShowUI();
     }
 
@@ -55,6 +57,11 @@ public class UIManager : SingletonBehavior<UIManager>
         }
         
         visualElement.RemoveFromHierarchy();
+        
+        if (_root.childCount == 0)
+        {
+            _root.style.display = DisplayStyle.None;
+        }
     }
     
     private BaseUI GetUI<T>(out bool isAlreadyOpen) where T : BaseUI, new()

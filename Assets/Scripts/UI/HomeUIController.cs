@@ -9,12 +9,16 @@ public class HomeUIController : MonoBehaviour
     private VisualElement _homeUIContainer;
 
     private VisualElement _settingPanel;
-
+    private VisualElement _playDataSelectPanel;
+    
     private Button _createButton;
     private Button _joinButton;
     private Button _settingButton;
     private Button _exitButton;
-    private string SettingsUI = "Prefabs/UI/SettingsUI";
+    
+    private static readonly string SettingsUI_PATH = "Prefabs/UI/SettingsUI";
+    private string PlayDataSelectUI_PATH = "Prefabs/UI/PlayDataSelectUI";
+    
     /// <summary>
     /// 방 만들기 버튼을 누르면 호출된다.
     /// </summary>
@@ -33,14 +37,15 @@ public class HomeUIController : MonoBehaviour
         _settingButton.RegisterCallback<ClickEvent>(OnClickSettingButton);
         _exitButton.RegisterCallback<ClickEvent>(OnClickExitButton);
     }
+    
     public void OnClickCreateButton(ClickEvent evt)
     {
-        PlayDataSelectUIData playDataSelectUIData = new PlayDataSelectUIData()
-        {
-            UserGameData = HomeManager.Instance.UserGameData
-        };
-        UIManager.Instance.OpenUI<PlayDataSelectUI>(playDataSelectUIData);
-
+        var playDataSelect = Resources.Load<VisualTreeAsset>(PlayDataSelectUI_PATH);
+        _playDataSelectPanel = playDataSelect.CloneTree();
+        _playDataSelectPanel.style.position = Position.Absolute;
+        new PlayDataSelectUI(_playDataSelectPanel);
+        
+        _homeUIContainer.Add(_playDataSelectPanel);
     }
 
     /// <summary>
@@ -57,17 +62,16 @@ public class HomeUIController : MonoBehaviour
     /// </summary>
     public void OnClickSettingButton(ClickEvent evt)
     {
-        var setting = Resources.Load<VisualTreeAsset>(SettingsUI);
+        var setting = Resources.Load<VisualTreeAsset>(SettingsUI_PATH);
 
         _settingPanel = setting.CloneTree();
 
         _settingPanel.style.position = Position.Absolute;
 
-        new SettingsUIController(_settingPanel);
+        new SettingsUI(_settingPanel);
 
         _homeUIContainer.Add(_settingPanel);
     }
-    // TODO : 설정 팝업을 만들면 해당 팝업을 띄운다.
 
     /// <summary>
     /// 종료 버튼을 누르면 호출된다.
