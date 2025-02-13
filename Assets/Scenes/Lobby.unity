@@ -418,10 +418,15 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 301547767194158486, guid: 3fe4998da55205c48ad835690119f9e9,
+        type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3949430894545060346, guid: 3fe4998da55205c48ad835690119f9e9,
         type: 3}
       propertyPath: m_Name
-      value: Lobby
+      value: LobbyUI
       objectReference: {fileID: 0}
     - target: {fileID: 6360716520751581404, guid: 3fe4998da55205c48ad835690119f9e9,
         type: 3}
@@ -474,10 +479,40 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8054963173038007878, guid: 3fe4998da55205c48ad835690119f9e9, type: 3}
+    - {fileID: 2859949184705924634, guid: 3fe4998da55205c48ad835690119f9e9, type: 3}
+    - {fileID: 2079243698566270756, guid: 3fe4998da55205c48ad835690119f9e9, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3949430894545060346, guid: 3fe4998da55205c48ad835690119f9e9,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1332907681}
   m_SourcePrefab: {fileID: 100100000, guid: 3fe4998da55205c48ad835690119f9e9, type: 3}
+--- !u!1 &1332907680 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3949430894545060346, guid: 3fe4998da55205c48ad835690119f9e9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1332907679}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1332907681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1332907680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PanelSettings: {fileID: 11400000, guid: fa1a32951fa23c045a46ed83bd5e27c7, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: dd2a391393539774988ab2367fc6fe21,
+    type: 3}
+  m_SortingOrder: 0
 --- !u!1001 &2434045015522482641
 PrefabInstance:
   m_ObjectHideFlags: 0
