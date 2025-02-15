@@ -1,12 +1,15 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/Resources/Prefabs/UI/BasicStyle.uss?fileID=7433441132597879392&amp;guid=2fbb568733e29514aa16a1de518b2c93&amp;type=3#BasicStyle" />
-    <ui:VisualElement name="HomeUIContainer" style="flex-grow: 1; align-items: center; justify-content: space-around; -unity-font-definition: url(&quot;project://database/Assets/Scenes/NanumBarunGothic%20SDF.asset?fileID=11400000&amp;guid=1ba20642bab6a384f98e392e5e9ddb2e&amp;type=2#NanumBarunGothic SDF&quot;);">
-        <ui:VisualElement name="Title" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Scenes/LOGO-Remove.png?fileID=2800000&amp;guid=c08e9110e445d2c4b8a7472d66b5f5d1&amp;type=3#LOGO-Remove&quot;); width: 700px; height: 350px; margin-top: 100px;" />
-        <ui:VisualElement name="ButtonContainer" style="flex-grow: 0; align-items: center; justify-content: space-around;">
-            <ui:Button text="새 게임" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Create_Button" class="button--default" />
-            <ui:Button text="방 참가" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Join_Button" class="button--default" />
-            <ui:Button text="설정" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Setting_Button" class="button--default" />
-            <ui:Button text="종료" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Exit_Button" class="button--default" />
+    <Style src="project://database/Assets/Resources/Prefabs/UI/ActionStyle.uss?fileID=7433441132597879392&amp;guid=857bdc1af040ac24b9b313dea83708ea&amp;type=3#ActionStyle" />
+    <ui:VisualElement name="HomeUI" style="flex-grow: 1; align-items: center; justify-content: center; -unity-font-definition: url(&quot;project://database/Assets/Scenes/NanumBarunGothic%20SDF.asset?fileID=11400000&amp;guid=1ba20642bab6a384f98e392e5e9ddb2e&amp;type=2#NanumBarunGothic SDF&quot;);">
+        <ui:VisualElement name="HomeUIContainer" class="HomeUIContainer--in">
+            <ui:VisualElement name="Title" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Scenes/LOGO-Remove.png?fileID=2800000&amp;guid=c08e9110e445d2c4b8a7472d66b5f5d1&amp;type=3#LOGO-Remove&quot;); width: 700px; height: 350px; margin-top: 100px;" />
+            <ui:VisualElement name="ButtonContainer" style="flex-grow: 0; align-items: center; justify-content: space-around;">
+                <ui:Button text="새 게임" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Create_Button" class="button--default" />
+                <ui:Button text="방 참가" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Join_Button" class="button--default" />
+                <ui:Button text="설정" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Setting_Button" class="button--default" />
+                <ui:Button text="종료" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Exit_Button" class="button--default" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

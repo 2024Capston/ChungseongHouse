@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 
 public class HomeUIController : MonoBehaviour
 {
+    private VisualElement _homeUI;
     private VisualElement _homeUIContainer;
 
     private VisualElement _settingPanel;
@@ -26,7 +27,8 @@ public class HomeUIController : MonoBehaviour
     {
         var root = GetComponent<UIDocument>().rootVisualElement;
 
-        _homeUIContainer = root.Q<VisualElement>("HomeUIContainer");
+        _homeUI = root.Q<VisualElement>("HomeUI");
+        _homeUIContainer = _homeUI.Q<VisualElement>("HomeUIContainer");
         _createButton = root.Q<Button>("Create_Button");
         _joinButton = root.Q<Button>("Join_Button");
         _settingButton = root.Q<Button>("Setting_Button");
@@ -45,7 +47,7 @@ public class HomeUIController : MonoBehaviour
         _playDataSelectPanel.style.position = Position.Absolute;
         new PlayDataSelectUI(_playDataSelectPanel);
         
-        _homeUIContainer.Add(_playDataSelectPanel);
+        _homeUI.Add(_playDataSelectPanel);
     }
 
     /// <summary>
@@ -68,9 +70,30 @@ public class HomeUIController : MonoBehaviour
 
         _settingPanel.style.position = Position.Absolute;
 
-        new SettingsUI(_settingPanel);
+        new SettingsUI(_settingPanel, () =>
+        {
+            CloseSetting();
+        });
+        
+        //HomeUIContainer 퇴장 애니메이션
+        _homeUIContainer.AddToClassList("HomeUIContainer--out");
+        
+        _homeUI.Add(_settingPanel);
+        
+        _settingPanel.AddToClassList("right");
+        StartCoroutine(PopupUIManager.PopupIn(_settingPanel));
+    }
 
-        _homeUIContainer.Add(_settingPanel);
+    public void HomeUIConatainerIn()
+    {
+        _homeUIContainer.RemoveFromClassList("HomeUIContainer--out");
+    }
+
+    public void CloseSetting()
+    {
+        HomeUIConatainerIn();
+
+        StartCoroutine(PopupUIManager.PopupOut(_settingPanel));
     }
 
     /// <summary>
@@ -80,4 +103,6 @@ public class HomeUIController : MonoBehaviour
     {
         Application.Quit();
     }
+    
+
 }

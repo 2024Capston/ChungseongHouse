@@ -36,7 +36,7 @@
     transition-duration: 0.1s;
 }
 
-.unity-progress-bar__container{
+.unity-progress-bar__container {
     height: 100px;
     max-height: 100px;
 }
