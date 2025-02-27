@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/Prefabs/UI/BasicStyle.uss?fileID=7433441132597879392&amp;guid=2fbb568733e29514aa16a1de518b2c93&amp;type=3#BasicStyle" />
+    <ui:VisualElement name="PlayDataSelectContianer" style="width: 900px; height: 1000px; background-color: rgba(0, 0, 0, 0.78); align-items: center; justify-content: space-around;">
+        <ui:TextField picking-mode="Ignore" name="CodeTextField" style="width: 500px; height: 100px; flex-direction: column; align-items: flex-start; font-size: 50px;" />
+        <ui:Label tabindex="-1" text="text" parse-escape-sequences="true" display-tooltip-when-elided="true" name="DescText" style="width: 500px; height: 100px; -unity-text-align: middle-center; font-size: 50px; color: rgb(255, 255, 255);" />
+        <ui:Button text="OK" parse-escape-sequences="true" display-tooltip-when-elided="true" name="OK_Button" enable-rich-text="true" class="button--default" />
+        <ui:Button text="Back" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Back_Button" class="button--default" />
+    </ui:VisualElement>
+</ui:UXML>

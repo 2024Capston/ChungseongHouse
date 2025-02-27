@@ -11,6 +11,7 @@ public class HomeUIController : MonoBehaviour
 
     private VisualElement _settingPanel;
     private VisualElement _playDataSelectPanel;
+    private VisualElement _codeInputPanel;
     
     private Button _createButton;
     private Button _joinButton;
@@ -19,6 +20,7 @@ public class HomeUIController : MonoBehaviour
     
     private static readonly string SettingsUI_PATH = "Prefabs/UI/SettingsUI";
     private static readonly string PlayDataSelectUI_PATH = "Prefabs/UI/PlayDataSelectUI";
+    private static readonly string CodeInputUI_PATH = "Prefabs/UI/CodeInputUI";
     
     /// <summary>
     /// 방 만들기 버튼을 누르면 호출된다.
@@ -61,8 +63,18 @@ public class HomeUIController : MonoBehaviour
     /// </summary>
     public void OnClickEnterButton(ClickEvent evt)
     {
-        BaseUIData uidata = new BaseUIData();
-        UIManager.Instance.OpenUI<CodeInputUI>(uidata);
+        var codeInput = Resources.Load<VisualTreeAsset>(CodeInputUI_PATH);
+        _codeInputPanel = codeInput.CloneTree();
+        _codeInputPanel.style.position = Position.Absolute;
+        _codeInputPanel.AddToClassList("right");
+        new CodeInputUI(_codeInputPanel, () =>
+        {
+            ClosePanel(_codeInputPanel);
+        });
+
+        _homeUI.Add(_codeInputPanel);
+        _homeUIContainer.AddToClassList("HomeUIContainer--out");
+        UIManager.Instance.StartPopupIn(_codeInputPanel);
     }
 
     /// <summary>
