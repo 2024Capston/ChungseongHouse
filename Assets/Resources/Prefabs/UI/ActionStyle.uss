@@ -2,8 +2,8 @@
     flex-grow: 1;
     justify-content: space-around;
     position: relative;
-    transition-duration: 1s;
-    transition-timing-function: ease-out;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out-back;
 }
 
 .HomeUIContainer--out {
@@ -11,22 +11,22 @@
 }
 
 .left {
-    position: absolute;
+    position: relative;
     translate: -2000px 0;
-    transition-duration: 1s;
-    transition-timing-function: ease-out;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out-back;
 }
 
 .right {
-    position: absolute;
+    position: relative;
     translate: 2000px 0;
-    transition-duration: 1s;
-    transition-timing-function: ease-out;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out-back;
 }
 
 .center {
-    position: absolute;
+    position: relative;
     translate: 0 0;
-    transition-duration: 1s;
-    transition-timing-function: ease-out;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out-back;
 }

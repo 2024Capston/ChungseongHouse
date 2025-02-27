@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/Prefabs/UI/BasicStyle.uss?fileID=7433441132597879392&amp;guid=2fbb568733e29514aa16a1de518b2c93&amp;type=3#BasicStyle" />
+    <Style src="project://database/Assets/Resources/Prefabs/UI/ActionStyle.uss?fileID=7433441132597879392&amp;guid=857bdc1af040ac24b9b313dea83708ea&amp;type=3#ActionStyle" />
+    <ui:VisualElement name="GraphicSettingPanel" class="panel--default" style="-unity-font-definition: url(&quot;project://database/Assets/Scenes/NanumBarunGothic%20SDF.asset?fileID=11400000&amp;guid=1ba20642bab6a384f98e392e5e9ddb2e&amp;type=2#NanumBarunGothic SDF&quot;);">
+        <ui:VisualElement name="VisualElement" style="width: 700px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; background-color: rgba(209, 209, 209, 0.78); border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0; align-items: center; justify-content: space-around; align-self: auto; height: 100px; font-size: 40px; flex-direction: row;">
+            <ui:DropdownField label="Resolution" name="Resolution" style="flex-shrink: 1;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="VisualElement" style="width: 700px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; background-color: rgba(209, 209, 209, 0.78); border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0; align-items: center; justify-content: space-around; align-self: auto; height: 100px; font-size: 40px; flex-direction: row;">
+            <ui:Label tabindex="-1" text="Fullscreen" parse-escape-sequences="true" display-tooltip-when-elided="true" enable-rich-text="false" style="padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
+            <ui:Toggle name="Fullscreen" />
+        </ui:VisualElement>
+        <ui:Button text="Close" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CloseVideoUIButton" class="button--default" />
+    </ui:VisualElement>
+</ui:UXML>

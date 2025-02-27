@@ -2,9 +2,9 @@
     <Style src="project://database/Assets/Resources/Prefabs/UI/BasicStyle.uss?fileID=7433441132597879392&amp;guid=2fbb568733e29514aa16a1de518b2c93&amp;type=3#BasicStyle" />
     <ui:VisualElement name="PlayDataSelectContianer" style="width: 900px; height: 1000px; background-color: rgba(0, 0, 0, 0.78); align-items: center; justify-content: space-around;">
         <ui:VisualElement name="PlayDataButtonContainer" style="height: 80%; justify-content: space-around; align-items: center;">
-            <ui:Button text="SaveSlot1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveSlot1_Button" class="button--default" />
-            <ui:Button text="SaveSlot2" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveSlot2_Button" class="button--default" />
-            <ui:Button text="SaveSlot3" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveSlot3_Button" class="button--default" />
+            <ui:Button text="SaveSlot1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveSlot1_Button" class="button--default" style="width: 700px; height: 200px;" />
+            <ui:Button text="SaveSlot2" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveSlot2_Button" class="button--default" style="width: 700px; height: 200px;" />
+            <ui:Button text="SaveSlot3" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveSlot3_Button" class="button--default" style="width: 700px; height: 200px;" />
         </ui:VisualElement>
         <ui:Button text="Back" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Back_Button" class="button--default" />
     </ui:VisualElement>

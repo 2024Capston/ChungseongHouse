@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/Prefabs/UI/ActionStyle.uss?fileID=7433441132597879392&amp;guid=857bdc1af040ac24b9b313dea83708ea&amp;type=3#ActionStyle" />
+    <Style src="project://database/Assets/Resources/Prefabs/UI/BasicStyle.uss?fileID=7433441132597879392&amp;guid=2fbb568733e29514aa16a1de518b2c93&amp;type=3#BasicStyle" />
+    <ui:VisualElement name="AudioSettingPanel" class="panel--default">
+        <ui:VisualElement style="width: 700px; height: 100px; background-color: rgba(255, 255, 255, 0.78); align-items: center; flex-direction: row; justify-content: space-around;">
+            <ui:Label tabindex="-1" text="마스터 볼륨" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 40px;" />
+            <ui:SliderInt high-value="100" style="width: 309px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -112,4 +112,14 @@ public class UIManager : SingletonBehavior<UIManager>
             baseUI.CloseUI();
         }
     }
+    
+    public void StartPopupIn(VisualElement panel)
+    {
+        StartCoroutine(PopupUIManager.PopupIn(panel));
+    }
+
+    public void StartPopupOut(VisualElement panel)
+    {
+        StartCoroutine(PopupUIManager.PopupOut(panel));
+    }
 }

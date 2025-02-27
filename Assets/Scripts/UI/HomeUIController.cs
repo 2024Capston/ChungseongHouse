@@ -18,7 +18,7 @@ public class HomeUIController : MonoBehaviour
     private Button _exitButton;
     
     private static readonly string SettingsUI_PATH = "Prefabs/UI/SettingsUI";
-    private string PlayDataSelectUI_PATH = "Prefabs/UI/PlayDataSelectUI";
+    private static readonly string PlayDataSelectUI_PATH = "Prefabs/UI/PlayDataSelectUI";
     
     /// <summary>
     /// 방 만들기 버튼을 누르면 호출된다.
@@ -45,9 +45,15 @@ public class HomeUIController : MonoBehaviour
         var playDataSelect = Resources.Load<VisualTreeAsset>(PlayDataSelectUI_PATH);
         _playDataSelectPanel = playDataSelect.CloneTree();
         _playDataSelectPanel.style.position = Position.Absolute;
-        new PlayDataSelectUI(_playDataSelectPanel);
+        _playDataSelectPanel.AddToClassList("right");
+        new PlayDataSelectUI(_playDataSelectPanel, () =>
+        {
+            ClosePanel(_playDataSelectPanel);
+        });
         
         _homeUI.Add(_playDataSelectPanel);
+        _homeUIContainer.AddToClassList("HomeUIContainer--out");
+        UIManager.Instance.StartPopupIn(_playDataSelectPanel);
     }
 
     /// <summary>
@@ -69,33 +75,26 @@ public class HomeUIController : MonoBehaviour
         _settingPanel = setting.CloneTree();
 
         _settingPanel.style.position = Position.Absolute;
-
+        
+        // 스크립트, Close Action 연결
         new SettingsUI(_settingPanel, () =>
         {
-            CloseSetting();
+            ClosePanel(_settingPanel);
         });
         
-        //HomeUIContainer 퇴장 애니메이션
+        // HomeUIContainer 퇴장 애니메이션
         _homeUIContainer.AddToClassList("HomeUIContainer--out");
         
+        // UI 화면에 SettingPanel 추가
         _homeUI.Add(_settingPanel);
         
+        // settingPanel이 오른쪽에서 중앙으로 이동하기위해 class 추가
         _settingPanel.AddToClassList("right");
-        StartCoroutine(PopupUIManager.PopupIn(_settingPanel));
+        
+        // settingPanel을 중앙으로 이동
+        UIManager.Instance.StartPopupIn(_settingPanel);
     }
-
-    public void HomeUIConatainerIn()
-    {
-        _homeUIContainer.RemoveFromClassList("HomeUIContainer--out");
-    }
-
-    public void CloseSetting()
-    {
-        HomeUIConatainerIn();
-
-        StartCoroutine(PopupUIManager.PopupOut(_settingPanel));
-    }
-
+    
     /// <summary>
     /// 종료 버튼을 누르면 호출된다.
     /// </summary>
@@ -104,5 +103,15 @@ public class HomeUIController : MonoBehaviour
         Application.Quit();
     }
     
+    public void HomeUIConatainerIn()
+    {
+        _homeUIContainer.RemoveFromClassList("HomeUIContainer--out");
+    }
 
+    public void ClosePanel(VisualElement panel)
+    {
+        HomeUIConatainerIn();
+
+        UIManager.Instance.StartPopupOut(panel);
+    }
 }

@@ -40,3 +40,23 @@
     height: 100px;
     max-height: 100px;
 }
+
+.panel--default {
+    width: 900px;
+    height: 1000px;
+    background-color: rgba(0, 0, 0, 0.78);
+    justify-content: space-around;
+    align-items: center;
+}
+
+.settingPanel {
+    flex-grow: 0;
+    align-items: center;
+    justify-content: space-around;
+    width: 900px;
+    height: 1000px;
+    background-color: rgba(0, 0, 0, 0.78);
+    -unity-font-definition: url("project://database/Assets/Scenes/NanumBarunGothic%20SDF.asset?fileID=11400000&guid=1ba20642bab6a384f98e392e5e9ddb2e&type=2#NanumBarunGothic SDF");
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out-back;
+}

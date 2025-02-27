@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,15 +14,18 @@ public class PlayDataSelectUI
     private Button _saveSlot3Button;
     private Button _backButton;
 
+    private Action OnClosePanel;
+
     private List<Button> _buttonContainer;
     // Start is called before the first frame update
-    public PlayDataSelectUI(VisualElement root)
+    public PlayDataSelectUI(VisualElement root, Action OnClosePlayDataSelectUIButton)
     {
         _root = root;
         _saveSlot1Button = _root.Q<Button>("SaveSlot1_Button");
         _saveSlot2Button = _root.Q<Button>("SaveSlot2_Button");
         _saveSlot3Button = _root.Q<Button>("SaveSlot3_Button");
         _backButton = _root.Q<Button>("Back_Button");
+        OnClosePanel = OnClosePlayDataSelectUIButton;
         
         _buttonContainer = new List<Button>(){_saveSlot1Button, _saveSlot2Button, _saveSlot3Button};
 
@@ -64,6 +68,6 @@ public class PlayDataSelectUI
 
     private void OnClickBackButton(ClickEvent evt)
     {
-        _root.RemoveFromHierarchy();
+        OnClosePanel?.Invoke();
     }
 }
