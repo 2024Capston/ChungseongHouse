@@ -23,6 +23,8 @@ public class SettingsUI
     private VisualElement _controlPanel;
     private VisualElement _languagePanel;
 
+    private VisualElement _newPanel;
+
     
    // private static readonly string AudioUI_PATH = "Prefabs/UI/Setting/AudioUI";
     private static readonly string VideoUI_PATH = "Prefabs/UI/Setting/VideoUI";
@@ -56,29 +58,7 @@ public class SettingsUI
     }
     private void OnClickVideo(ClickEvent evt)
     {
-        var video = Resources.Load<VisualTreeAsset>(VideoUI_PATH);
-
-        _videoPanel = video.CloneTree();
-
-        _videoPanel.style.position = Position.Absolute;
-        
-        // 스크립트, Close Action 연결
-        new VideoUIController(_videoPanel, () =>
-        {
-            ClosePanel(_videoPanel);
-        });
-        
-        // SettingMenu 퇴장 애니메이션
-        _settingPanel.AddToClassList("left");
-        
-        // UI 화면에 SettingPanel 추가
-        _settingUI.Add(_videoPanel);
-        
-        // settingPanel이 오른쪽에서 중앙으로 이동하기위해 class 추가
-        _videoPanel.AddToClassList("right");
-        
-        // settingPanel을 중앙으로 이동
-        UIManager.Instance.StartPopupIn(_videoPanel);
+        newSettingUI<VideoUIController>(VideoUI_PATH);
 
     }
     
@@ -99,5 +79,27 @@ public class SettingsUI
         _settingPanel.RemoveFromClassList("left");
 
         UIManager.Instance.StartPopupOut(panel);
+    }
+    
+    private void newSettingUI<T>(string PATH) where T : class
+    {
+        var _newUI = Resources.Load<VisualTreeAsset>(PATH);
+        _newPanel = _newUI.CloneTree();
+        _newPanel.style.position = Position.Absolute;
+
+        // T가 특정 생성자를 가지도록 강제
+        var controller = Activator.CreateInstance(typeof(T), _newPanel, (Action)(() => ClosePanel(_newPanel))) as T;
+
+        // SettingMenu 퇴장 애니메이션
+        _settingPanel.AddToClassList("left");
+
+        // UI 화면에 SettingPanel 추가
+        _settingUI.Add(_newPanel);
+
+        // settingPanel이 오른쪽에서 중앙으로 이동하기 위해 class 추가
+        _newPanel.AddToClassList("right");
+
+        // settingPanel을 중앙으로 이동
+        UIManager.Instance.StartPopupIn(_newPanel);
     }
 }
