@@ -39,6 +39,8 @@ public class TitleManager : MonoBehaviour
 
             StartCoroutine(CoLoadHome());
         }
+        
+        AudioManager.Instance.ApplyAudioMixerValues();
     }
 
     /// <summary>

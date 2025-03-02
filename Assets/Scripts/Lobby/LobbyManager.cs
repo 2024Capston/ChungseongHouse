@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using Steamworks;
 using Unity.Multiplayer.Samples.Utilities;
 using Unity.Netcode;
+#if UNITY_EDITOR
+using UnityEditor.Experimental.GraphView;
+#endif
 using UnityEngine;
-
+    
 public class LobbyManager : NetworkSingletonBehaviour<LobbyManager>
 {
     [SerializeField] private GameObject[] _playerPrefabs = new GameObject[2];

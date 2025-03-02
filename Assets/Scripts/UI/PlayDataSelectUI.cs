@@ -21,6 +21,9 @@ public class PlayDataSelectUI
     public PlayDataSelectUI(VisualElement root, Action OnClosePlayDataSelectUIButton)
     {
         _root = root;
+        
+        SoundManager.RegisterButtonClickSound(_root);
+        
         _saveSlot1Button = _root.Q<Button>("SaveSlot1_Button");
         _saveSlot2Button = _root.Q<Button>("SaveSlot2_Button");
         _saveSlot3Button = _root.Q<Button>("SaveSlot3_Button");

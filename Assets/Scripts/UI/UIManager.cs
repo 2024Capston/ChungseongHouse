@@ -12,11 +12,19 @@ public class UIManager : SingletonBehavior<UIManager>
 
     private Dictionary<Type, BaseUI> _uiPool = new Dictionary<Type, BaseUI>();
     private VisualElement _root;
+    
+    private static readonly string SettingsUI_PATH = "Prefabs/UI/SettingsUI";
+    private VisualElement _settingPanel;
+    private bool _isSettingOpen = false;
+
 
     protected override void Init()
     {
         base.Init();
         _root = _uiDocument.rootVisualElement;
+        
+        SoundManager.RegisterButtonClickSound(_root);
+
         _root.style.display = DisplayStyle.None;
     }
 
@@ -121,5 +129,57 @@ public class UIManager : SingletonBehavior<UIManager>
     public void StartPopupOut(VisualElement panel)
     {
         StartCoroutine(PopupUIManager.PopupOut(panel));
+    }
+
+    void OnEscapeInput()
+    {
+        Debug.Log("OnEscapeInput");
+        if (!_isSettingOpen)
+        {
+            _isSettingOpen = true;
+            
+            _root.style.display = DisplayStyle.Flex;
+        
+            var setting = Resources.Load<VisualTreeAsset>(SettingsUI_PATH);
+
+            _settingPanel = setting.CloneTree();
+
+            _settingPanel.style.position = Position.Absolute;
+        
+            // UIDocumentLocalization 참조 가져오기
+            var localization = GetComponent<UIDocumentLocalization>();
+
+            // SettingUI 생성 및 번역 적용
+            new SettingsUI(_settingPanel, () =>
+            {
+                ClosePanel(_settingPanel);
+            }, localization); // UIDocumentLocalization 참조 전달
+        
+        
+            // UI 화면에 SettingPanel 추가
+            _root.Add(_settingPanel);
+        
+            // settingPanel이 오른쪽에서 중앙으로 이동하기위해 class 추가
+            _settingPanel.AddToClassList("right");
+        
+            // settingPanel을 중앙으로 이동
+            StartPopupIn(_settingPanel);
+        }
+        else
+        {
+            ClosePanel(_settingPanel);
+            
+            _isSettingOpen = false;
+        }
+    }
+    
+    private void ClosePanel(VisualElement panel)
+    {
+        StartPopupOut(panel);
+
+        _root.style.display = DisplayStyle.None;
+        
+        _isSettingOpen = false;
+
     }
 }

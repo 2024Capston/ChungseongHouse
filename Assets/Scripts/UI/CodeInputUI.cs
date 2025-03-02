@@ -18,6 +18,9 @@ public class CodeInputUI
     public CodeInputUI(VisualElement root, Action OnCloseCodeInputUI)
     {
         _root = root;
+        
+        SoundManager.RegisterButtonClickSound(_root);
+        
         _codeTextField = _root.Q<TextField>("CodeTextField");
         _descText = _root.Q<Label>("DescText");
         _okButton = _root.Q<Button>("OK_Button");

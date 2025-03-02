@@ -5,19 +5,19 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.UIElements.Experimental;
 
-public class SettingsUI 
+public class SettingsUI
 {
     private VisualElement _root;
     private VisualElement _settingUI;
     private VisualElement _settingPanel;
-    
+
     private Button _closeSettingButton;
     private Button _audio;
     private Button _video;
     private Button _control;
     private Button _language;
     private Action OnCloseSetting;
-    
+
     private VisualElement _audioPanel;
     private VisualElement _videoPanel;
     private VisualElement _controlPanel;
@@ -25,62 +25,69 @@ public class SettingsUI
 
     private VisualElement _newPanel;
 
-    
-   // private static readonly string AudioUI_PATH = "Prefabs/UI/Setting/AudioUI";
-    private static readonly string VideoUI_PATH = "Prefabs/UI/Setting/VideoUI";
-   // private static readonly string ControlsUI_PATH = "Prefabs/UI/Setting/ControlsUI";
-   // private static readonly string LanguageUI_PATH = "Prefabs/UI/Setting/LanguageUI";
+    private UIDocumentLocalization _localization; // UIDocumentLocalization 참조
 
-    public SettingsUI(VisualElement root, Action OnCloseSettingButtonClick)
+    private static readonly string AudioUI_PATH = "Prefabs/UI/Setting/AudioUI";
+    private static readonly string VideoUI_PATH = "Prefabs/UI/Setting/VideoUI";
+    private static readonly string ControlUI_PATH = "Prefabs/UI/Setting/ControlUI";
+    private static readonly string LanguageUI_PATH = "Prefabs/UI/Setting/LanguageUI";
+
+    public SettingsUI(VisualElement root, Action OnCloseSettingButtonClick, UIDocumentLocalization localization)
     {
         _root = root;
+        _localization = localization; // UIDocumentLocalization 참조 저장
+
+        SoundManager.RegisterButtonClickSound(_root);
+
         OnCloseSetting = OnCloseSettingButtonClick;
-        
+
         _settingUI = _root.Q<VisualElement>("SettingUI");
         _settingPanel = _root.Q<VisualElement>("SettingPanel");
-        
+
         _audio = _root.Q<Button>("AudioSettingButton");
         _video = _root.Q<Button>("VideoSettingButton");
         _control = _root.Q<Button>("ControlSettingButton");
         _language = _root.Q<Button>("LanguageSettingButton");
         _closeSettingButton = _root.Q<Button>("CloseSettingButton");
-        
+
         _audio.RegisterCallback<ClickEvent>(OnClickAudio);
         _video.RegisterCallback<ClickEvent>(OnClickVideo);
         _control.RegisterCallback<ClickEvent>(OnClickControl);
         _language.RegisterCallback<ClickEvent>(OnClickLanguage);
         _closeSettingButton.RegisterCallback<ClickEvent>(OnClickCloseSettingButton);
+
+        // 초기 번역 적용
+        ApplyLocalization(_root);
     }
-    
+
     private void OnClickAudio(ClickEvent evt)
     {
-
+        newSettingUI<AudioUIController>(AudioUI_PATH);
     }
+
     private void OnClickVideo(ClickEvent evt)
     {
         newSettingUI<VideoUIController>(VideoUI_PATH);
+    }
 
-    }
-    
-    private void OnClickControl(ClickEvent evt)
-    {
-    }
+    private void OnClickControl(ClickEvent evt) { }
+
     private void OnClickLanguage(ClickEvent evt)
     {
+        newSettingUI<LanguageUIController>(LanguageUI_PATH);
     }
 
     private void OnClickCloseSettingButton(ClickEvent evt)
     {
         OnCloseSetting?.Invoke();
     }
-    
+
     public void ClosePanel(VisualElement panel)
     {
         _settingPanel.RemoveFromClassList("left");
-
         UIManager.Instance.StartPopupOut(panel);
     }
-    
+
     private void newSettingUI<T>(string PATH) where T : class
     {
         var _newUI = Resources.Load<VisualTreeAsset>(PATH);
@@ -95,11 +102,26 @@ public class SettingsUI
 
         // UI 화면에 SettingPanel 추가
         _settingUI.Add(_newPanel);
+        
+        // 번역 적용
+        ApplyLocalization(_newPanel);
 
         // settingPanel이 오른쪽에서 중앙으로 이동하기 위해 class 추가
         _newPanel.AddToClassList("right");
 
         // settingPanel을 중앙으로 이동
         UIManager.Instance.StartPopupIn(_newPanel);
+    }
+
+    private void ApplyLocalization(VisualElement panel)
+    {
+        if (_localization != null)
+        {
+            var table = _localization.GetTable(); // GetTable 메서드가 있다고 가정
+            if (table != null)
+            {
+                _localization.LocalizeChildrenRecursively(panel, table);
+            }
+        }
     }
 }

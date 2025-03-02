@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI Table_fr
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: ab926d7dfdbcfa9458747de7a473e6d7, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 43719979008
+    m_Localized: JOUER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7657992351744
+    m_Localized: REJOINDRE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8067033460736
+    m_Localized: OPTIONS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8492860174336
+    m_Localized: QUITTER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8002004971520
+    m_Localized: Volume BGM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9388390215680
+    m_Localized: Volume principal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9914192359424
+    m_Localized: Volume SFX
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10221186052096
+    m_Localized: "R\xE9initialiser"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10816009662464
+    m_Localized: APPLIQUER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11162656305152
+    m_Localized: RETOUR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11338087264256
+    m_Localized: AUDIO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11606543691776
+    m_Localized: "VID\xC9O"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11756401979392
+    m_Localized: "CONTR\xD4LE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11927504416768
+    m_Localized: LANGUE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12070257553408
+    m_Localized: D'ACCORD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12319965442048
+    m_Localized: ANNULER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12460919222272
+    m_Localized: Chargement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12657091014656
+    m_Localized: 'Votre couleur :'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12992543059968
+    m_Localized: "R\xE9solution"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13128623058944
+    m_Localized: "Plein \xE9cran"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13286672822272
+    m_Localized: "Luminosit\xE9"
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

@@ -1,13 +1,13 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/Resources/Prefabs/UI/BasicStyle.uss?fileID=7433441132597879392&amp;guid=2fbb568733e29514aa16a1de518b2c93&amp;type=3#BasicStyle" />
     <Style src="project://database/Assets/Resources/Prefabs/UI/ActionStyle.uss?fileID=7433441132597879392&amp;guid=857bdc1af040ac24b9b313dea83708ea&amp;type=3#ActionStyle" />
-    <ui:VisualElement name="SettingUI" style="flex-grow: 1; align-items: center; justify-content: space-around;">
-        <ui:VisualElement name="SettingPanel" class="settingPanel">
-            <ui:Button text="Audio" parse-escape-sequences="true" display-tooltip-when-elided="true" name="AudioSettingButton" class="button--default" style="width: 700px; height: 100px;" />
-            <ui:Button text="Video" parse-escape-sequences="true" display-tooltip-when-elided="true" name="VideoSettingButton" class="button--default" style="width: 700px; height: 100px;" />
-            <ui:Button text="Control" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ControlSettingButton" class="button--default" style="width: 700px; height: 100px;" />
-            <ui:Button text="Language" parse-escape-sequences="true" display-tooltip-when-elided="true" name="LanguageSettingButton" class="button--default" style="width: 700px; height: 100px;" />
-            <ui:Button text="Close" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CloseSettingButton" class="button--default" style="width: 700px; height: 100px;" />
+    <ui:VisualElement name="SettingUI" style="flex-grow: 1; align-items: center; justify-content: space-around; background-color: rgba(0, 0, 0, 0.49); -unity-font-definition: url(&quot;project://database/Assets/Resources/Fonts/NotoSans-Regular%20SDF.asset?fileID=11400000&amp;guid=0d1f838670768be4c891260af0b39d6e&amp;type=2#NotoSans-Regular SDF&quot;);">
+        <ui:VisualElement name="SettingPanel" class="settingPanel" style="width: 1920px; background-color: rgba(0, 0, 0, 0); height: 1080px; -unity-font-definition: url(&quot;project://database/Assets/Resources/Fonts/NotoSans-Regular%20SDF.asset?fileID=11400000&amp;guid=0d1f838670768be4c891260af0b39d6e&amp;type=2#NotoSans-Regular SDF&quot;);">
+            <ui:Button text="#AUDIO" parse-escape-sequences="true" display-tooltip-when-elided="true" name="AudioSettingButton" class="button--default" style="width: 700px; height: 100px;" />
+            <ui:Button text="#VIDEO" parse-escape-sequences="true" display-tooltip-when-elided="true" name="VideoSettingButton" class="button--default" style="width: 700px; height: 100px;" />
+            <ui:Button text="#CONTROL" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ControlSettingButton" class="button--default" style="width: 700px; height: 100px;" />
+            <ui:Button text="#LANGUAGE" parse-escape-sequences="true" display-tooltip-when-elided="true" name="LanguageSettingButton" class="button--default" style="width: 700px; height: 100px;" />
+            <ui:Button text="#BACK" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CloseSettingButton" class="button--default" style="width: 700px; height: 100px;" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

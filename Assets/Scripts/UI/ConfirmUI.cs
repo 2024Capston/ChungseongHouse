@@ -37,6 +37,8 @@ public class ConfirmUI : BaseUI
     public override void Init(VisualTreeAsset visualTree)
     {
         base.Init(visualTree);
+        
+        SoundManager.RegisterButtonClickSound(_root);
 
         _title = _root.Q<Label>("Popup_Title");
         _paragraph = _root.Q<Label>("Popup_Paragraph");

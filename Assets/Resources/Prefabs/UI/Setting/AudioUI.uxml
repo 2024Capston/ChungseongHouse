@@ -1,10 +1,24 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/Resources/Prefabs/UI/ActionStyle.uss?fileID=7433441132597879392&amp;guid=857bdc1af040ac24b9b313dea83708ea&amp;type=3#ActionStyle" />
     <Style src="project://database/Assets/Resources/Prefabs/UI/BasicStyle.uss?fileID=7433441132597879392&amp;guid=2fbb568733e29514aa16a1de518b2c93&amp;type=3#BasicStyle" />
-    <ui:VisualElement name="AudioSettingPanel" class="panel--default">
-        <ui:VisualElement style="width: 700px; height: 100px; background-color: rgba(255, 255, 255, 0.78); align-items: center; flex-direction: row; justify-content: space-around;">
-            <ui:Label tabindex="-1" text="마스터 볼륨" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 40px;" />
-            <ui:SliderInt high-value="100" style="width: 309px;" />
+    <Style src="project://database/Assets/Resources/Prefabs/UI/SliderStyle.uss?fileID=7433441132597879392&amp;guid=2571c32dd048b6a48b1a0f5f216d10b8&amp;type=3#SliderStyle" />
+    <ui:VisualElement name="AudioSettingPanel" class="panel--default" style="-unity-font-definition: url(&quot;project://database/Assets/Fonts/NotoSans-Regular%20SDF.asset?fileID=11400000&amp;guid=0d1f838670768be4c891260af0b39d6e&amp;type=2#NotoSans-Regular SDF&quot;); width: 1920px; height: 1080px; background-color: rgba(0, 0, 0, 0);">
+        <ui:VisualElement style="width: 1000px; height: 100px; background-color: rgba(209, 209, 209, 0.78); align-items: center; flex-direction: row; justify-content: space-between; border-left-color: rgba(255, 255, 255, 0.78); border-right-color: rgba(255, 255, 255, 0.78); border-top-color: rgba(255, 255, 255, 0.78); border-bottom-color: rgba(255, 255, 255, 0.78); padding-left: 30px; padding-right: 30px;">
+            <ui:Label tabindex="-1" text="#Master Volume" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 40px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; color: rgb(0, 0, 0); width: auto;" />
+            <ui:Slider label="asdfa" high-value="0" name="MasterSlider" low-value="-80" style="width: 600px; height: 80px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="width: 1000px; height: 100px; background-color: rgba(209, 209, 209, 0.78); align-items: center; flex-direction: row; justify-content: space-between; border-left-color: rgba(255, 255, 255, 0.78); border-right-color: rgba(255, 255, 255, 0.78); border-top-color: rgba(255, 255, 255, 0.78); border-bottom-color: rgba(255, 255, 255, 0.78); padding-right: 30px; padding-left: 30px;">
+            <ui:Label tabindex="-1" text="#BGM Volume" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 40px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; color: rgb(0, 0, 0); width: auto;" />
+            <ui:Slider label="asdfa" high-value="0" name="BGMSlider" low-value="-80" style="width: 600px; height: 80px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="width: 1000px; height: 100px; background-color: rgba(209, 209, 209, 0.78); align-items: center; flex-direction: row; justify-content: space-between; border-left-color: rgba(255, 255, 255, 0.78); border-right-color: rgba(255, 255, 255, 0.78); border-top-color: rgba(255, 255, 255, 0.78); border-bottom-color: rgba(255, 255, 255, 0.78); padding-right: 30px; padding-left: 30px;">
+            <ui:Label tabindex="-1" text="#SFX Volume" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 40px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; color: rgb(0, 0, 0); width: auto;" />
+            <ui:Slider label="asdfa" high-value="0" name="SFXSlider" low-value="-80" style="width: 600px; height: 80px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
+        </ui:VisualElement>
+        <ui:Button text="#Reset" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ResetAudioUIButton" class="button--default" style="width: 1000px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0; background-color: rgba(209, 209, 209, 0.78); -unity-text-align: middle-left; padding-right: 30px; padding-left: 30px; flex-direction: row; justify-content: space-between;" />
+        <ui:VisualElement style="width: 1000px; height: auto; flex-direction: row; align-items: center; justify-content: space-around;">
+            <ui:Button text="#APPLY" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ApplyAudioUIButton" class="button--default" style="width: 400px;" />
+            <ui:Button text="#BACK" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CloseAudioUIButton" class="button--default" style="width: 400px;" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

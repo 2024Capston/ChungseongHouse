@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/Prefabs/UI/BasicStyle.uss?fileID=7433441132597879392&amp;guid=2fbb568733e29514aa16a1de518b2c93&amp;type=3#BasicStyle" />
+    <ui:VisualElement style="flex-grow: 1; align-items: center; flex-direction: column; justify-content: center;">
+        <ui:VisualElement style="flex-direction: row;">
+            <ui:VisualElement style="margin-right: 20px; height: 900px; justify-content: space-around;">
+                <ui:Button text="한국어" parse-escape-sequences="true" display-tooltip-when-elided="true" name="KoreanButton" class="button--default" />
+                <ui:Button text="English" parse-escape-sequences="true" display-tooltip-when-elided="true" name="EnglishButton" class="button--default" />
+                <ui:Button text="日本語" parse-escape-sequences="true" display-tooltip-when-elided="true" name="JapaneseButton" class="button--default" />
+                <ui:Button text="Deutsch" parse-escape-sequences="true" display-tooltip-when-elided="true" name="GermanButton" class="button--default" />
+                <ui:Button text="Русский" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RussianButton" class="button--default" />
+            </ui:VisualElement>
+            <ui:VisualElement style="height: 900px; justify-content: space-around; margin-left: 20px;">
+                <ui:Button text="简体中文" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SCButton" class="button--default" />
+                <ui:Button text="繁体中文" parse-escape-sequences="true" display-tooltip-when-elided="true" name="TCButton" class="button--default" />
+                <ui:Button text="Français" parse-escape-sequences="true" display-tooltip-when-elided="true" name="FrenchButton" class="button--default" />
+                <ui:Button text="Português" parse-escape-sequences="true" display-tooltip-when-elided="true" name="PortugueseButton" class="button--default" />
+                <ui:Button text="Español" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SpanishButton" class="button--default" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Button text="#BACK" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CloseLanguageUIButton" class="button--default" style="width: 1000px;" />
+    </ui:VisualElement>
+</ui:UXML>

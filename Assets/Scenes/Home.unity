@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 359273489}
   - component: {fileID: 359273488}
   - component: {fileID: 359273490}
+  - component: {fileID: 359273491}
   m_Layer: 0
   m_Name: HomeUI
   m_TagString: Untagged
@@ -185,6 +186,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c0e466f17198b1429f54076d777fad5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &359273491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 359273487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a618510dc3bab448b9c52caee24f372, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _table:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab926d7dfdbcfa9458747de7a473e6d7
 --- !u!1 &783752077
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,7 +311,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
