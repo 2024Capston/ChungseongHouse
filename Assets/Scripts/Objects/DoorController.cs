@@ -6,10 +6,12 @@ using Unity.Netcode.Components;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-[RequireComponent(typeof(NetworkAnimator))]
 [RequireComponent(typeof(SphereCollider))]
-public class DoorController : NetworkBehaviour
+public class DoorController : NetworkBehaviour, IActivatable
 {
+    [SerializeField]
+    private bool _isTriggerable = true;
+
     private Animator _animator;
     
     /// <summary>
@@ -29,11 +31,16 @@ public class DoorController : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void OpenDoorServerRpc()
     {
+        OpenDoorClientRpc();
+    }
+
+    [ClientRpc]
+    private void OpenDoorClientRpc()
+    {
         if (IsOpened)
         {
-            _animator.SetBool("Open", true);    
+            _animator.SetBool("Open", true);
         }
-        
     }
     
     /// <summary>
@@ -42,16 +49,58 @@ public class DoorController : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void CloseDoorServerRpc()
     {
+        CloseDoorClientRpc();
+    }
+
+    [ClientRpc]
+    public void CloseDoorClientRpc()
+    {
         _animator.SetBool("Open", false);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        OpenDoorServerRpc();
+        if (_isTriggerable)
+        {
+            OpenDoorServerRpc();
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
+        if (_isTriggerable)
+        {
+            CloseDoorServerRpc();
+        }
+    }
+
+    public bool IsActivatable(GameObject activator = null)
+    {
+        return true;
+    }
+
+    public bool Activate(GameObject activator = null)
+    {
+        OpenDoorServerRpc();
+
+        return true;
+    }
+
+    public bool Deactivate(GameObject activator = null)
+    {
         CloseDoorServerRpc();
+
+        return true;
+    }
+
+    [ClientRpc]
+    private void InitializeClientRpc(bool isTriggerable)
+    {
+        _isTriggerable = isTriggerable;
+    }
+
+    public void Initialize(bool isTriggerable)
+    {
+        InitializeClientRpc(isTriggerable);
     }
 }

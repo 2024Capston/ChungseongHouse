@@ -25,7 +25,7 @@ abstract public class ButtonController : NetworkBehaviour, IInteractable
     /// <summary>
     /// 버튼이 활성화됐을 때 Activate될 IInteractable 오브젝트
     /// </summary>
-    [SerializeField] private GameObject[] _activatables;
+    [SerializeField] protected GameObject[] _activatables;
 
     protected ButtonRenderer _buttonRenderer;
 

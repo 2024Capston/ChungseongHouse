@@ -101,10 +101,7 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
-<<<<<<<< HEAD:Assets/Resources/Prefabs/Object/Material/Button_Light_Blue.mat
-========
     - _Mode: 3
->>>>>>>> 919ee5548555f9f956db504f4eed75bc7b146a4b:Assets/Resources/Prefabs/Object/Material/Red.mat
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
@@ -123,11 +120,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 2, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
-<<<<<<<< HEAD:Assets/Resources/Prefabs/Object/Material/Button_Light_Blue.mat
---- !u!114 &1857229924738564853
-========
 --- !u!114 &848673501562750076
->>>>>>>> 919ee5548555f9f956db504f4eed75bc7b146a4b:Assets/Resources/Prefabs/Object/Material/Red.mat
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

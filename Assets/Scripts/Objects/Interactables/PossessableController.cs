@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 /// <summary>
 /// 빙의 가능한 물체를 조작하는 Class
 /// </summary>
-public class PossessableController : PlayerDependantBehaviour, IInteractable
+public class PossessableController : NetworkBehaviour, IInteractable
 {
     /// <summary>
     /// 물체의 색깔
@@ -51,29 +51,6 @@ public class PossessableController : PlayerDependantBehaviour, IInteractable
     {
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
-        _networkInterpolator = GetComponent<NetworkInterpolator>();
-
-        _networkInterpolator.AddVisualReferenceDependantFunction(() =>
-        {
-            _meshRenderer = _networkInterpolator.VisualReference.GetComponent<MeshRenderer>();
-
-            _outline = _networkInterpolator.VisualReference.GetComponent<Outline>();
-            _outline.enabled = false;
-
-            _meshRenderer.material = _materials[(int)_color - 1];
-        });
-    }
-
-    public override void OnPlayerInitialized()
-    {
-        if (_color == PlayerController.LocalPlayer.Color && IsClient)
-        {
-            RequestOwnershipServerRpc(NetworkManager.LocalClientId);
-        }
-        else
-        {
-            _rigidbody.isKinematic = true;
-        }
     }
 
     void Update()
@@ -319,6 +296,53 @@ public class PossessableController : PlayerDependantBehaviour, IInteractable
         if (player.TryGet(out NetworkObject networkObject))
         {
             StopPossession(networkObject.GetComponent<PlayerController>());
+        }
+    }
+
+    [ClientRpc]
+    private void InitializeClientRpc(ColorType color)
+    {
+        _color = color;
+
+        _networkInterpolator = GetComponent<NetworkInterpolator>();
+
+        _networkInterpolator.AddVisualReferenceDependantFunction(() =>
+        {
+            _meshRenderer = _networkInterpolator.VisualReference.GetComponent<MeshRenderer>();
+
+            _outline = _networkInterpolator.VisualReference.GetComponent<Outline>();
+            _outline.enabled = false;
+
+            _meshRenderer.material = _materials[(int)_color - 1];
+        });
+
+        if (PlayerController.LocalPlayer)
+        {
+            RequestOwnership();
+        }
+        else
+        {
+            PlayerController.LocalPlayerCreated += RequestOwnership;
+        }
+    }
+
+    public void Initialize(ColorType color)
+    {
+        InitializeClientRpc(color);
+    }
+
+    private void RequestOwnership()
+    {
+        if (_color == PlayerController.LocalPlayer.Color)
+        {
+            if (!IsHost)
+            {
+                RequestOwnershipServerRpc(NetworkManager.LocalClientId);
+            }
+        }
+        else
+        {
+            _rigidbody.isKinematic = true;
         }
     }
 }

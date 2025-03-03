@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7491870980377275817}
   - component: {fileID: -7003528103421170569}
   - component: {fileID: -4888093720654665678}
+  - component: {fileID: 7709082146527292454}
   m_Layer: 0
   m_Name: Floor1_1Loader
   m_TagString: Untagged
@@ -45,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 829660867
+  GlobalObjectIdHash: 1524060263
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -66,6 +67,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3269885e930f0c544927bd1745655329, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _networkObjects:
-  - {fileID: 2987878429939592881, guid: 7e3ba9bcd94342640b6a3e95831303dd, type: 3}
-  _localObjects: []
+  _networkObjects: []
+  _localObjects:
+  - {fileID: 4541239244592144941, guid: 293d274815d88504f9f91a12c77690b3, type: 3}
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &7709082146527292454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4760297340198228138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 209ba2f3f469b5a48bf703ce548ef104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _doorPrefab: {fileID: 2139083483612935556, guid: 93f059f9024d0d54cb7961ca69750fe2,
+    type: 3}
+  _buttonPrefab: {fileID: 5378141897744454298, guid: e4a88bd9858f943489580e9987084674,
+    type: 3}
+  _ColorChangerPrefab: {fileID: 1395162713721715456, guid: 53e8886bd9e2c4e4f898995a2b29d73b,
+    type: 3}
+  _cubePrefab: {fileID: 565341968845837280, guid: ce08a997eae0e7b4084f91d5ec9d5ba0,
+    type: 3}
+  _platformPrefab: {fileID: 2268501196984302396, guid: d3101ddb0d82780499885f6b1e1a971f,
+    type: 3}

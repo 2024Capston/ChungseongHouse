@@ -48,11 +48,6 @@ public class PlateController : NetworkBehaviour
     {
         _animator = GetComponent<Animator>();
 
-
-        Material[] materials = _lightMeshRenderer.materials;
-        materials[1] = _materials[(int)_color];
-        _lightMeshRenderer.materials = materials;
-
         if (IsServer)
         {
             _boxCollider = GetComponent<BoxCollider>();
@@ -80,7 +75,7 @@ public class PlateController : NetworkBehaviour
 
                 if (!_objectsOnPlate.Contains(hit.collider.gameObject))
                 {
-                    _eventsOnEnter.Invoke(this, hit.collider.gameObject);
+                    _eventsOnEnter?.Invoke(this, hit.collider.gameObject);
                 }
             }
         }
@@ -89,7 +84,7 @@ public class PlateController : NetworkBehaviour
         {
             if (!newObjects.Contains(existingObjects))
             {
-                _eventsOnExit.Invoke(this, existingObjects);
+                _eventsOnExit?.Invoke(this, existingObjects);
             }
         }
 
@@ -116,5 +111,23 @@ public class PlateController : NetworkBehaviour
         {
             _animator.SetBool("IsPressed", false);
         }
+    }
+
+    [ClientRpc]
+    private void InitializeClientRpc(ColorType color)
+    {
+        _color = color;
+
+        Material[] materials = _lightMeshRenderer.materials;
+        materials[1] = _materials[(int)_color];
+        _lightMeshRenderer.materials = materials;
+    }
+
+    public void Initialize(ColorType color, UnityEvent<PlateController, GameObject> eventsOnEnter, UnityEvent<PlateController, GameObject> eventsOnExit)
+    {
+        InitializeClientRpc(color);
+
+        _eventsOnEnter = eventsOnEnter;
+        _eventsOnExit = eventsOnExit;
     }
 }

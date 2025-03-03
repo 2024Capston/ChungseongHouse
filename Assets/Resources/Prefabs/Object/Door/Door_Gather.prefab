@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6477893098588926144}
+  - component: {fileID: 3041769135658692568}
   - component: {fileID: 6940867589838962802}
   - component: {fileID: 2064255483728643765}
   - component: {fileID: 1341257413579436421}
   - component: {fileID: 540267531118509011}
-  - component: {fileID: 5644138546492172414}
   m_Layer: 0
   m_Name: Door_Gather
   m_TagString: Untagged
@@ -40,6 +40,27 @@ Transform:
   - {fileID: 1386715401566981969}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3041769135658692568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2139083483612935556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 3133992764
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!114 &6940867589838962802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52,6 +73,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ef553543feb05e4892d102c6788700d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isTriggerable: 1
   <IsOpened>k__BackingField: 0
 --- !u!95 &2064255483728643765
 Animator:
@@ -126,20 +148,6 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 1
---- !u!114 &5644138546492172414
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2139083483612935556}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TransitionStateInfoList: []
-  m_Animator: {fileID: 2064255483728643765}
 --- !u!1001 &588159781769597497
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -148,6 +156,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6477893098588926144}
     m_Modifications:
+    - target: {fileID: -2546294304626695568, guid: ba7bd5610c5eee342a51d8c87b508877,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5033790415592458150, guid: ba7bd5610c5eee342a51d8c87b508877,
         type: 3}
       propertyPath: m_Name
@@ -381,6 +394,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6477893098588926144}
     m_Modifications:
+    - target: {fileID: -1560850255096137322, guid: ecd1f8e89aec6e24384d5684f2500701,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4637332281466162009, guid: ecd1f8e89aec6e24384d5684f2500701,
         type: 3}
       propertyPath: m_Name

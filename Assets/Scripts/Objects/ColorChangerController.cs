@@ -185,4 +185,9 @@ public class ColorChangerController : NetworkBehaviour
             lastTime = Time.realtimeSinceStartup;
         }
     }
+
+    public void Initialize(float changeTime)
+    {
+        _changeTime = changeTime;
+    }
 }

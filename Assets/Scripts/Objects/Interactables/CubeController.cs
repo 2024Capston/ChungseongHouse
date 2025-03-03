@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// 큐브를 조작하는 Class.
 /// </summary>
-public class CubeController : PlayerDependantBehaviour, IInteractable
+public class CubeController : NetworkBehaviour, IInteractable
 {
     /// <summary>
     /// 큐브 색깔
@@ -54,19 +54,6 @@ public class CubeController : PlayerDependantBehaviour, IInteractable
             _outline = _networkInterpolator.VisualReference.GetComponent<Outline>();
             _outline.enabled = false;
         });
-    }
-
-    public override void OnPlayerInitialized()
-    {
-        if (_color == PlayerController.LocalPlayer.Color && IsClient)
-        {
-            // 플레이어와 색깔이 같으면 Ownership 요청
-            RequestOwnershipServerRpc(NetworkManager.LocalClientId);
-        }
-        else
-        {
-            _rigidbody.isKinematic = true;
-        }
     }
 
     private void Update()
@@ -191,6 +178,38 @@ public class CubeController : PlayerDependantBehaviour, IInteractable
         }
     }
 
+    [ClientRpc]
+    private void InitializeClientRpc(ColorType color)
+    {
+        _color = color;
+        _cubeRenderer.Initialize();
+
+        if (PlayerController.LocalPlayer)
+        {
+            RequestOwnership();
+        }
+        else
+        {
+            PlayerController.LocalPlayerCreated += RequestOwnership;
+        }
+    }
+
+    private void RequestOwnership()
+    {
+        if (_color == PlayerController.LocalPlayer.Color)
+        {
+            if (!IsHost)
+            {
+                // 플레이어와 색깔이 같으면 Ownership 요청
+                RequestOwnershipServerRpc(NetworkManager.LocalClientId);
+            }
+        }
+        else
+        {
+            _rigidbody.isKinematic = true;
+        }
+    }
+
     /// <summary>
     /// 큐브의 색깔 정보를 서버와 클라이언트에서 변경한다.
     /// </summary>
@@ -215,5 +234,10 @@ public class CubeController : PlayerDependantBehaviour, IInteractable
     public void ForceStopInteraction()
     {
         ForceStopInteractionClientRpc();
+    }
+
+    public void Initialize(ColorType color)
+    {
+        InitializeClientRpc(color);
     }
 }

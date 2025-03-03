@@ -21,33 +21,6 @@ public class CubeRenderer : NetworkBehaviour
     private Transform[] _piecesTransforms;
     private MeshRenderer[] _piecesMeshRenderers;
 
-    private void Start()
-    {
-        _cubeController = GetComponent<CubeController>();
-        _networkInterpolator = GetComponent<NetworkInterpolator>();
-
-        _networkInterpolator.AddVisualReferenceDependantFunction(() =>
-        {
-            _outline = _networkInterpolator.VisualReference.GetComponent<Outline>();
-
-            int childCount = _networkInterpolator.VisualReference.transform.childCount;
-            _piecesTransforms = new Transform[childCount];
-            _piecesMeshRenderers = new MeshRenderer[childCount];
-
-            for (int i = 0; i < childCount; i++)
-            {
-                Transform child = _networkInterpolator.VisualReference.transform.GetChild(i);
-
-                _piecesTransforms[i] = child.transform;
-                _piecesMeshRenderers[i] = child.GetComponent<MeshRenderer>();
-
-                Material[] materials = _piecesMeshRenderers[i].materials;
-                materials[1] = _materials[(int)_cubeController.Color - 1];
-                _piecesMeshRenderers[i].materials = materials;
-            }
-        });
-    }
-
     [ServerRpc(RequireOwnership = false)]
     private void UpdateColorServerRpc()
     {
@@ -77,6 +50,33 @@ public class CubeRenderer : NetworkBehaviour
         if (_outline) {
             _outline.enabled = originalOutline;
         }
+    }
+
+    public void Initialize()
+    {
+        _cubeController = GetComponent<CubeController>();
+        _networkInterpolator = GetComponent<NetworkInterpolator>();
+
+        _networkInterpolator.AddVisualReferenceDependantFunction(() =>
+        {
+            _outline = _networkInterpolator.VisualReference.GetComponent<Outline>();
+
+            int childCount = _networkInterpolator.VisualReference.transform.childCount;
+            _piecesTransforms = new Transform[childCount];
+            _piecesMeshRenderers = new MeshRenderer[childCount];
+
+            for (int i = 0; i < childCount; i++)
+            {
+                Transform child = _networkInterpolator.VisualReference.transform.GetChild(i);
+
+                _piecesTransforms[i] = child.transform;
+                _piecesMeshRenderers[i] = child.GetComponent<MeshRenderer>();
+
+                Material[] materials = _piecesMeshRenderers[i].materials;
+                materials[1] = _materials[(int)_cubeController.Color - 1];
+                _piecesMeshRenderers[i].materials = materials;
+            }
+        });
     }
 
     /// <summary>

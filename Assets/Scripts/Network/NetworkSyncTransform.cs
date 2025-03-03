@@ -20,6 +20,7 @@ public class NetworkSyncTransform : NetworkBehaviour
     // transform 정보 관련
     private Vector3 _lastSyncedPosition;    // 마지막으로 주고 받은 위치
     private Quaternion _lastSyncedRotation; // 마지막으로 주고 받은 회전
+    private Vector3 _lastSyncedScale;       // 마지막으로 주고 받은 스케일
 
     // parenting 보간 관련
     private bool _isParenting;              // parenting 보간 중인지 여부              
@@ -31,6 +32,7 @@ public class NetworkSyncTransform : NetworkBehaviour
 
         _lastSyncedPosition = transform.position;
         _lastSyncedRotation = transform.rotation;
+        _lastSyncedScale = transform.localScale;
     }
 
     void Update()
@@ -54,7 +56,7 @@ public class NetworkSyncTransform : NetworkBehaviour
         {
             SendTransform();
         }
-        else if (_lastSyncedPosition != null && _lastSyncedRotation != null)
+        else if (_lastSyncedPosition != null && _lastSyncedRotation != null && _lastSyncedScale != null)
         {
             UpdateFetchedTransform();
         }
@@ -79,9 +81,10 @@ public class NetworkSyncTransform : NetworkBehaviour
 
         float positionDiff = Vector3.Distance(transform.position, _lastSyncedPosition);
         float rotationDiff = Quaternion.Angle(transform.rotation, _lastSyncedRotation) / 10f;
+        float scaleDiff = Vector3.Distance(transform.localScale, _lastSyncedScale);
 
         // transform 변화값이 기준을 넘어서는 경우에만 전송
-        if (positionDiff < _sendThreshold && rotationDiff < _sendThreshold)
+        if (positionDiff < _sendThreshold && rotationDiff < _sendThreshold && scaleDiff < _sendThreshold)
         {
             return;
         }
@@ -89,14 +92,15 @@ public class NetworkSyncTransform : NetworkBehaviour
         // 마지막으로 전송한 transform 값 저장
         _lastSyncedPosition = positionToSend;
         _lastSyncedRotation = transform.rotation;
+        _lastSyncedScale = transform.localScale;
 
         if (IsServer)
         {
-            SendTransformClientRpc(positionToSend, transform.rotation);
+            SendTransformClientRpc(positionToSend, transform.rotation, transform.localScale);
         }
         else
         {
-            SendTransformServerRpc(positionToSend, transform.rotation);
+            SendTransformServerRpc(positionToSend, transform.rotation, transform.localScale);
         }
     }
 
@@ -110,18 +114,18 @@ public class NetworkSyncTransform : NetworkBehaviour
         if (_parentVisualReference)
         {
             transform.position = _lastSyncedPosition + _parentVisualReference.transform.position;
-            transform.rotation = _lastSyncedRotation;
         }
         else if (_parent)
         {
             transform.position = _lastSyncedPosition + _parent.transform.position;
-            transform.rotation = _lastSyncedRotation;
         }
         else
         {
             transform.position = _lastSyncedPosition;
-            transform.rotation = _lastSyncedRotation;
         }
+
+        transform.rotation = _lastSyncedRotation;
+        transform.localScale = _lastSyncedScale;
 
         // parenting 중이라면 transform이 튀는 것을 방지
         if (_isParenting && Vector3.Distance(transform.position, lastPosition) > 100f)
@@ -194,11 +198,13 @@ public class NetworkSyncTransform : NetworkBehaviour
     /// </summary>
     /// <param name="position">위치</param>
     /// <param name="rotation">회전</param>
+    /// <param name="scale">스케일</param>
     [ServerRpc(RequireOwnership = false)]
-    private void SendTransformServerRpc(Vector3 position, Quaternion rotation)
+    private void SendTransformServerRpc(Vector3 position, Quaternion rotation, Vector3 scale)
     {
         _lastSyncedPosition = position;
         _lastSyncedRotation = rotation;
+        _lastSyncedScale = scale;
     }
 
     /// <summary>
@@ -206,8 +212,9 @@ public class NetworkSyncTransform : NetworkBehaviour
     /// </summary>
     /// <param name="position">위치</param>
     /// <param name="rotation">회전</param>
+    /// /// <param name="scale">스케일</param>
     [ClientRpc]
-    private void SendTransformClientRpc(Vector3 position, Quaternion rotation)
+    private void SendTransformClientRpc(Vector3 position, Quaternion rotation, Vector3 scale)
     {
         if (IsServer)
         {
@@ -216,6 +223,7 @@ public class NetworkSyncTransform : NetworkBehaviour
 
         _lastSyncedPosition = position;
         _lastSyncedRotation = rotation;
+        _lastSyncedScale = scale;
     }
 
     /// <summary>

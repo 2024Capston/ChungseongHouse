@@ -1,18 +1,26 @@
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// 움직이는 플랫폼을 조작하는 Class
 /// </summary>
 public class PlatformController : NetworkBehaviour, IActivatable
 {
+    private struct Target{
+        public Vector3 position;
+        public Quaternion rotation;
+        public Vector3 scale;
+    }
+
     /// <summary>
     /// 목표 위치 (오름차순으로 순서대로 이동)
     /// </summary>
-    [SerializeField] private Transform[] _targets;
+    [SerializeField] private Target[] _targets;
 
     /// <summary>
     /// 이동 속력
@@ -21,6 +29,7 @@ public class PlatformController : NetworkBehaviour, IActivatable
 
     private Rigidbody _rigidbody;
 
+    private bool _isInitialized;
     private bool _isActive;
     private float _timer;
 
@@ -28,24 +37,14 @@ public class PlatformController : NetworkBehaviour, IActivatable
     private int _currentTarget = 1;     // 현재 목표 위치
     private float _targetMoveTime;      // 이동에 걸릴 시간
 
-    private void OnEnable()
-    {
-        if (_targets.Length < 2)
-        {
-            Logger.Log("There must be at least two targets for a platform.");
-        }
-    }
-
     public override void OnNetworkSpawn()
     {
         _rigidbody = GetComponent<Rigidbody>();
-
-        _targetMoveTime = (_targets[_currentTarget].position - _targets[_previousTarget].position).magnitude / _moveSpeed;
     }
 
     void FixedUpdate()
     {
-        if (!_isActive)
+        if (!_isActive || !_isInitialized)
         {
             return;
         }
@@ -55,6 +54,7 @@ public class PlatformController : NetworkBehaviour, IActivatable
 
         _rigidbody.MovePosition(Vector3.Lerp(_targets[_previousTarget].position, _targets[_currentTarget].position, lerpCoefficient));
         _rigidbody.MoveRotation(Quaternion.Slerp(_targets[_previousTarget].rotation, _targets[_currentTarget].rotation, lerpCoefficient));
+        transform.localScale = Vector3.Lerp(_targets[_previousTarget].scale, _targets[_currentTarget].scale, lerpCoefficient);
 
         // 목표에 도달했으면 목표 위치 갱신
         if (Vector3.Distance(transform.position, _targets[_currentTarget].position) < 0.1f)
@@ -69,7 +69,7 @@ public class PlatformController : NetworkBehaviour, IActivatable
             // 서버 측에서 클라이언트 측으로 갱신 알림
             if (IsServer)
             {
-                UpdatePlatformPositionClientRpc(transform.position, transform.rotation, _currentTarget);
+                UpdatePlatformPositionClientRpc(transform.position, transform.rotation, transform.localScale, _currentTarget);
             }
         }
     }
@@ -121,7 +121,7 @@ public class PlatformController : NetworkBehaviour, IActivatable
     /// <param name="rotation">갱신 회전</param>
     /// <param name="currentTarget">갱신 목표 위치</param>
     [ClientRpc]
-    private void UpdatePlatformPositionClientRpc(Vector3 position, Quaternion rotation, int currentTarget)
+    private void UpdatePlatformPositionClientRpc(Vector3 position, Quaternion rotation, Vector3 scale, int currentTarget)
     {
         if (IsServer)
         {
@@ -132,6 +132,7 @@ public class PlatformController : NetworkBehaviour, IActivatable
 
         _rigidbody.MovePosition(position);
         _rigidbody.MoveRotation(rotation);
+        transform.localScale = scale;
 
         _currentTarget = currentTarget;
 
@@ -145,5 +146,46 @@ public class PlatformController : NetworkBehaviour, IActivatable
         }
 
         _targetMoveTime = (_targets[_currentTarget].position - _targets[_previousTarget].position).magnitude / _moveSpeed;
+    }
+
+    [ClientRpc]
+    private void InitializeClientRpc(int targetsLength, float moveSpeed)
+    {
+        _moveSpeed = moveSpeed;
+        _targets = new Target[targetsLength];
+    }
+
+    [ClientRpc]
+    private void AppendTargetClientRpc(int index, Vector3 position, Quaternion rotation, Vector3 scale)
+    {
+        _targets[index].position = position;
+        _targets[index].rotation = rotation;
+        _targets[index].scale = scale;
+
+        if (index == 0)
+        {
+            _rigidbody.position = _targets[0].position;
+            _rigidbody.rotation = _targets[0].rotation;
+            transform.localScale = _targets[0].scale;
+        }
+        else if (index == 1)
+        {
+            _targetMoveTime = (_targets[_currentTarget].position - _targets[_previousTarget].position).magnitude / _moveSpeed;
+        }
+
+        if (index == _targets.Length - 1)
+        {
+            _isInitialized = true;
+        }
+    }
+
+    public void Initialize(Transform[] targets, float moveSpeed)
+    {
+        InitializeClientRpc(targets.Length, moveSpeed);
+
+        for (int i = 0; i < targets.Length; i++)
+        {
+            AppendTargetClientRpc(i, targets[i].position, targets[i].rotation, targets[i].localScale);
+        }
     }
 }

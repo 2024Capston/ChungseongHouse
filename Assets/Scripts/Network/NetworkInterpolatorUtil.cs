@@ -21,6 +21,7 @@ public class NetworkInterpolatorUtil : MonoBehaviour
         {
             transform.position = Vector3.Lerp(transform.position, _target.position, Time.deltaTime * _lerpSpeed);
             transform.rotation = Quaternion.Slerp(transform.rotation, _target.rotation, Time.deltaTime * _lerpSpeed);
+            transform.localScale = Vector3.Lerp(transform.localScale, _target.localScale, Time.deltaTime * _lerpSpeed);
         }
     }
 

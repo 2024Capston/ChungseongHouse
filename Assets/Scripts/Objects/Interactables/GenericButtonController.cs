@@ -106,7 +106,7 @@ public class GenericButtonController : ButtonController
 
             PlayPressAnimation(true);
 
-            _events.Invoke();
+            _events?.Invoke();
         }
         // 버튼 타입: Toggle
         else if (_buttonType == ButtonType.Toggle)
@@ -141,5 +141,26 @@ public class GenericButtonController : ButtonController
                 _temporaryTime = _temporaryCooldown;
             }
         }
+    }
+
+    [ClientRpc]
+    private void InitializeClientRpc(ColorType color, ButtonType buttonType, bool requiresBoth, float detectionRadius)
+    {
+        _color = color;
+
+        _buttonType = buttonType;
+
+        _requiresBoth = requiresBoth;
+        _detectionRadius = detectionRadius;
+    }
+
+    public void Initialize(ColorType color, GameObject[] activatables, ButtonType buttonType, float temporaryCooldown, bool requiresBoth, float detectionRadius, UnityEvent events)
+    {
+        InitializeClientRpc(color, buttonType, requiresBoth, detectionRadius);
+
+        _activatables = activatables;
+        _temporaryCooldown = temporaryCooldown;
+
+        _events = events;
     }
 }
