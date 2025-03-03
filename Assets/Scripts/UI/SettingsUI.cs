@@ -29,7 +29,7 @@ public class SettingsUI
 
     private static readonly string AudioUI_PATH = "Prefabs/UI/Setting/AudioUI";
     private static readonly string VideoUI_PATH = "Prefabs/UI/Setting/VideoUI";
-    private static readonly string ControlUI_PATH = "Prefabs/UI/Setting/ControlUI";
+    // private static readonly string ControlUI_PATH = "Prefabs/UI/Setting/ControlUI";
     private static readonly string LanguageUI_PATH = "Prefabs/UI/Setting/LanguageUI";
 
     public SettingsUI(VisualElement root, Action OnCloseSettingButtonClick, UIDocumentLocalization localization)

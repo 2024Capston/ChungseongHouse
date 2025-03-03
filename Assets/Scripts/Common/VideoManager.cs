@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using Screen = UnityEngine.Device.Screen;
 
 public class VideoManager : SingletonBehavior<VideoManager>
 {
@@ -29,6 +30,8 @@ public class VideoManager : SingletonBehavior<VideoManager>
         {
             Debug.LogError("Color Adjustments Not Found in Volume!");
         }
+        
+        Screen.SetResolution(PlayerPrefs.GetInt("VideoResolutionWidth", Screen.currentResolution.width), PlayerPrefs.GetInt("VideoResolutionHeight", Screen.currentResolution.height), (PlayerPrefs.GetInt("IsFullScreen", 1) == 1));
         
         SetBrightness(_brightness);
     }

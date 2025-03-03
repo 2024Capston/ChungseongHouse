@@ -14,6 +14,7 @@ public class VideoUIController
     private Button _resetVideoUIButton;
     private Button _closeVideoUIButton;
     private Button _applyButton; 
+    // 적용 여부 확인
     private bool isApplied = false;
 
     private DropdownField _resolution;
@@ -22,7 +23,7 @@ public class VideoUIController
     private int savedHeight;
     
     private Toggle _fullScreenToggle;
-    private bool _isFullScreen;
+    private bool isFullScreen;
     private bool savedFullScreen;
 
     private BasicSlider _basicSlider;
@@ -44,19 +45,19 @@ public class VideoUIController
         
         _brightnessSlider = _root.Q<Slider>("BrightnessSlider");
         
+        savedWidth = PlayerPrefs.GetInt("VideoResolutionWidth", Screen.currentResolution.width);
+        savedHeight = PlayerPrefs.GetInt("VideoResolutionHeight", Screen.currentResolution.height);
+        isFullScreen = PlayerPrefs.GetInt("IsFullScreen", 1) == 1;
+        savedBrightness = PlayerPrefs.GetFloat("BrightnessValue", 0.5f);
+        
         InitResolutions();
         InitFullScreen();
         InitBasicSlider(_brightnessSlider);
-
+        
         _resetVideoUIButton.RegisterCallback<ClickEvent>(OnClickResetVideoUIButton);
         _closeVideoUIButton.RegisterCallback<ClickEvent>(OnClickCloseVideoUIButton);
         _applyButton.RegisterCallback<ClickEvent>(OnClickApplyVideoUIButton);
         
-        string[] resolutionParts = _selectedResolution.Split('x');
-        savedWidth = int.Parse(resolutionParts[0]);
-        savedHeight = int.Parse(resolutionParts[1]);
-        savedFullScreen = _isFullScreen;
-        savedBrightness = PlayerPrefs.GetFloat("BrightnessValue");
         
         _applyButton.style.display = DisplayStyle.None;  // 처음에는 숨김
     }
@@ -69,7 +70,7 @@ public class VideoUIController
             .Select(resolution => $"{resolution.width}x{resolution.height}")
             .ToList();
 
-        _selectedResolution = $"{Screen.currentResolution.width}x{Screen.currentResolution.height}";
+        _selectedResolution = $"{savedWidth}x{savedHeight}";
         _resolution.index = _resolution.choices.IndexOf(_selectedResolution);
 
         // 사용자가 드롭다운을 변경할 때 Apply 버튼 표시
@@ -78,6 +79,11 @@ public class VideoUIController
             if (evt.newValue != _selectedResolution)
             {
                 _selectedResolution = evt.newValue;
+                string[] resolutionParts = _selectedResolution.Split('x');
+                int changedWidth = int.Parse(resolutionParts[0]);
+                int changedHeight = int.Parse(resolutionParts[1]);
+                
+                Screen.SetResolution(changedWidth, changedHeight, isFullScreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
                 _applyButton.style.display = DisplayStyle.Flex; // 버튼 표시
             }
         });
@@ -87,14 +93,19 @@ public class VideoUIController
     private void InitFullScreen()
     {
         _fullScreenToggle = _root.Q<Toggle>("FullScreenToggle");
-        _isFullScreen = Screen.fullScreen;
-        _fullScreenToggle.value = _isFullScreen;
+        _fullScreenToggle.value = isFullScreen;
 
         _fullScreenToggle.RegisterValueChangedCallback(evt =>
         {
-            if (evt.newValue != _isFullScreen)
+            if (evt.newValue != isFullScreen)
             {
-                _isFullScreen = evt.newValue;
+                isFullScreen = evt.newValue;
+                _selectedResolution = _resolution.value;
+                string[] resolutionParts = _selectedResolution.Split('x');
+                int changedWidth = int.Parse(resolutionParts[0]);
+                int changedHeight = int.Parse(resolutionParts[1]);
+                
+                Screen.SetResolution(changedWidth, changedHeight, isFullScreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
                 _applyButton.style.display = DisplayStyle.Flex; 
             }
         });
@@ -127,10 +138,10 @@ public class VideoUIController
         _resolution.index = _resolution.choices.IndexOf(_selectedResolution);
 
         // 전체 화면 설정을 기본값으로
-        _isFullScreen = true;
-        _fullScreenToggle.value = _isFullScreen;
+        isFullScreen = true;
+        _fullScreenToggle.value = isFullScreen;
         
-        Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, _isFullScreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
+        Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, isFullScreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
 
         // 밝기를 기본값(0.5)으로 설정
         _brightnessSlider.value = 0.5f;
@@ -145,11 +156,19 @@ public class VideoUIController
         string[] resolutionParts = _selectedResolution.Split('x');
         int width = int.Parse(resolutionParts[0]);
         int height = int.Parse(resolutionParts[1]);
-
-        Screen.SetResolution(width, height, _isFullScreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
+        
+        PlayerPrefs.SetInt("VideoResolutionWidth", width);
+        PlayerPrefs.SetInt("VideoResolutionHeight", height);
+        PlayerPrefs.SetInt("IsFullScreen", isFullScreen ? 1 : 0);
+        //PlayerPrefs.Save()는 Brightness에서 실행
         
         // PlayerPrefs에 Brightness 값 저장
         VideoManager.Instance.SaveBrightness();
+        
+        savedWidth = PlayerPrefs.GetInt("VideoResolutionWidth", Screen.currentResolution.width);
+        savedHeight = PlayerPrefs.GetInt("VideoResolutionHeight", Screen.currentResolution.height);
+        savedFullScreen = PlayerPrefs.GetInt("IsFullScreen", 1) == 1;
+        savedBrightness = PlayerPrefs.GetFloat("BrightnessValue", 0.5f);
 
         isApplied = true;
 
@@ -160,6 +179,11 @@ public class VideoUIController
     {
         if (!isApplied)
         {
+            string _savedResolution = $"{savedWidth}x{savedHeight}";
+            _resolution.index = _resolution.choices.IndexOf(_savedResolution);
+            
+            _fullScreenToggle.value = savedFullScreen;
+            
             Screen.SetResolution(savedWidth, savedHeight, savedFullScreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
             VideoManager.Instance.SetBrightness(savedBrightness);
         }
