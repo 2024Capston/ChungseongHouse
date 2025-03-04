@@ -30,7 +30,7 @@ public class AudioUIController
     {
         _root = root;
         
-        SoundManager.RegisterButtonClickSound(_root);
+        _root.RegisterButtonClickSound();
         
         OnCloseVideo = OnClickCloseAudioUIButtonClick;
         

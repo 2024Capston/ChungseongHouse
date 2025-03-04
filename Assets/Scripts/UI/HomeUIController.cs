@@ -56,7 +56,7 @@ public class HomeUIController : MonoBehaviour
     {
         var root = GetComponent<UIDocument>().rootVisualElement;
         
-        SoundManager.RegisterButtonClickSound(root);
+        root.RegisterButtonClickSound();
         
         _homeUI = root.Q<VisualElement>("HomeUI");
         _homeUIContainer = _homeUI.Q<VisualElement>("HomeUIContainer");

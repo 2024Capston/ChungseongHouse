@@ -35,7 +35,7 @@ public class VideoUIController
     {
         _root = root;
         
-        SoundManager.RegisterButtonClickSound(_root);
+        _root.RegisterButtonClickSound();
 
         OnCloseVideo = OnClickCloseVideoUIButtonClick;
         

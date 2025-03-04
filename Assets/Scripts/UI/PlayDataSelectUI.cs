@@ -22,7 +22,7 @@ public class PlayDataSelectUI
     {
         _root = root;
         
-        SoundManager.RegisterButtonClickSound(_root);
+        _root.RegisterButtonClickSound();
         
         _saveSlot1Button = _root.Q<Button>("SaveSlot1_Button");
         _saveSlot2Button = _root.Q<Button>("SaveSlot2_Button");

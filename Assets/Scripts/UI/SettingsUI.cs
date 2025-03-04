@@ -37,7 +37,7 @@ public class SettingsUI
         _root = root;
         _localization = localization; // UIDocumentLocalization 참조 저장
 
-        SoundManager.RegisterButtonClickSound(_root);
+        _root.RegisterButtonClickSound();
 
         OnCloseSetting = OnCloseSettingButtonClick;
 

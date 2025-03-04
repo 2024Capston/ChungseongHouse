@@ -19,7 +19,7 @@ public class CodeInputUI
     {
         _root = root;
         
-        SoundManager.RegisterButtonClickSound(_root);
+        _root.RegisterButtonClickSound();
         
         _codeTextField = _root.Q<TextField>("CodeTextField");
         _descText = _root.Q<Label>("DescText");

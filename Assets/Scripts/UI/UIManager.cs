@@ -23,7 +23,7 @@ public class UIManager : SingletonBehavior<UIManager>
         base.Init();
         _root = _uiDocument.rootVisualElement;
         
-        SoundManager.RegisterButtonClickSound(_root);
+        _root.RegisterButtonClickSound();
 
         _root.style.display = DisplayStyle.None;
     }

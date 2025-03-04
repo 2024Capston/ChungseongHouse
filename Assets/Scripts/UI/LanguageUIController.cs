@@ -29,7 +29,7 @@ public class LanguageUIController
     {
         _root = root;
         
-        SoundManager.RegisterButtonClickSound(_root);
+        _root.RegisterButtonClickSound();
         
         OnCloseLanguage = OnClickCloseLanguageUIButtonClick;
         
