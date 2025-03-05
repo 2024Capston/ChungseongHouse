@@ -99,6 +99,14 @@ MonoBehaviour:
     m_Key: Brightness
     m_Metadata:
       m_Items: []
+  - m_Id: 1205243867602944
+    m_Key: New Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1206938819403776
+    m_Key: Chapter
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

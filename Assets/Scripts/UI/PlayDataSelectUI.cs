@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using RaB.Connection;
+using UnityEngine.Localization.Settings;
+using UnityEngine.Localization.Tables;
 
 public class PlayDataSelectUI 
 {
@@ -36,11 +38,13 @@ public class PlayDataSelectUI
         {
             if (!HomeManager.Instance.UserGameData.PlayDatas[i].HasData)
             {
-                _buttonContainer[i].text = "새 게임";
+                _buttonContainer[i].text = "#New Game";
             }
             else
             {
-                _buttonContainer[i].text =  $"챕터 진행도 : {HomeManager.Instance.UserGameData.PlayDatas[i].StageClearCount} / {HomeManager.Instance.UserGameData.PlayDatas[i].StageCount}";
+                string localizedChapter = LocalizationSettings.StringDatabase.GetLocalizedString("UI Table", "Chapter");
+
+                _buttonContainer[i].text =  $"{localizedChapter} : {HomeManager.Instance.UserGameData.PlayDatas[i].StageClearCount} / {HomeManager.Instance.UserGameData.PlayDatas[i].StageCount}";
             }
         }
 

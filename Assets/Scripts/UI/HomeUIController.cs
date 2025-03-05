@@ -86,12 +86,17 @@ public class HomeUIController : MonoBehaviour
         _playDataSelectPanel = playDataSelect.CloneTree();
         _playDataSelectPanel.style.position = Position.Absolute;
         
-        
         _playDataSelectPanel.AddToClassList("right");
+        
+        var localization = GetComponent<UIDocumentLocalization>();
+
         new PlayDataSelectUI(_playDataSelectPanel, () =>
         {
             ClosePanel(_playDataSelectPanel);
         });
+        
+        ApplyLocalization(_playDataSelectPanel);
+
         
         _homeUI.Add(_playDataSelectPanel);
         _homeUIContainer.AddToClassList("HomeUIContainer--out");
@@ -107,10 +112,13 @@ public class HomeUIController : MonoBehaviour
         _codeInputPanel = codeInput.CloneTree();
         _codeInputPanel.style.position = Position.Absolute;
         _codeInputPanel.AddToClassList("right");
+        
         new CodeInputUI(_codeInputPanel, () =>
         {
             ClosePanel(_codeInputPanel);
         });
+        
+        ApplyLocalization(_codeInputPanel);
 
         _homeUI.Add(_codeInputPanel);
         _homeUIContainer.AddToClassList("HomeUIContainer--out");
@@ -136,7 +144,7 @@ public class HomeUIController : MonoBehaviour
         new SettingsUI(_settingPanel, () =>
         {
             ClosePanel(_settingPanel);
-        }, localization); // UIDocumentLocalization 참조 전달
+        }, localization);
 
         // HomeUIContainer 퇴장 애니메이션
         _homeUIContainer.AddToClassList("HomeUIContainer--out");
@@ -156,7 +164,7 @@ public class HomeUIController : MonoBehaviour
         var localization = GetComponent<UIDocumentLocalization>();
         if (localization != null)
         {
-            var table = localization.GetTable(); // GetTable 메서드가 있다고 가정
+            var table = localization.GetTable();
             if (table != null)
             {
                 localization.LocalizeChildrenRecursively(panel, table);

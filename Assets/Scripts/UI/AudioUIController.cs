@@ -65,7 +65,7 @@ public class AudioUIController
 
             slider.RegisterValueChangedCallback(evt =>
             {
-                AudioManager.Instance._audioMixer.SetFloat(Parameter, evt.newValue);
+                AudioManager.Instance.ConnectAudioMixer(Parameter, evt.newValue);
                 _applyButton.style.display = DisplayStyle.Flex;
             });
                 
@@ -74,7 +74,9 @@ public class AudioUIController
     
     private void OnClickResetAudioUIButton(ClickEvent evt)
     {
-        AudioManager.Instance.SetValue(0, 0, 0);
+        _masterSlider.value = 0;
+        _BGMSlider.value = 0;
+        _SFXSlider.value = 0;
     }
 
     

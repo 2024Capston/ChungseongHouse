@@ -62,19 +62,19 @@ public class SettingsUI
 
     private void OnClickAudio(ClickEvent evt)
     {
-        newSettingUI<AudioUIController>(AudioUI_PATH);
+        NewSettingUI<AudioUIController>(AudioUI_PATH);
     }
 
     private void OnClickVideo(ClickEvent evt)
     {
-        newSettingUI<VideoUIController>(VideoUI_PATH);
+        NewSettingUI<VideoUIController>(VideoUI_PATH);
     }
 
     private void OnClickControl(ClickEvent evt) { }
 
     private void OnClickLanguage(ClickEvent evt)
     {
-        newSettingUI<LanguageUIController>(LanguageUI_PATH);
+        NewSettingUI<LanguageUIController>(LanguageUI_PATH);
     }
 
     private void OnClickCloseSettingButton(ClickEvent evt)
@@ -82,16 +82,16 @@ public class SettingsUI
         OnCloseSetting?.Invoke();
     }
 
-    public void ClosePanel(VisualElement panel)
+    private void ClosePanel(VisualElement panel)
     {
         _settingPanel.RemoveFromClassList("left");
         UIManager.Instance.StartPopupOut(panel);
     }
 
-    private void newSettingUI<T>(string PATH) where T : class
+    private void NewSettingUI<T>(string PATH) where T : class
     {
-        var _newUI = Resources.Load<VisualTreeAsset>(PATH);
-        _newPanel = _newUI.CloneTree();
+        var newUI = Resources.Load<VisualTreeAsset>(PATH);
+        _newPanel = newUI.CloneTree();
         _newPanel.style.position = Position.Absolute;
 
         // T가 특정 생성자를 가지도록 강제
@@ -117,7 +117,7 @@ public class SettingsUI
     {
         if (_localization != null)
         {
-            var table = _localization.GetTable(); // GetTable 메서드가 있다고 가정
+            var table = _localization.GetTable(); 
             if (table != null)
             {
                 _localization.LocalizeChildrenRecursively(panel, table);

@@ -40,7 +40,7 @@ public class AudioManager : SingletonBehavior<AudioManager>
     private Transform _sfx;
 
     [SerializeField]
-    public AudioMixer _audioMixer;  // 🎛 AudioMixer 추가
+    private AudioMixer _audioMixer;  // 🎛 AudioMixer 추가
 
     [SerializeField]
     private AudioMixerGroup _bgmGroup;  // BGM AudioMixerGroup
@@ -91,6 +91,11 @@ public class AudioManager : SingletonBehavior<AudioManager>
     
         Debug.Log($"AudioMixer Applied: Master({_masterValue}), BGM({_bgmValue}), SFX({_sfxValue})");
     }
+
+    public void ConnectAudioMixer(string audioMixerName, float value)
+    {
+        _audioMixer.SetFloat(audioMixerName, value);
+    }
     
     private void LoadValues()
     {
@@ -123,7 +128,8 @@ public class AudioManager : SingletonBehavior<AudioManager>
         {
             "Master" => _masterValue,
             "BGM" => _bgmValue,
-            "SFX" => _sfxValue
+            "SFX" => _sfxValue,
+            ""=> 0,
         };
     }
 

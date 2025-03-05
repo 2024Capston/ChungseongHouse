@@ -7,7 +7,7 @@ public static class VisualElementExtension
     {
         foreach (var button in root.Query<Button>().ToList())
         {
-            button.clicked += () => AudioManager.Instance.PlaySFX(SFX.ButtonClick);
+            button.RegisterCallback<PointerDownEvent>(evt =>AudioManager.Instance.PlaySFX(SFX.ButtonClick),TrickleDown.TrickleDown);
         }
     }
 }
