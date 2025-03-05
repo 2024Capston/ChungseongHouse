@@ -111,7 +111,7 @@ public class CubeRenderer : NetworkBehaviour
             for (int i = 0; i < 4; i++)
             {
                 _piecesTransforms[i].localRotation = Quaternion.Lerp(Quaternion.identity, Quaternion.Euler(0, 90, 0), timer * 3f / transitionTime);
-
+                
                 Material[] materials = _piecesMeshRenderers[0].materials;
                 materials[1].Lerp(startMaterial, targetMaterial, timer * 3f / transitionTime);
 

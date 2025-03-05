@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.Collections;
@@ -93,6 +94,11 @@ public class PlatformController : NetworkBehaviour, IActivatable
         return true;
     }
 
+    /// <summary>
+    /// 보간용 함수
+    /// </summary>
+    /// <param name="timer">입력 값 [0, 1]</param>
+    /// <returns></returns>
     private float EaseInOut(float timer)
     {
         return -(Mathf.Cos(Mathf.PI * timer) - 1f) / 2f;
@@ -148,13 +154,32 @@ public class PlatformController : NetworkBehaviour, IActivatable
         _targetMoveTime = (_targets[_currentTarget].position - _targets[_previousTarget].position).magnitude / _moveSpeed;
     }
 
+    /// <summary>
+    /// 서버와 클라이언트의 초기 상태를 동기화한다. 이 함수는 서버와 클라이언트 모두에서 호출된다.
+    /// </summary>
+    /// <param name="targetsLength"></param>
+    /// <param name="moveSpeed"></param>
+    /// <param name="position"></param>
+    /// <param name="rotation"></param>
+    /// <param name="scale"></param>
     [ClientRpc]
-    private void InitializeClientRpc(int targetsLength, float moveSpeed)
+    private void InitializeClientRpc(int targetsLength, float moveSpeed, Vector3 position, Quaternion rotation, Vector3 scale)
     {
         _moveSpeed = moveSpeed;
         _targets = new Target[targetsLength];
+
+        transform.position = position;
+        transform.rotation = rotation;
+        transform.localScale = scale;
     }
 
+    /// <summary>
+    /// 목표 위치 배열을 설정한다. (배열을 한 번에 RPC로 전달할 수 없으므로 여러 번에 나눠 전달한다.)
+    /// </summary>
+    /// <param name="index">배열 인덱스</param>
+    /// <param name="position">위치</param>
+    /// <param name="rotation">회전</param>
+    /// <param name="scale">스케일</param>
     [ClientRpc]
     private void AppendTargetClientRpc(int index, Vector3 position, Quaternion rotation, Vector3 scale)
     {
@@ -179,9 +204,14 @@ public class PlatformController : NetworkBehaviour, IActivatable
         }
     }
 
+    /// <summary>
+    /// 플랫폼 상태를 초기화하고 클라이언트와 동기화한다. 이 함수는 서버에서만 호출한다.
+    /// </summary>
+    /// <param name="targets">목표 위치</param>
+    /// <param name="moveSpeed">이동 속력</param>
     public void Initialize(Transform[] targets, float moveSpeed)
     {
-        InitializeClientRpc(targets.Length, moveSpeed);
+        InitializeClientRpc(targets.Length, moveSpeed, transform.position, transform.rotation, transform.localScale);
 
         for (int i = 0; i < targets.Length; i++)
         {

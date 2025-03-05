@@ -187,6 +187,24 @@ public class PossessableController : NetworkBehaviour, IInteractable
     }
 
     /// <summary>
+    /// 플레이어 색깔에 따라 빙의 물체의 소유권을 요청한다.
+    /// </summary>
+    private void RequestOwnership()
+    {
+        if (_color == PlayerController.LocalPlayer.Color)
+        {
+            if (!IsHost)
+            {
+                RequestOwnershipServerRpc(NetworkManager.LocalClientId);
+            }
+        }
+        else
+        {
+            _rigidbody.isKinematic = true;
+        }
+    }
+
+    /// <summary>
     /// 색깔이 같은 물체에 대해 서버에 Ownership을 요청한다.
     /// </summary>
     /// <param name="clientId">요청하는 플레이어 ID</param>
@@ -242,7 +260,7 @@ public class PossessableController : NetworkBehaviour, IInteractable
     /// </summary>
     /// <param name="player">빙의할 플레이어</param>
     [ServerRpc]
-    public void StartPossessionServerRpc(NetworkObjectReference player)
+    private void StartPossessionServerRpc(NetworkObjectReference player)
     {
         if (player.TryGet(out NetworkObject networkObject))
         {
@@ -255,7 +273,7 @@ public class PossessableController : NetworkBehaviour, IInteractable
     /// </summary>
     /// <param name="player">빙의할 플레이어</param>
     [ClientRpc]
-    public void StartPossesionClientRpc(NetworkObjectReference player)
+    private void StartPossesionClientRpc(NetworkObjectReference player)
     {
         if (IsServer)
         {
@@ -273,7 +291,7 @@ public class PossessableController : NetworkBehaviour, IInteractable
     /// </summary>
     /// <param name="player">빙의 중단할 플레이어</param>
     [ServerRpc]
-    public void StopPossessionServerRpc(NetworkObjectReference player)
+    private void StopPossessionServerRpc(NetworkObjectReference player)
     {
         if (player.TryGet(out NetworkObject networkObject))
         {
@@ -286,7 +304,7 @@ public class PossessableController : NetworkBehaviour, IInteractable
     /// </summary>
     /// <param name="player">빙의 중단할 플레이어</param>
     [ClientRpc]
-    public void StopPossesionClientRpc(NetworkObjectReference player)
+    private void StopPossesionClientRpc(NetworkObjectReference player)
     {
         if (IsServer)
         {
@@ -299,10 +317,21 @@ public class PossessableController : NetworkBehaviour, IInteractable
         }
     }
 
+    /// <summary>
+    /// 서버와 클라이언트의 초기 상태를 동기화한다. 이 함수는 서버와 클라이언트 모두에서 호출된다.
+    /// </summary>
+    /// <param name="color">색깔</param>
+    /// <param name="position">위치</param>
+    /// <param name="rotation">회전</param>
+    /// <param name="scale">스케일</param>
     [ClientRpc]
-    private void InitializeClientRpc(ColorType color)
+    private void InitializeClientRpc(ColorType color, Vector3 position, Quaternion rotation, Vector3 scale)
     {
         _color = color;
+
+        _rigidbody.MovePosition(position);
+        _rigidbody.MoveRotation(rotation);
+        transform.localScale = scale;
 
         _networkInterpolator = GetComponent<NetworkInterpolator>();
 
@@ -326,23 +355,12 @@ public class PossessableController : NetworkBehaviour, IInteractable
         }
     }
 
+    /// <summary>
+    /// 빙의 물체 상태를 초기화하고 클라이언트와 동기화한다. 이 함수는 서버에서만 호출한다.
+    /// </summary>
+    /// <param name="color">색깔</param>
     public void Initialize(ColorType color)
     {
-        InitializeClientRpc(color);
-    }
-
-    private void RequestOwnership()
-    {
-        if (_color == PlayerController.LocalPlayer.Color)
-        {
-            if (!IsHost)
-            {
-                RequestOwnershipServerRpc(NetworkManager.LocalClientId);
-            }
-        }
-        else
-        {
-            _rigidbody.isKinematic = true;
-        }
+        InitializeClientRpc(color, transform.position, transform.rotation, transform.localScale);
     }
 }

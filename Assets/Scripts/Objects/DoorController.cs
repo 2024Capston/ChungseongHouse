@@ -9,8 +9,7 @@ using UnityEngine;
 [RequireComponent(typeof(SphereCollider))]
 public class DoorController : NetworkBehaviour, IActivatable
 {
-    [SerializeField]
-    private bool _isTriggerable = true;
+    [SerializeField] private bool _isTriggerable = true;    // 근처에 가면 열릴지 여부
 
     private Animator _animator;
     
@@ -93,14 +92,30 @@ public class DoorController : NetworkBehaviour, IActivatable
         return true;
     }
 
+    /// <summary>
+    /// 서버와 클라이언트의 초기 상태를 동기화한다. 이 함수는 서버와 클라이언트 모두에서 호출된다.
+    /// </summary>
+    /// <param name="isTriggerable">주변에 가면 켜질지 여부</param>
+    /// <param name="isOpen">열린 상태 여부</param>
     [ClientRpc]
-    private void InitializeClientRpc(bool isTriggerable)
+    private void InitializeClientRpc(bool isTriggerable, bool isOpen)
     {
         _isTriggerable = isTriggerable;
+        IsOpened = isOpen;
     }
 
-    public void Initialize(bool isTriggerable)
+    /// <summary>
+    /// 문 상태를 초기화하고 클라이언트와 동기화한다. 이 함수는 서버에서만 호출한다.
+    /// </summary>
+    /// <param name="isTriggerable">주변에 가면 켜질지 여부</param>
+    /// <param name="isOpen">열린 상태 여부</param>
+    public void Initialize(bool isTriggerable, bool isOpen)
     {
-        InitializeClientRpc(isTriggerable);
+        InitializeClientRpc(isTriggerable, isOpen);
+
+        if (isOpen)
+        {
+            OpenDoorServerRpc();
+        }
     }
 }

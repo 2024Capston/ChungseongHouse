@@ -46,6 +46,10 @@ public class CubeController : NetworkBehaviour, IInteractable
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
+    }
+
+    public override void OnNetworkSpawn()
+    {
         _cubeRenderer = GetComponent<CubeRenderer>();
         _networkInterpolator = GetComponent<NetworkInterpolator>();
 
@@ -100,6 +104,25 @@ public class CubeController : NetworkBehaviour, IInteractable
         SetTakenServerRpc(false);
 
         return true;
+    }
+
+    /// <summary>
+    /// 플레이어 색깔에 따라 큐브의 소유권을 요청한다.
+    /// </summary>
+    private void RequestOwnership()
+    {
+        if (_color == PlayerController.LocalPlayer.Color)
+        {
+            if (!IsHost)
+            {
+                // 플레이어와 색깔이 같으면 Ownership 요청
+                RequestOwnershipServerRpc(NetworkManager.LocalClientId);
+            }
+        }
+        else
+        {
+            _rigidbody.isKinematic = true;
+        }
     }
 
     /// <summary>
@@ -178,11 +201,22 @@ public class CubeController : NetworkBehaviour, IInteractable
         }
     }
 
+    /// <summary>
+    /// 서버와 클라이언트의 큐브 상태를 동기화한다.
+    /// </summary>
+    /// <param name="color">큐브 색깔</param>
+    /// <param name="position">위치</param>
+    /// <param name="rotation">회전</param>
+    /// <param name="scale">스케일</param>
     [ClientRpc]
-    private void InitializeClientRpc(ColorType color)
+    private void InitializeClientRpc(ColorType color, Vector3 position, Quaternion rotation, Vector3 scale)
     {
         _color = color;
         _cubeRenderer.Initialize();
+
+        _rigidbody.MovePosition(position);
+        _rigidbody.MoveRotation(rotation);
+        transform.localScale = scale;
 
         if (PlayerController.LocalPlayer)
         {
@@ -191,22 +225,6 @@ public class CubeController : NetworkBehaviour, IInteractable
         else
         {
             PlayerController.LocalPlayerCreated += RequestOwnership;
-        }
-    }
-
-    private void RequestOwnership()
-    {
-        if (_color == PlayerController.LocalPlayer.Color)
-        {
-            if (!IsHost)
-            {
-                // 플레이어와 색깔이 같으면 Ownership 요청
-                RequestOwnershipServerRpc(NetworkManager.LocalClientId);
-            }
-        }
-        else
-        {
-            _rigidbody.isKinematic = true;
         }
     }
 
@@ -236,8 +254,12 @@ public class CubeController : NetworkBehaviour, IInteractable
         ForceStopInteractionClientRpc();
     }
 
+    /// <summary>
+    /// 큐브 상태를 초기화하고 클라이언트와 동기화한다. 이 함수는 서버에서만 호출한다.
+    /// </summary>
+    /// <param name="color">큐브 색깔</param>
     public void Initialize(ColorType color)
     {
-        InitializeClientRpc(color);
+        InitializeClientRpc(color, transform.position, transform.rotation, transform.localScale);
     }
 }

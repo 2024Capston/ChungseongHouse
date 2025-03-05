@@ -64,6 +64,18 @@ public class PlayerController : NetworkBehaviour
         _collider = GetComponent<Collider>();
         _playerRenderer = GetComponent<PlayerRenderer>();
 
+        if (IsOwner)
+        {
+            _rigidbody = GetComponent<Rigidbody>();
+            _cameraController = GetComponent<CameraController>();
+            _networkPlatformFinder = GetComponent<NetworkPlatformFinder>();
+        }
+        else
+        {
+            GetComponent<PlayerInput>().enabled = false;
+            GetComponent<Rigidbody>().isKinematic = true;
+        }
+
         // 임시: 플레이어 색깔 지정
         if (IsServer)
         {
@@ -73,6 +85,13 @@ public class PlayerController : NetworkBehaviour
 
                 _localPlayer = this;
                 _localPlayerCreated?.Invoke();
+
+                Transform spawnPoint = GameObject.FindGameObjectWithTag("Blue Spawn Point").transform;
+
+                _rigidbody.interpolation = RigidbodyInterpolation.None;
+                transform.position = spawnPoint.position;
+                transform.rotation = spawnPoint.rotation;
+                _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
             }
             else
             {
@@ -86,27 +105,18 @@ public class PlayerController : NetworkBehaviour
         {
             RequestPlayerColorServerRpc();
         }
-
-        if (IsOwner)
-        {
-            _rigidbody = GetComponent<Rigidbody>();
-            _cameraController = GetComponent<CameraController>();
-            _networkPlatformFinder = GetComponent<NetworkPlatformFinder>();
-        }
-        else
-        {
-            GetComponent<PlayerInput>().enabled = false;
-            GetComponent<Rigidbody>().isKinematic = true;
-        }
     }
 
     public override void OnNetworkDespawn()
     {
+        _localPlayerCreated = null;
+
         if (IsOwner)
         {
             BaseUIData baseUIData = new BaseUIData();
             UIManager.Instance.OpenUI<LoadingUI>(baseUIData);
         }
+
         base.OnNetworkDespawn();
     }
 

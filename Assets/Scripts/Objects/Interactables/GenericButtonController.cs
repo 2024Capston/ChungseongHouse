@@ -143,6 +143,13 @@ public class GenericButtonController : ButtonController
         }
     }
 
+    /// <summary>
+    /// 서버와 클라이언트의 초기 상태를 동기화한다. 이 함수는 서버와 클라이언트 모두에서 호출된다.
+    /// </summary>
+    /// <param name="color">색깔</param>
+    /// <param name="buttonType">작동 방식</param>
+    /// <param name="requiresBoth">두 명 필요 여부</param>
+    /// <param name="detectionRadius">인식 범위</param>
     [ClientRpc]
     private void InitializeClientRpc(ColorType color, ButtonType buttonType, bool requiresBoth, float detectionRadius)
     {
@@ -154,13 +161,39 @@ public class GenericButtonController : ButtonController
         _detectionRadius = detectionRadius;
     }
 
-    public void Initialize(ColorType color, GameObject[] activatables, ButtonType buttonType, float temporaryCooldown, bool requiresBoth, float detectionRadius, UnityEvent events)
+    /// <summary>
+    /// 버튼 상태를 초기화하고 클라이언트와 동기화한다. 이 함수는 서버에서만 호출한다.
+    /// </summary>
+    /// <param name="color">색깔</param>
+    /// <param name="buttonType">작동 방식</param>
+    /// <param name="temporaryCooldown">지속 시간</param>
+    /// <param name="requiresBoth">두 명 필요 여부</param>
+    /// <param name="detectionRadius">인식 범위</param>
+    public void Initialize(ColorType color, ButtonType buttonType, float temporaryCooldown, bool requiresBoth, float detectionRadius)
     {
         InitializeClientRpc(color, buttonType, requiresBoth, detectionRadius);
 
-        _activatables = activatables;
         _temporaryCooldown = temporaryCooldown;
+    }
 
-        _events = events;
+    /// <summary>
+    /// 버튼에 연결된 Activatable을 추가한다.
+    /// </summary>
+    /// <param name="activatable">Activatable 오브젝트</param>
+    public void AddActivatable(GameObject activatable)
+    {
+        // Array 뒤에 하나만 Append하기 위해 List로 잠시 변환
+        List<GameObject> activatables = new List<GameObject>(_activatables);
+        activatables.Add(activatable);
+        _activatables = activatables.ToArray();
+    }
+
+    /// <summary>
+    /// 버튼에 연결된 이벤트를 추가한다.
+    /// </summary>
+    /// <param name="evn">이벤트</param>
+    public void AddEvent(UnityAction evn)
+    {
+        _events.AddListener(evn);
     }
 }

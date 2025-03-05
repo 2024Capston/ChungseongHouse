@@ -63,7 +63,10 @@ public class PlateController : NetworkBehaviour
         }
 
         RaycastHit[] hits = Physics.BoxCastAll(transform.position, _boxCollider.bounds.extents, Vector3.up, transform.rotation, 1f);
+        
         List<GameObject> newObjects = new List<GameObject>();
+        List<GameObject> objectsToEnter =new List<GameObject>();
+        List<GameObject> objectsToExit = new List<GameObject>();
 
         foreach (RaycastHit hit in hits)
         {
@@ -75,7 +78,7 @@ public class PlateController : NetworkBehaviour
 
                 if (!_objectsOnPlate.Contains(hit.collider.gameObject))
                 {
-                    _eventsOnEnter?.Invoke(this, hit.collider.gameObject);
+                    objectsToEnter.Add(hit.collider.gameObject);
                 }
             }
         }
@@ -84,7 +87,7 @@ public class PlateController : NetworkBehaviour
         {
             if (!newObjects.Contains(existingObjects))
             {
-                _eventsOnExit?.Invoke(this, existingObjects);
+                objectsToExit.Add(existingObjects);
             }
         }
 
@@ -98,6 +101,22 @@ public class PlateController : NetworkBehaviour
         }
 
         _objectsOnPlate = newObjects;
+
+        foreach(GameObject gameObject in objectsToEnter)
+        {
+            _eventsOnEnter.Invoke(this, gameObject);
+        }
+
+        foreach(GameObject gameObject in objectsToExit)
+        {
+            _eventsOnExit.Invoke(this, gameObject);
+        }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        _eventsOnEnter = null;
+        _eventsOnExit = null;
     }
 
     [ClientRpc]
@@ -113,6 +132,10 @@ public class PlateController : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// 서버와 클라이언트의 초기 상태를 동기화한다. 이 함수는 서버와 클라이언트 모두에서 호출된다.
+    /// </summary>
+    /// <param name="color">색깔</param>
     [ClientRpc]
     private void InitializeClientRpc(ColorType color)
     {
@@ -123,11 +146,32 @@ public class PlateController : NetworkBehaviour
         _lightMeshRenderer.materials = materials;
     }
 
-    public void Initialize(ColorType color, UnityEvent<PlateController, GameObject> eventsOnEnter, UnityEvent<PlateController, GameObject> eventsOnExit)
+    /// <summary>
+    /// 발판 상태를 초기화하고 클라이언트와 동기화한다. 이 함수는 서버에서만 호출한다.
+    /// </summary>
+    /// <param name="color">색깔</param>
+    public void Initialize(ColorType color)
     {
         InitializeClientRpc(color);
 
-        _eventsOnEnter = eventsOnEnter;
-        _eventsOnExit = eventsOnExit;
+        _eventsOnEnter = new UnityEvent<PlateController, GameObject>();
+        _eventsOnExit = new UnityEvent<PlateController, GameObject>();
+    }
+
+    /// <summary>
+    /// 발판에 물체가 들어오면 호출될 이벤트를 추가한다.
+    /// </summary>
+    /// <param name="evn">이벤트</param>
+    public void AddEventOnEnter(UnityAction<PlateController, GameObject> evn) {
+        _eventsOnEnter.AddListener(evn);
+    }
+
+    /// <summary>
+    /// 발판에서 물체가 나가면 호출될 이벤트를 추가한다.
+    /// </summary>
+    /// <param name="evn">이벤트</param>
+    public void AddEventOnExit(UnityAction<PlateController, GameObject> evn)
+    {
+        _eventsOnExit.AddListener(evn);
     }
 }

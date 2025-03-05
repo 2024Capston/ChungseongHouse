@@ -87,6 +87,11 @@ public class NetworkInterpolator : NetworkBehaviour
         _visualReferenceCreated?.Invoke();
     }
 
+    public override void OnNetworkDespawn()
+    {
+        _visualReferenceCreated = null;
+    }
+
     /// <summary>
     /// Owner가 바뀌면 보간 속력을 조절한다.
     /// </summary>

@@ -26,6 +26,12 @@ public class CameraController : NetworkBehaviour
             _cinemachinePOV = _firstPersonCamera.GetCinemachineComponent<CinemachinePOV>();
             _isFirstPerson = _firstPersonCamera.m_Priority > _thirdPersonCamera.m_Priority;
 
+            _cinemachinePOV.m_HorizontalAxis.Value = 0f;
+            _cinemachinePOV.m_VerticalAxis.Value = 0f;
+
+            _thirdPersonCamera.m_XAxis.Value = 0f;
+            _thirdPersonCamera.m_YAxis.Value = 0f;
+
             NetworkInterpolator networkInterpolator = GetComponent<NetworkInterpolator>();
 
             networkInterpolator.AddVisualReferenceDependantFunction(() =>
