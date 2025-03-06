@@ -221,7 +221,6 @@ GameObject:
   - component: {fileID: -2161484111408225323}
   - component: {fileID: 1968184193364488746}
   - component: {fileID: 3838021012378750936}
-  - component: {fileID: 7651059345379365957}
   - component: {fileID: -640124323256899825}
   - component: {fileID: -5098741523928834209}
   - component: {fileID: -1680078530824072864}
@@ -349,7 +348,6 @@ MonoBehaviour:
   _parentUnderVisualReference: 1
   _sendThreshold: 0.01
   _parentingCooldown: 0.5
-  _manuallyStart: 0
 --- !u!114 &3838021012378750936
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,69 +361,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _detectionThreshold: 100
---- !u!114 &7651059345379365957
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2598954008640769726}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: de6de9a48a237cc4ea7a768e13248e48,
-    type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 8f30e387-5d40-4a3f-b8d6-85d197ce33c2
-    m_ActionName: PlayerAction/MoveInput[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d,/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: e0824bdc-50d8-44d1-805e-83fb3c6c0b62
-    m_ActionName: PlayerAction/InteractionInput[/Keyboard/e]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 1d2864bd-10e3-465b-8854-690b1649d624
-    m_ActionName: PlayerAction/JumpInput[/Keyboard/space]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 3ee35aaf-8fc7-4934-bb43-875e912f7dcf
-    m_ActionName: PlayerAction/EscapeInput[/Keyboard/escape]
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: -1680078530824072864}
-        m_TargetAssemblyTypeName: CameraController, Assembly-CSharp
-        m_MethodName: OnNetworkSpawn
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 33464466-d531-4e2a-846e-919a3f954d91
-    m_ActionName: PlayerAction/LookAroundInput[/Mouse/delta]
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: PC
-  m_DefaultActionMap: PlayerAction
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!114 &-640124323256899825
 MonoBehaviour:
   m_ObjectHideFlags: 0

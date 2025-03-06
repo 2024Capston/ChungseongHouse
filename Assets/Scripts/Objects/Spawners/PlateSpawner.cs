@@ -44,12 +44,12 @@ public class PlateSpawner : NetworkObjectSpawner
         // 스폰한 발판에 이벤트를 추가
         foreach (DelegateWrapper action in _eventsOnEnter)
         {
-            plateController.AddEventOnEnter((UnityAction<PlateController, GameObject>)action.GetAction());
+            plateController.AddEventOnEnter((UnityAction<PlateController, GameObject>)action.GetDelegate());
         }
 
         foreach (DelegateWrapper action in _eventsOnExit)
         {
-            plateController.AddEventOnExit((UnityAction<PlateController, GameObject>)action.GetAction());
+            plateController.AddEventOnExit((UnityAction<PlateController, GameObject>)action.GetDelegate());
         }
     }
 }

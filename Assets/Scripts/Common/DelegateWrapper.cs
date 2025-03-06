@@ -18,7 +18,7 @@ public class DelegateWrapper
     /// 게임 오브젝트, 스크립트 이름, 함수 이름을 바탕으로 Delegate를 반환한다.
     /// </summary>
     /// <returns>Delegate</returns>
-    public Delegate GetAction()
+    public Delegate GetDelegate()
     {
         // 게임 오브젝트가 주어진 경우
         if (_gameObject)

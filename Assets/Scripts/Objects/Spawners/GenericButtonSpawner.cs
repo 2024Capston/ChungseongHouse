@@ -63,7 +63,7 @@ public class GenericButtonSpawner : NetworkObjectSpawner
         // 스폰한 버튼에 이벤트를 추가
         foreach (DelegateWrapper action in _events)
         {
-            buttonController.AddEvent((UnityAction)action.GetAction());
+            buttonController.AddEvent((UnityAction)action.GetDelegate());
         }
     }
 }

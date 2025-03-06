@@ -70,9 +70,25 @@ public class CubeController : NetworkBehaviour, IInteractable
         if (_interactingPlayer)
         {
             Vector3 target = Camera.main.transform.position + Camera.main.transform.forward * DISTANCE_FROM_PLAYER;
-            target = target - transform.position;
 
-            _rigidbody.velocity = target.normalized * Mathf.Sqrt(target.magnitude) * CUBE_SPEED;
+            if (Vector3.Distance(target, transform.position) > 0.1f)
+            {
+                Vector3 direction = (target - transform.position).normalized;
+                float magnitude = Mathf.Sqrt((target - transform.position).magnitude) * CUBE_SPEED;
+
+                if (!_rigidbody.SweepTest(direction, out RaycastHit hitInfo, magnitude * Time.deltaTime))
+                {
+                    _rigidbody.velocity = direction * magnitude;
+                }
+                else
+                {
+                    _rigidbody.velocity = Vector3.zero;
+                }
+            }
+            else
+            {
+                _rigidbody.velocity = Vector3.zero;
+            }
 
             if (Vector3.Distance(transform.position, _interactingPlayer.transform.position) > MAXIMUM_DISTANCE_FROM_PLAYER)
             {

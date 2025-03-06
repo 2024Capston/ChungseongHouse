@@ -32,6 +32,8 @@ public class CameraController : NetworkBehaviour
             _thirdPersonCamera.m_XAxis.Value = 0f;
             _thirdPersonCamera.m_YAxis.Value = 0f;
 
+            InputHandler.Instance.OnLookAround += OnLookAroundInput;
+
             NetworkInterpolator networkInterpolator = GetComponent<NetworkInterpolator>();
 
             networkInterpolator.AddVisualReferenceDependantFunction(() =>

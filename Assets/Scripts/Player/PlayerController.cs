@@ -69,6 +69,10 @@ public class PlayerController : NetworkBehaviour
             _rigidbody = GetComponent<Rigidbody>();
             _cameraController = GetComponent<CameraController>();
             _networkPlatformFinder = GetComponent<NetworkPlatformFinder>();
+
+            InputHandler.Instance.OnMove += OnMoveInput;
+            InputHandler.Instance.OnJump += OnJumpInput;
+            InputHandler.Instance.OnInteraction += OnInteractionInput;
         }
         else
         {
