@@ -107,7 +107,7 @@ public class TitleManager : MonoBehaviour
         _progressText.text = "10%";
 
         // Home Scene을 비동기적으로 불러오기 위해 시도한다.
-        _asyncOperation = SceneManager.LoadSceneAsync(SceneType.Home.ToString());
+        _asyncOperation = SceneLoader.Instance.LoadScene(SceneType.Home.ToString(), false);
 
         if (_asyncOperation == null)
         {

@@ -72,7 +72,7 @@ public class LobbyManager : NetworkSingletonBehaviour<LobbyManager>
             
         }
         
-        SceneLoaderWrapper.Instance.LoadScene(SceneType.InGame.ToString(), true);
+        SceneLoader.Instance.LoadScene(SceneType.InGame.ToString(), true);
     }
     
     /// <summary>
