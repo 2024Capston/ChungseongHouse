@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -14,7 +11,15 @@ public class CameraController : NetworkBehaviour
     [SerializeField] CinemachineVirtualCamera _firstPersonCamera;
     [SerializeField] CinemachineFreeLook _thirdPersonCamera;
 
+    private GameObject _firstPersonCameraHolder;
+
     private CinemachinePOV _cinemachinePOV;
+    private Vector2 _lookAroundInput;
+
+    private Rigidbody _rigidbody;
+    private AxisState _axisState;
+    private float _currentYaw;
+    private float _lastYaw;
 
     private bool _isFirstPerson;
     public bool IsFirstPerson
@@ -26,11 +31,16 @@ public class CameraController : NetworkBehaviour
     {
         if (IsOwner)
         {
+            _firstPersonCameraHolder = new GameObject("Camera Holder");
+            _firstPersonCamera.transform.parent = _firstPersonCameraHolder.transform;
+
             _cinemachinePOV = _firstPersonCamera.GetCinemachineComponent<CinemachinePOV>();
             _isFirstPerson = _firstPersonCamera.m_Priority > _thirdPersonCamera.m_Priority;
 
+            _rigidbody = GetComponent<Rigidbody>();
+            _axisState = _cinemachinePOV.m_HorizontalAxis;
+
             // 처음 시작시 카메라 위치를 초기화
-            _cinemachinePOV.m_HorizontalAxis.Value = 0f;
             _cinemachinePOV.m_VerticalAxis.Value = 0f;
 
             _thirdPersonCamera.m_XAxis.Value = 0f;
@@ -42,13 +52,9 @@ public class CameraController : NetworkBehaviour
 
             networkInterpolator.AddVisualReferenceDependantFunction(() =>
             {
-                _firstPersonCamera.Follow = networkInterpolator.VisualReference.transform;
-
                 _thirdPersonCamera.Follow = networkInterpolator.VisualReference.transform;
                 _thirdPersonCamera.LookAt = networkInterpolator.VisualReference.transform;
             });
-
-            _firstPersonCamera.transform.parent = null;
 
             Cursor.lockState = CursorLockMode.Locked;
         }
@@ -60,9 +66,52 @@ public class CameraController : NetworkBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (IsOwner)
+        {
+            if (_isFirstPerson)
+            {
+                _firstPersonCameraHolder.transform.position = transform.position;
+
+                _cinemachinePOV.m_VerticalAxis.m_InputAxisValue = _lookAroundInput.y;
+
+                _axisState.m_InputAxisValue = _lookAroundInput.x;
+                _axisState.Update(Time.deltaTime);
+
+                float newYaw = _axisState.Value;
+                _currentYaw += newYaw - _lastYaw;
+
+                if (_currentYaw > 180f)
+                {
+                    _currentYaw -= 360f;
+                }
+                else if (_currentYaw < -180f)
+                {
+                    _currentYaw += 360f;
+                }
+
+                _firstPersonCameraHolder.transform.rotation = Quaternion.Euler(Vector3.up * _currentYaw);
+                _rigidbody.MoveRotation(_firstPersonCameraHolder.transform.rotation);
+
+                _lastYaw = newYaw;
+            }
+            else
+            {
+                _thirdPersonCamera.m_YAxis.m_InputAxisValue = _lookAroundInput.y;
+                _thirdPersonCamera.m_XAxis.m_InputAxisValue = _lookAroundInput.x;
+            }
+        }
+    }
+
     private new void OnDestroy()
     {
         InputHandler.Instance.OnLookAround -= OnLookAroundInput;
+
+        if (_firstPersonCameraHolder)
+        {
+            Destroy(_firstPersonCameraHolder);
+        }
 
         base.OnDestroy();
     }
@@ -90,17 +139,6 @@ public class CameraController : NetworkBehaviour
 
     public void OnLookAroundInput(InputValue value)
     {
-        Vector2 rotateInput = value.Get<Vector2>() / Time.deltaTime / 2048f;
-
-        if (_isFirstPerson)
-        {
-            _cinemachinePOV.m_VerticalAxis.m_InputAxisValue = rotateInput.y;
-            _cinemachinePOV.m_HorizontalAxis.m_InputAxisValue = rotateInput.x;
-        }
-        else
-        {
-            _thirdPersonCamera.m_YAxis.m_InputAxisValue = rotateInput.y;
-            _thirdPersonCamera.m_XAxis.m_InputAxisValue = rotateInput.x;
-        }
+        _lookAroundInput = value.Get<Vector2>() / Time.deltaTime / 2048f;
     }
 }

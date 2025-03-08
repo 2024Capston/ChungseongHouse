@@ -18,7 +18,8 @@ public class CubeController : NetworkBehaviour, IInteractable
 
     private const float DISTANCE_FROM_PLAYER = 32f;         // 플레이어와 큐브 사이의 거리
     private const float MAXIMUM_DISTANCE_FROM_PLAYER = 64f; // 플레이어와 큐브가 멀어질 수 있는 최대 거리
-    private const float CUBE_SPEED = 64f;                   // 큐브의 이동 속력
+    private const float MAXIMUM_CUBE_SPEED = 128f;           // 큐브의 최대 이동 속력
+    private const float CUBE_SPEED = 2f;                    // 큐브의 이동 속력
 
     private Rigidbody _rigidbody;
     private CubeRenderer _cubeRenderer;
@@ -71,24 +72,18 @@ public class CubeController : NetworkBehaviour, IInteractable
         {
             Vector3 target = Camera.main.transform.position + Camera.main.transform.forward * DISTANCE_FROM_PLAYER;
 
-            if (Vector3.Distance(target, transform.position) > 0.1f)
-            {
-                Vector3 direction = (target - transform.position).normalized;
-                float magnitude = Mathf.Sqrt((target - transform.position).magnitude) * CUBE_SPEED;
+            Vector3 direction = (target - transform.position).normalized;
+            float magnitude = Mathf.Clamp(Mathf.Pow((target - transform.position).magnitude * CUBE_SPEED, 2), 0, MAXIMUM_CUBE_SPEED);
 
-                if (!_rigidbody.SweepTest(direction, out RaycastHit hitInfo, magnitude * Time.deltaTime))
-                {
-                    _rigidbody.velocity = direction * magnitude;
-                }
-                else
-                {
-                    _rigidbody.velocity = Vector3.zero;
-                }
-            }
-            else
+
+            if (_rigidbody.SweepTest(direction, out RaycastHit hit, magnitude * Time.deltaTime))
             {
-                _rigidbody.velocity = Vector3.zero;
+                magnitude /= 4f;
             }
+
+            _rigidbody.velocity = direction * magnitude;
+
+            _rigidbody.MoveRotation(Quaternion.Slerp(_rigidbody.rotation, Quaternion.LookRotation(transform.position - Camera.main.transform.position), Time.deltaTime * 16f));
 
             if (Vector3.Distance(transform.position, _interactingPlayer.transform.position) > MAXIMUM_DISTANCE_FROM_PLAYER)
             {

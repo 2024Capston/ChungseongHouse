@@ -1,7 +1,5 @@
-using Cinemachine;
 using System;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -73,40 +71,48 @@ public class PlayerController : NetworkBehaviour
             InputHandler.Instance.OnMove += OnMoveInput;
             InputHandler.Instance.OnJump += OnJumpInput;
             InputHandler.Instance.OnInteraction += OnInteractionInput;
-        }
-        else
-        {
-            GetComponent<Rigidbody>().isKinematic = true;
-        }
 
-        // 임시: 플레이어 색깔 지정
-        if (IsServer)
-        {
-            if (IsOwner)
+            // 색깔 배정
+            _color = NetworkManager.LocalClient.PlayerObject.GetComponent<PlayerConfig>().IsBlue ? ColorType.Blue : ColorType.Red;
+            _playerRenderer.Initialize();
+
+            // 스폰 위치 배정
+            Transform spawnPoint;
+
+            if (_color == ColorType.Blue)
             {
-                _color = ColorType.Blue;
-
-                _localPlayer = this;
-                _localPlayerCreated?.Invoke();
+                spawnPoint = GameObject.FindWithTag("Blue Spawn Point").transform;
             }
             else
             {
-                _color = ColorType.Red;
+                spawnPoint = GameObject.FindWithTag("Red Spawn Point").transform;
             }
 
-            _playerColorAssigned?.Invoke(_color);
-            _playerRenderer.Initialize();
+            if (spawnPoint != null)
+            {
+                _rigidbody.MovePosition(spawnPoint.position);
+                _rigidbody.MoveRotation(spawnPoint.rotation);
+            }
+
+            _localPlayer = this;
+            _localPlayerCreated?.Invoke();
         }
         else
         {
-            RequestPlayerColorServerRpc();
+            // 상대 색깔 요청
+            if (IsServer)
+            {
+                RequestPlayerColorClientRpc();
+            }
+            else
+            {
+                RequestPlayerColorServerRpc();
+            }
         }
     }
 
     public override void OnNetworkDespawn()
     {
-        _localPlayerCreated = null;
-
         if (IsOwner)
         {
             BaseUIData baseUIData = new BaseUIData();
@@ -150,14 +156,13 @@ public class PlayerController : NetworkBehaviour
     /// </summary>
     private void HandleMovement()
     {
-        Quaternion rotation = Quaternion.Euler(0, Camera.main.transform.rotation.eulerAngles.y, 0);
+        Quaternion rotation = Quaternion.Euler(Vector3.up * Camera.main.transform.rotation.eulerAngles.y);
 
         if (_cameraController.IsFirstPerson)
         {
-            _rigidbody.MoveRotation(Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 32f));
-
-            Vector3 newVelocity = transform.rotation * _moveInput * _walkSpeed;
+            Vector3 newVelocity = rotation * _moveInput * _walkSpeed;
             newVelocity.y = _rigidbody.velocity.y;
+
             _rigidbody.velocity = newVelocity;
         }
         else
@@ -311,49 +316,48 @@ public class PlayerController : NetworkBehaviour
     }
 
     /// <summary>
-    /// ESC 입력을 받는 Callback.
+    /// 서버 측에서 클라이언트에게 상대의 색깔을 요청한다.
     /// </summary>
-    void OnEscapeInput()
-    {
-
-    }
-
-    /// <summary>
-    /// 클라이언트 측에서 서버에게 플레이어 색깔을 묻는다.
-    /// </summary>
-    [ServerRpc(RequireOwnership = false)]
-    private void RequestPlayerColorServerRpc()
-    {
-        if (_color == 0)
-        {
-            _playerColorAssigned += SendPlayerColorClientRpc;
-        }
-        else
-        {
-            SendPlayerColorClientRpc(_color);
-        }
-    }
-
-    /// <summary>
-    /// 서버 측에서 클라이언트에게 플레이어 색깔을 전달한다.
-    /// </summary>
-    /// <param name="color">플레이어 색깔</param>
     [ClientRpc(RequireOwnership = false)]
-    private void SendPlayerColorClientRpc(ColorType color)
+    private void RequestPlayerColorClientRpc()
     {
         if (IsServer)
         {
             return;
         }
 
+        SendPlayerColorServerRpc(_color);
+    }
+
+    /// <summary>
+    /// 클라이언트 측에서 서버에게 상대의 색깔을 요청한다.
+    /// </summary>
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestPlayerColorServerRpc()
+    {
+        SendPlayerColorClientRpc(_color);
+    }
+
+    /// <summary>
+    /// 서버에서 클라이언트에게 자신의 색깔을 전달한다.
+    /// </summary>
+    /// <param name="color">색깔</param>
+    [ClientRpc]
+    private void SendPlayerColorClientRpc(ColorType color)
+    {
         _color = color;
         _playerRenderer.Initialize();
+    }
 
-        if (IsOwner)
-        {
-            _localPlayer = this;
-            _localPlayerCreated?.Invoke();
-        }
+    /// <summary>
+    /// 클라이언트에서 서버에게 자신의 색깔을 전달한다.
+    /// </summary>
+    /// <param name="color">색깔</param>
+    [ServerRpc]
+    private void SendPlayerColorServerRpc(ColorType color)
+    {
+        _color = color;
+        _playerRenderer.Initialize();
     }
 
     /// <summary>
