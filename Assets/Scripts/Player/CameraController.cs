@@ -6,6 +6,9 @@ using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// 플레이어 카메라를 조작하는 Class
+/// </summary>
 public class CameraController : NetworkBehaviour
 {
     [SerializeField] CinemachineVirtualCamera _firstPersonCamera;
@@ -26,6 +29,7 @@ public class CameraController : NetworkBehaviour
             _cinemachinePOV = _firstPersonCamera.GetCinemachineComponent<CinemachinePOV>();
             _isFirstPerson = _firstPersonCamera.m_Priority > _thirdPersonCamera.m_Priority;
 
+            // 처음 시작시 카메라 위치를 초기화
             _cinemachinePOV.m_HorizontalAxis.Value = 0f;
             _cinemachinePOV.m_VerticalAxis.Value = 0f;
 
@@ -54,6 +58,13 @@ public class CameraController : NetworkBehaviour
             Destroy(_thirdPersonCamera.gameObject);
             Destroy(GetComponentInChildren<Camera>().gameObject);
         }
+    }
+
+    private new void OnDestroy()
+    {
+        InputHandler.Instance.OnLookAround -= OnLookAroundInput;
+
+        base.OnDestroy();
     }
 
     public void ChangeCameraMode(bool toFirstPerson)

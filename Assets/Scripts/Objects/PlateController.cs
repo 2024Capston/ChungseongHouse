@@ -18,12 +18,12 @@ public class PlateController : NetworkBehaviour
     /// <summary>
     /// 발판에 물체가 들어오면 호출할 이벤트
     /// </summary>
-    [SerializeField] UnityEvent<PlateController, GameObject> _eventsOnEnter;
+    [SerializeField] EventType[] _publishOnEnter;
 
     /// <summary>
     /// 발판에서 물체가 나가면 호출할 이벤트
     /// </summary>
-    [SerializeField] UnityEvent<PlateController, GameObject> _eventsOnExit;
+    [SerializeField] EventType[] _publishOnExit;
 
     /// <summary>
     /// 발판 옆의 빛에 대한 레퍼런스
@@ -104,19 +104,19 @@ public class PlateController : NetworkBehaviour
 
         foreach(GameObject gameObject in objectsToEnter)
         {
-            _eventsOnEnter.Invoke(this, gameObject);
+            foreach (EventType eventType in _publishOnEnter)
+            {
+                EventBus.Instance.InvokeEvent(eventType, this, gameObject);
+            }
         }
 
         foreach(GameObject gameObject in objectsToExit)
         {
-            _eventsOnExit.Invoke(this, gameObject);
+            foreach (EventType eventType in _publishOnExit)
+            {
+                EventBus.Instance.InvokeEvent(eventType, this, gameObject);
+            }
         }
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        _eventsOnEnter = null;
-        _eventsOnExit = null;
     }
 
     [ClientRpc]
@@ -150,28 +150,11 @@ public class PlateController : NetworkBehaviour
     /// 발판 상태를 초기화하고 클라이언트와 동기화한다. 이 함수는 서버에서만 호출한다.
     /// </summary>
     /// <param name="color">색깔</param>
-    public void Initialize(ColorType color)
+    public void Initialize(ColorType color, EventType[] publishOnEnter, EventType[] publishOnExit)
     {
         InitializeClientRpc(color);
 
-        _eventsOnEnter = new UnityEvent<PlateController, GameObject>();
-        _eventsOnExit = new UnityEvent<PlateController, GameObject>();
-    }
-
-    /// <summary>
-    /// 발판에 물체가 들어오면 호출될 이벤트를 추가한다.
-    /// </summary>
-    /// <param name="evn">이벤트</param>
-    public void AddEventOnEnter(UnityAction<PlateController, GameObject> evn) {
-        _eventsOnEnter.AddListener(evn);
-    }
-
-    /// <summary>
-    /// 발판에서 물체가 나가면 호출될 이벤트를 추가한다.
-    /// </summary>
-    /// <param name="evn">이벤트</param>
-    public void AddEventOnExit(UnityAction<PlateController, GameObject> evn)
-    {
-        _eventsOnExit.AddListener(evn);
+        _publishOnEnter = publishOnEnter;
+        _publishOnExit = publishOnExit;
     }
 }

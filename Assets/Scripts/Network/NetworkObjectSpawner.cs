@@ -40,7 +40,7 @@ public class NetworkObjectSpawner : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    protected void OnDestroy()
     {
         // 파괴 시, 스폰했던 오브젝트도 제거
         if (_spawnedObject)

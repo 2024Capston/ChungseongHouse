@@ -206,7 +206,6 @@ abstract public class ButtonController : NetworkBehaviour, IInteractable
     /// </summary>
     public void EnableButton()
     {
-        Debug.Log("Enabled " + name);
         EnableButtonServerRpc(true);
     }
 
@@ -215,7 +214,6 @@ abstract public class ButtonController : NetworkBehaviour, IInteractable
     /// </summary>
     public void DisableButton()
     {
-        Debug.Log("Disabled " + name);
         EnableButtonServerRpc(false);
     }
 

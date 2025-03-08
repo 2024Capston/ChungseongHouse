@@ -8,10 +8,10 @@ using UnityEngine.Events;
 
 public class PlateSpawner : NetworkObjectSpawner
 {
-    [SerializeField] ColorType _color;
+    [SerializeField] private ColorType _color;
 
-    [SerializeField] DelegateWrapper[] _eventsOnEnter;
-    [SerializeField] DelegateWrapper[] _eventsOnExit;
+    [SerializeField] private EventType[] _publishOnEnter;
+    [SerializeField] private EventType[] _publishOnExit;
 
     private new void Awake()
     {
@@ -29,27 +29,6 @@ public class PlateSpawner : NetworkObjectSpawner
         _spawnedObject.transform.localScale = transform.lossyScale;
 
         _spawnedObject.GetComponent<NetworkObject>().Spawn();
-        _spawnedObject.GetComponent<PlateController>().Initialize(_color);
-    }
-
-    private void Start()
-    {
-        if (!NetworkManager.Singleton.IsServer)
-        {
-            return;
-        }
-
-        PlateController plateController = _spawnedObject.GetComponent<PlateController>();
-
-        // 스폰한 발판에 이벤트를 추가
-        foreach (DelegateWrapper action in _eventsOnEnter)
-        {
-            plateController.AddEventOnEnter((UnityAction<PlateController, GameObject>)action.GetDelegate());
-        }
-
-        foreach (DelegateWrapper action in _eventsOnExit)
-        {
-            plateController.AddEventOnExit((UnityAction<PlateController, GameObject>)action.GetDelegate());
-        }
+        _spawnedObject.GetComponent<PlateController>().Initialize(_color, _publishOnEnter, _publishOnExit);
     }
 }

@@ -14,7 +14,10 @@ public class GenericButtonSpawner : NetworkObjectSpawner
     [SerializeField] private bool _requiresBoth;
     [SerializeField] private float _detectionRadius;
 
-    [SerializeField] private DelegateWrapper[] _events;
+    [SerializeField] private EventType[] _publishOnPress;
+    [SerializeField] private EventType[] _publishOnUnpress;
+    [SerializeField] private EventType[] _subscribeForEnable;
+    [SerializeField] private EventType[] _subscribeForDisable;
 
     private new void Awake()
     {
@@ -32,7 +35,7 @@ public class GenericButtonSpawner : NetworkObjectSpawner
         _spawnedObject.transform.localScale = transform.lossyScale;
 
         _spawnedObject.GetComponent<NetworkObject>().Spawn();
-        _spawnedObject.GetComponentInChildren<GenericButtonController>().Initialize(_color, _buttonType, _temporaryCooldown, _requiresBoth, _detectionRadius);
+        _spawnedObject.GetComponentInChildren<GenericButtonController>().Initialize(_color, _buttonType, _temporaryCooldown, _requiresBoth, _detectionRadius, _publishOnPress, _publishOnUnpress, _subscribeForEnable, _subscribeForDisable);
     }
 
     private void Start()
@@ -58,12 +61,6 @@ public class GenericButtonSpawner : NetworkObjectSpawner
             {
                 buttonController.AddActivatable(activatable.GetComponentInChildren(type).gameObject);
             }
-        }
-
-        // 스폰한 버튼에 이벤트를 추가
-        foreach (DelegateWrapper action in _events)
-        {
-            buttonController.AddEvent((UnityAction)action.GetDelegate());
         }
     }
 }

@@ -10,6 +10,9 @@ public class DoorSpawner : NetworkObjectSpawner
     [SerializeField] bool _isTrigerrable = false;
     [SerializeField] bool _isOpen = false;
 
+    [SerializeField] EventType[] _subscribeForActivation;
+    [SerializeField] EventType[] _subscribeForDeactivation;
+
     private new void Awake()
     {
         base.Awake();
@@ -31,6 +34,6 @@ public class DoorSpawner : NetworkObjectSpawner
         _spawnedObject.transform.localScale = transform.lossyScale;
 
         _spawnedObject.GetComponent<NetworkObject>().Spawn();
-        _spawnedObject.GetComponent<DoorController>().Initialize(_isTrigerrable, _isOpen);
+        _spawnedObject.GetComponent<DoorController>().Initialize(_isTrigerrable, _isOpen, _subscribeForActivation, _subscribeForDeactivation);
     }
 }

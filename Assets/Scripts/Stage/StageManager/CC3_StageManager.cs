@@ -14,6 +14,8 @@ namespace ColorChanger
 
         public override void EndGame()
         {
+            EventBus.Instance.UnsubscribeEvent<UnityAction<PlateController, GameObject>>(EventType.EventA, OnPlatePressed);
+            InGameManager.Instance.EndGameServerRpc();
         }
 
         public override void RestartGame()
@@ -22,12 +24,12 @@ namespace ColorChanger
 
         public override void StartGame()
         {
-            _plateControllers = FindObjectsOfType<PlateController>();
-            _exitDoorController = GameObject.Find("ExitDoor").GetComponent<DoorController>();
+            EventBus.Instance.SubscribeEvent<UnityAction<PlateController, GameObject>>(EventType.EventA, OnPlatePressed);
         }
 
         private bool CheckClearCondition()
         {
+            return true;
             foreach (PlateController plateController in _plateControllers)
             {
                 bool hasCube = false;
@@ -54,7 +56,7 @@ namespace ColorChanger
         {
             if (CheckClearCondition())
             {
-                _exitDoorController.Activate();
+                EventBus.Instance.InvokeEvent(EventType.EventB);
             }
         }
     }

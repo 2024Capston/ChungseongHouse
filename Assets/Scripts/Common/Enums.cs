@@ -37,3 +37,11 @@ public enum ButtonType
     Toggle,     // 활성/비활성 토글
     Temporary   // 누르고 일정 시간이 지나면 비활성화
 }
+
+/// <summary>
+/// 이벤트 버스에 사용할 이벤트 종류
+/// </summary>
+public enum EventType
+{
+    EventA, EventB, EventC, EventD, EventE, EventF, EventG, EventH
+}

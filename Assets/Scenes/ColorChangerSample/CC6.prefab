@@ -7255,8 +7255,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
+      propertyPath: _temporaryCooldown
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
       propertyPath: _activatables.Array.size
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
+      propertyPath: _publishOnPress.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
@@ -7272,6 +7282,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _events.Array.data[0]._script
       value: GenericButtonController
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
+      propertyPath: _publishOnPress.Array.data[0]
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
@@ -30381,7 +30396,7 @@ PrefabInstance:
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
       propertyPath: _color
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
@@ -30398,6 +30413,26 @@ PrefabInstance:
       propertyPath: _activatables.Array.data[0]
       value: 
       objectReference: {fileID: 8677145642534471184}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
+      propertyPath: _subscribeForEnable.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
+      propertyPath: _subscribeForDisable.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
+      propertyPath: _subscribeForEnable.Array.data[0]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
+      propertyPath: _subscribeForDisable.Array.data[0]
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 5378141897744454298, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
       propertyPath: m_Name
@@ -82374,8 +82409,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
+      propertyPath: _temporaryCooldown
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
       propertyPath: _activatables.Array.size
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
+      propertyPath: _publishOnPress.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
@@ -82391,6 +82436,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _events.Array.data[0]._script
       value: GenericButtonController
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
+      propertyPath: _publishOnPress.Array.data[0]
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}

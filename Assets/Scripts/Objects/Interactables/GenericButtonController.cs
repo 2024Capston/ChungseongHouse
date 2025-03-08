@@ -33,9 +33,24 @@ public class GenericButtonController : ButtonController
     [SerializeField] private float _detectionRadius;
 
     /// <summary>
-    /// 버튼이 활성화됐을 때 실행될 함수
+    /// 버튼을 눌렀을 때 호출할 이벤트
     /// </summary>
-    [SerializeField] private UnityEvent _events;
+    [SerializeField] private EventType[] _publishOnPress;
+
+    /// <summary>
+    /// 버튼을 뗐을 때 호출할 이벤트
+    /// </summary>
+    [SerializeField] private EventType[] _publishOnUnpress;
+
+    /// <summary>
+    /// 호출되면 버튼을 활성화할 이벤트
+    /// </summary>
+    [SerializeField] private EventType[] _subscribeForEnable;
+
+    /// <summary>
+    /// 호출되면 버튼을 비활성화할 이벤트
+    /// </summary>
+    [SerializeField] private EventType[] _subscribeForDisable;
 
     private float _temporaryTime = 0f;  // Temporary용 타이머
 
@@ -57,8 +72,28 @@ public class GenericButtonController : ButtonController
                 DeactivateObjects();
 
                 PlayPressAnimation(false);
+
+                foreach (EventType eventType in _publishOnUnpress)
+                {
+                    EventBus.Instance.InvokeEvent(eventType);
+                }
             }
         }
+    }
+
+    private new void OnDestroy()
+    {
+        foreach (EventType eventType in _subscribeForEnable)
+        {
+            EventBus.Instance.UnsubscribeEvent<UnityAction>(eventType, EnableButton);
+        }
+
+        foreach (EventType eventType in _subscribeForDisable)
+        {
+            EventBus.Instance.UnsubscribeEvent<UnityAction>(eventType, DisableButton);
+        }
+
+        base.OnDestroy();
     }
 
     public override bool OnInteractableCheck(PlayerController player)
@@ -106,7 +141,10 @@ public class GenericButtonController : ButtonController
 
             PlayPressAnimation(true);
 
-            _events?.Invoke();
+            foreach (EventType eventType in _publishOnPress)
+            {
+                EventBus.Instance.InvokeEvent(eventType);
+            }
         }
         // 버튼 타입: Toggle
         else if (_buttonType == ButtonType.Toggle)
@@ -115,13 +153,21 @@ public class GenericButtonController : ButtonController
             {
                 UnpressButton();
                 DeactivateObjects();
+
+                foreach (EventType eventType in _publishOnUnpress)
+                {
+                    EventBus.Instance.InvokeEvent(eventType);
+                }
             }
             else
             {
                 PressButton();
                 ActivateObjects();
 
-                _events.Invoke();
+                foreach (EventType eventType in _publishOnPress)
+                {
+                    EventBus.Instance.InvokeEvent(eventType);
+                }
             }
 
             PlayToggleAnimation();
@@ -136,7 +182,10 @@ public class GenericButtonController : ButtonController
 
                 PlayPressAnimation(true);
 
-                _events.Invoke();
+                foreach (EventType eventType in _publishOnPress)
+                {
+                    EventBus.Instance.InvokeEvent(eventType);
+                }
 
                 _temporaryTime = _temporaryCooldown;
             }
@@ -169,11 +218,26 @@ public class GenericButtonController : ButtonController
     /// <param name="temporaryCooldown">지속 시간</param>
     /// <param name="requiresBoth">두 명 필요 여부</param>
     /// <param name="detectionRadius">인식 범위</param>
-    public void Initialize(ColorType color, ButtonType buttonType, float temporaryCooldown, bool requiresBoth, float detectionRadius)
+    public void Initialize(ColorType color, ButtonType buttonType, float temporaryCooldown, bool requiresBoth, float detectionRadius, EventType[] publishOnPress, EventType[] publishOnUnpress, EventType[] subscribeForEnable, EventType[] subscribeForDisable)
     {
         InitializeClientRpc(color, buttonType, requiresBoth, detectionRadius);
 
         _temporaryCooldown = temporaryCooldown;
+
+        _publishOnPress = publishOnPress;
+        _publishOnUnpress = publishOnUnpress;
+        _subscribeForEnable = subscribeForEnable;
+        _subscribeForDisable = subscribeForDisable;
+
+        foreach (EventType eventType in _subscribeForEnable)
+        {
+            EventBus.Instance.SubscribeEvent<UnityAction>(eventType, EnableButton);
+        }
+
+        foreach (EventType eventType in _subscribeForDisable)
+        {
+            EventBus.Instance.SubscribeEvent<UnityAction>(eventType, DisableButton);
+        }
     }
 
     /// <summary>
@@ -186,14 +250,5 @@ public class GenericButtonController : ButtonController
         List<GameObject> activatables = new List<GameObject>(_activatables);
         activatables.Add(activatable);
         _activatables = activatables.ToArray();
-    }
-
-    /// <summary>
-    /// 버튼에 연결된 이벤트를 추가한다.
-    /// </summary>
-    /// <param name="evn">이벤트</param>
-    public void AddEvent(UnityAction evn)
-    {
-        _events.AddListener(evn);
     }
 }

@@ -76,7 +76,6 @@ public class PlayerController : NetworkBehaviour
         }
         else
         {
-            GetComponent<PlayerInput>().enabled = false;
             GetComponent<Rigidbody>().isKinematic = true;
         }
 
@@ -89,13 +88,6 @@ public class PlayerController : NetworkBehaviour
 
                 _localPlayer = this;
                 _localPlayerCreated?.Invoke();
-
-                Transform spawnPoint = GameObject.FindGameObjectWithTag("Blue Spawn Point").transform;
-
-                _rigidbody.interpolation = RigidbodyInterpolation.None;
-                transform.position = spawnPoint.position;
-                transform.rotation = spawnPoint.rotation;
-                _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
             }
             else
             {
@@ -139,6 +131,18 @@ public class PlayerController : NetworkBehaviour
                 _cameraController.ChangeCameraMode(!_cameraController.IsFirstPerson);
             }
         }
+    }
+
+    private new void OnDestroy()
+    {
+        if (IsOwner)
+        {
+            InputHandler.Instance.OnMove -= OnMoveInput;
+            InputHandler.Instance.OnJump -= OnJumpInput;
+            InputHandler.Instance.OnInteraction -= OnInteractionInput;
+        }
+
+        base.OnDestroy();
     }
 
     /// <summary>

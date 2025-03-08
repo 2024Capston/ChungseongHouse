@@ -4,15 +4,30 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(SphereCollider))]
 public class DoorController : NetworkBehaviour, IActivatable
 {
-    [SerializeField] private bool _isTriggerable = true;    // 근처에 가면 열릴지 여부
+    /// <summary>
+    /// 근처에 가면 열릴지 여부
+    /// </summary>
+    [SerializeField] private bool _isTriggerable = true;
+
+    /// <summary>
+    /// 호출되면 문을 열 이벤트
+    /// </summary>
+    [SerializeField] private EventType[] _subscribeForActivation;
+
+    /// <summary>
+    /// 호출되면 문을 닫을 이벤트
+    /// </summary>
+    [SerializeField] private EventType[] _subscribeForDeactivation;
 
     private Animator _animator;
-    
+    private float _playerCount = 0;
+
     /// <summary>
     /// 문이 열리기 위해선 Host에서 IsOpened가 true 상태이어야 함.
     /// </summary>
@@ -22,6 +37,21 @@ public class DoorController : NetworkBehaviour, IActivatable
     private void Awake()
     {
         _animator = GetComponent<Animator>();
+    }
+
+    private new void OnDestroy()
+    {
+        foreach (EventType eventType in _subscribeForActivation)
+        {
+            EventBus.Instance.UnsubscribeEvent<UnityAction>(eventType, OpenDoorServerRpc);
+        }
+
+        foreach (EventType eventType in _subscribeForDeactivation)
+        {
+            EventBus.Instance.UnsubscribeEvent<UnityAction>(eventType, CloseDoorServerRpc);
+        }
+
+        base.OnDestroy();
     }
 
     /// <summary>
@@ -59,17 +89,27 @@ public class DoorController : NetworkBehaviour, IActivatable
 
     private void OnTriggerEnter(Collider other)
     {
-        if (_isTriggerable)
+        if (other.GetComponent<PlayerController>() != null)
         {
-            OpenDoorServerRpc();
+            _playerCount++;
+
+            if (_isTriggerable)
+            {
+                OpenDoorServerRpc();
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (_isTriggerable)
+        if (other.GetComponent<PlayerController>() != null)
         {
-            CloseDoorServerRpc();
+            _playerCount--;
+
+            if (_isTriggerable && _playerCount == 0)
+            {
+                CloseDoorServerRpc();
+            }
         }
     }
 
@@ -109,13 +149,21 @@ public class DoorController : NetworkBehaviour, IActivatable
     /// </summary>
     /// <param name="isTriggerable">주변에 가면 켜질지 여부</param>
     /// <param name="isOpen">열린 상태 여부</param>
-    public void Initialize(bool isTriggerable, bool isOpen)
+    public void Initialize(bool isTriggerable, bool isOpen, EventType[] subscribeForActivation, EventType[] subscribeForDeactivation)
     {
         InitializeClientRpc(isTriggerable, isOpen);
 
-        if (isOpen)
+        _subscribeForActivation = subscribeForActivation;
+        _subscribeForDeactivation = subscribeForDeactivation;
+
+        foreach (EventType eventType in _subscribeForActivation)
         {
-            OpenDoorServerRpc();
+            EventBus.Instance.SubscribeEvent<UnityAction>(eventType, OpenDoorServerRpc);
+        }
+
+        foreach (EventType eventType in _subscribeForDeactivation)
+        {
+            EventBus.Instance.SubscribeEvent<UnityAction>(eventType, CloseDoorServerRpc);
         }
     }
 }
