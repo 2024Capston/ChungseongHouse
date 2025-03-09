@@ -4,26 +4,27 @@ using UnityEngine;
 /// <summary>
 /// 색깔 변환기를 스폰하는 Class
 /// </summary>
-public class ColorChangerSpawner : NetworkObjectSpawner
+namespace ColorChanger
 {
-    [SerializeField] float _changeTime;
-
-    private new void Awake()
+    public class ColorChangerSpawner : NetworkObjectSpawner
     {
-        base.Awake();
+        [SerializeField] float _changeTime;
 
-        if (!NetworkManager.Singleton.IsServer)
+        private void Start()
         {
-            return;
+            if (!NetworkManager.Singleton.IsServer)
+            {
+                return;
+            }
+
+            _spawnedObject = Instantiate(_prefab);
+
+            _spawnedObject.transform.position = transform.position;
+            _spawnedObject.transform.rotation = transform.rotation;
+            _spawnedObject.transform.localScale = transform.lossyScale;
+
+            _spawnedObject.GetComponent<NetworkObject>().Spawn();
+            _spawnedObject.GetComponent<ColorChangerController>().Initialize(_changeTime);
         }
-
-        _spawnedObject = Instantiate(_prefab);
-
-        _spawnedObject.transform.position = transform.position;
-        _spawnedObject.transform.rotation = transform.rotation;
-        _spawnedObject.transform.localScale = transform.lossyScale;
-
-        _spawnedObject.GetComponent<NetworkObject>().Spawn();
-        _spawnedObject.GetComponent<ColorChangerController>().Initialize(_changeTime);
     }
 }

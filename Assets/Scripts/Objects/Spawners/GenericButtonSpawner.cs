@@ -8,8 +8,6 @@ public class GenericButtonSpawner : NetworkObjectSpawner
     [SerializeField] private ColorType _color;
     [SerializeField] private ButtonType _buttonType;
 
-    [SerializeField] private GameObject[] _activatables;
-
     [SerializeField] private float _temporaryCooldown;
     [SerializeField] private bool _requiresBoth;
     [SerializeField] private float _detectionRadius;
@@ -19,10 +17,8 @@ public class GenericButtonSpawner : NetworkObjectSpawner
     [SerializeField] private EventType[] _subscribeForEnable;
     [SerializeField] private EventType[] _subscribeForDisable;
 
-    private new void Awake()
+    private void Start()
     {
-        base.Awake();
-
         if (!NetworkManager.Singleton.IsServer)
         {
             return;
@@ -36,31 +32,5 @@ public class GenericButtonSpawner : NetworkObjectSpawner
 
         _spawnedObject.GetComponent<NetworkObject>().Spawn();
         _spawnedObject.GetComponentInChildren<GenericButtonController>().Initialize(_color, _buttonType, _temporaryCooldown, _requiresBoth, _detectionRadius, _publishOnPress, _publishOnUnpress, _subscribeForEnable, _subscribeForDisable);
-    }
-
-    private void Start()
-    {
-        if (!NetworkManager.Singleton.IsServer)
-        {
-            return;
-        }
-
-        GenericButtonController buttonController = _spawnedObject.GetComponentInChildren<GenericButtonController>();
-
-        // 스폰한 버튼에 Activatable을 추가
-        foreach (GameObject activatable in _activatables)
-        {
-            Type type = Type.GetType("IActivatable");
-
-            // 대상 오브젝트도 Network Object Spawner로 스폰된 경우
-            if (activatable.TryGetComponent<NetworkObjectSpawner>(out NetworkObjectSpawner networkObjectSpawner))
-            {
-                buttonController.AddActivatable(networkObjectSpawner.SpawnedObject.GetComponentInChildren(type).gameObject);
-            }
-            else
-            {
-                buttonController.AddActivatable(activatable.GetComponentInChildren(type).gameObject);
-            }
-        }
     }
 }

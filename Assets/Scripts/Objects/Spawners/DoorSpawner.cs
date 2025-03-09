@@ -13,10 +13,8 @@ public class DoorSpawner : NetworkObjectSpawner
     [SerializeField] EventType[] _subscribeForActivation;
     [SerializeField] EventType[] _subscribeForDeactivation;
 
-    private new void Awake()
+    private void Start()
     {
-        base.Awake();
-
         if (!NetworkManager.Singleton.IsServer)
         {
             return;

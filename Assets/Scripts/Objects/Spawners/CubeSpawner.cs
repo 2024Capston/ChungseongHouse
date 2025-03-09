@@ -8,10 +8,8 @@ public class CubeSpawner : NetworkObjectSpawner
 {
     [SerializeField] ColorType _color;
 
-    private new void Awake()
+    private void Start()
     {
-        base.Awake();
-
         if (!NetworkManager.Singleton.IsServer)
         {
             return;

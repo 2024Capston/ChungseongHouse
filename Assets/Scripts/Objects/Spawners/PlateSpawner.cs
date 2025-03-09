@@ -13,10 +13,8 @@ public class PlateSpawner : NetworkObjectSpawner
     [SerializeField] private EventType[] _publishOnEnter;
     [SerializeField] private EventType[] _publishOnExit;
 
-    private new void Awake()
+    private void Start()
     {
-        base.Awake();
-
         if (!NetworkManager.Singleton.IsServer)
         {
             return;

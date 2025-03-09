@@ -52361,12 +52361,12 @@ PrefabInstance:
     - target: {fileID: 6457006200338657688, guid: fbb276de9703fcf4dbb835e2207a09f9,
         type: 3}
       propertyPath: _subscribeForActivation.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6457006200338657688, guid: fbb276de9703fcf4dbb835e2207a09f9,
         type: 3}
       propertyPath: _subscribeForDeactivation.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6457006200338657688, guid: fbb276de9703fcf4dbb835e2207a09f9,
         type: 3}
@@ -52375,8 +52375,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6457006200338657688, guid: fbb276de9703fcf4dbb835e2207a09f9,
         type: 3}
+      propertyPath: _subscribeForActivation.Array.data[1]
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457006200338657688, guid: fbb276de9703fcf4dbb835e2207a09f9,
+        type: 3}
       propertyPath: _subscribeForDeactivation.Array.data[0]
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6477893098588926144, guid: fbb276de9703fcf4dbb835e2207a09f9,
         type: 3}
@@ -55999,7 +56004,7 @@ PrefabInstance:
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
       propertyPath: _publishOnPress.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
@@ -56009,12 +56014,17 @@ PrefabInstance:
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
       propertyPath: _publishOnUnpress.Array.size
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
+      propertyPath: _publishOnPress.Array.data[0]
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
       propertyPath: _publishOnUnpress.Array.data[0]
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}

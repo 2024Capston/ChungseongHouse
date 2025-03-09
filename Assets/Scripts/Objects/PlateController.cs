@@ -1,9 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
-
-using UnityEngine.Events;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using Possessable;
 
 /// <summary>
 /// 발판을 조작하는 Class

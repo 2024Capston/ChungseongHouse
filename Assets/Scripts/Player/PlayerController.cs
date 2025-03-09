@@ -27,9 +27,6 @@ public class PlayerController : NetworkBehaviour
     private IInteractable _interactableOnPointer;  // 플레이어가 바라보고 있는 Interactable
     private IInteractable _interactableInHand;     // 플레이어가 들고 있는 Interactable
 
-    // 서버에서 플레이어 색깔이 지정되었는지 확인하는 delegate
-    private Action<ColorType> _playerColorAssigned;
-
     // 입력 관련
     private Vector3 _moveInput;     // 방향 입력 값 (수직, 수평)
     private bool _jumpInput;        // 점프 입력 여부
@@ -81,11 +78,11 @@ public class PlayerController : NetworkBehaviour
 
             if (_color == ColorType.Blue)
             {
-                spawnPoint = GameObject.FindWithTag("Blue Spawn Point").transform;
+                spawnPoint = GameObject.FindWithTag("Blue Spawn Point")?.transform;
             }
             else
             {
-                spawnPoint = GameObject.FindWithTag("Red Spawn Point").transform;
+                spawnPoint = GameObject.FindWithTag("Red Spawn Point")?.transform;
             }
 
             if (spawnPoint != null)

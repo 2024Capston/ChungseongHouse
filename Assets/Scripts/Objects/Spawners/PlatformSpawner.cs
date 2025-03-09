@@ -8,10 +8,8 @@ public class PlatformSpawner : NetworkObjectSpawner
     [SerializeField] private Transform[] _targets;
     [SerializeField] private float _moveSpeed;
 
-    private new void Awake()
+    private void Start()
     {
-        base.Awake();
-
         if (!NetworkManager.Singleton.IsServer)
         {
             return;
