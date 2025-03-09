@@ -11,7 +11,7 @@ namespace RaB.Connection
     {
         public override void Enter()
         {
-            SceneLoader.Instance.LoadScene(SceneType.Lobby.ToString(), useNetworkSceneManager: true);
+            SceneLoadManager.Instance.LoadScene(SceneType.Lobby.ToString(), useNetworkSceneManager: true);
         }
 
         public override void Exit() { } 
@@ -21,7 +21,7 @@ namespace RaB.Connection
             // 현재 Scene이 InGame일 때는 Lobby Scene으로 이동해야 한다.
             if (SceneManager.GetActiveScene().name == SceneType.InGame.ToString())
             {
-                SceneLoader.Instance.LoadScene(SceneType.Lobby.ToString(), useNetworkSceneManager: true);
+                SceneLoadManager.Instance.LoadScene(SceneType.Lobby.ToString(), useNetworkSceneManager: true);
             }
         }
 

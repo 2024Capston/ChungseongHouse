@@ -1,12 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneLoader : NetworkSingletonBehaviour<SceneLoader>
+public class SceneLoadManager : NetworkSingletonBehaviour<SceneLoadManager>
 {
-    
     private bool IsNetworkSceneManagementEnabled => NetworkManager != null && NetworkManager.SceneManager != null && NetworkManager.NetworkConfig.EnableSceneManagement;
-
-    private bool m_IsInitialized;
     
     public virtual AsyncOperation LoadScene(string sceneName, bool useNetworkSceneManager, LoadSceneMode loadSceneMode = LoadSceneMode.Single)
     {
@@ -31,5 +28,4 @@ public class SceneLoader : NetworkSingletonBehaviour<SceneLoader>
 
         return loadOperation;
     }
-
 }
