@@ -19,7 +19,7 @@ namespace RaB.Connection
             UIManager.Instance.CloseAllOpenUI();
             
             // Offline 상태에서는 Home Scene에 있어야 합니다.
-            SceneLoaderWrapper.Instance.LoadScene(SceneType.Home.ToString(), false);
+            SceneLoadManager.Instance.LoadScene(SceneType.Home.ToString(), false);
         }
 
         public override void Exit() { }

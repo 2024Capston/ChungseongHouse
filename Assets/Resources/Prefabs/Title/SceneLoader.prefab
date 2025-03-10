@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9041822379283728956}
   - component: {fileID: 6777439255833156912}
-  - component: {fileID: 7452053902508525297}
+  - component: {fileID: 3435987900206760961}
   m_Layer: 0
   m_Name: SceneLoader
   m_TagString: Untagged
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2013406845
+  GlobalObjectIdHash: 1884851866
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -54,7 +54,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &7452053902508525297
+--- !u!114 &3435987900206760961
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,8 +63,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 9053006245607449}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d202c9ed4a2c4a6fa83f21f1c21394ea, type: 3}
+  m_Script: {fileID: 11500000, guid: e5a60c279e454307b5093bbcee3fa1d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ClientLoadingScreen: {fileID: 0}
-  m_LoadingProgressManager: {fileID: 0}

@@ -153,7 +153,7 @@ public class InGameManager : NetworkSingletonBehaviour<InGameManager>
         _inGameState = InGameState.End;
         
         DestoryAllObjects();
-        SceneLoaderWrapper.Instance.LoadScene(SceneType.Lobby.ToString(), true);
+        SceneLoadManager.Instance.LoadScene(SceneType.Lobby.ToString(), true);
     }
 
     /// <summary>
@@ -183,7 +183,7 @@ public class InGameManager : NetworkSingletonBehaviour<InGameManager>
     {
         _inGameState = InGameState.End;
         Logger.LogError($"StageLoad Failed\n{e}");
-        SceneLoaderWrapper.Instance.LoadScene(SceneType.Lobby.ToString(), true);
+        SceneLoadManager.Instance.LoadScene(SceneType.Lobby.ToString(), true);
         Logger.Log($"Scene Transition {SceneManager.GetActiveScene().name} to {SceneType.Lobby}");
     }
 }
