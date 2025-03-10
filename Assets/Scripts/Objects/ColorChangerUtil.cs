@@ -3,11 +3,11 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// 색깔 변환기로 변환된 물체에 추가되는 Class
-/// </summary>
 namespace ColorChanger
 {
+    /// <summary>
+    /// 색깔 변환기로 변환된 물체에 추가되는 Class
+    /// </summary>
     public class ColorChangerUtil : MonoBehaviour
     {
         private const float TRANSITION_TIME = 2f;

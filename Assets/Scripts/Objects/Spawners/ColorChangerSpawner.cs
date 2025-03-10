@@ -1,11 +1,11 @@
 using Unity.Netcode;
 using UnityEngine;
 
-/// <summary>
-/// 색깔 변환기를 스폰하는 Class
-/// </summary>
 namespace ColorChanger
 {
+    /// <summary>
+    /// 색깔 변환기를 스폰하는 Class
+    /// </summary>
     public class ColorChangerSpawner : NetworkObjectSpawner
     {
         [SerializeField] float _changeTime;

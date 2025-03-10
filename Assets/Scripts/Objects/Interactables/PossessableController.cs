@@ -1,12 +1,11 @@
 using UnityEngine;
 using Unity.Netcode;
-using Unity.VisualScripting;
 
-/// <summary>
-/// 빙의 가능한 물체를 조작하는 Class
-/// </summary>
 namespace Possessable
 {
+    /// <summary>
+    /// 빙의 가능한 물체를 조작하는 Class
+    /// </summary>
     public class PossessableController : NetworkBehaviour, IInteractable
     {
         /// <summary>
@@ -143,7 +142,7 @@ namespace Possessable
 
             if (IsServer)
             {
-                StartPossesionClientRpc(player.gameObject);
+                StartPossessionClientRpc(player.gameObject);
             }
             else
             {
@@ -171,7 +170,7 @@ namespace Possessable
 
                 if (IsServer)
                 {
-                    StopPossesionClientRpc(player.gameObject);
+                    StopPossessionClientRpc(player.gameObject);
                 }
                 else
                 {
@@ -275,7 +274,7 @@ namespace Possessable
         /// </summary>
         /// <param name="player">빙의할 플레이어</param>
         [ClientRpc]
-        private void StartPossesionClientRpc(NetworkObjectReference player)
+        private void StartPossessionClientRpc(NetworkObjectReference player)
         {
             if (IsServer)
             {
@@ -306,7 +305,7 @@ namespace Possessable
         /// </summary>
         /// <param name="player">빙의 중단할 플레이어</param>
         [ClientRpc]
-        private void StopPossesionClientRpc(NetworkObjectReference player)
+        private void StopPossessionClientRpc(NetworkObjectReference player)
         {
             if (IsServer)
             {

@@ -3,11 +3,11 @@ using Unity.Netcode;
 using System.Collections;
 using Unity.VisualScripting;
 
-/// <summary>
-/// 색깔 변환기를 조작하는 Class
-/// </summary>
 namespace ColorChanger
 {
+    /// <summary>
+    /// 색깔 변환기를 조작하는 Class
+    /// </summary>
     public class ColorChangerController : NetworkBehaviour
     {
         /// <summary>

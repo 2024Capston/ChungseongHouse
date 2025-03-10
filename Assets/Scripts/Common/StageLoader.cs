@@ -108,7 +108,7 @@ public class StageLoader : NetworkBehaviour
     private void CompleteLoadAllLocalObjectServerRpc()
     {
         // 혼자 테스트가 필요할 땐 1일 때 StartGame을 해주면 됩니다.
-        if (++_clientLoadCount == 1)
+        if (++_clientLoadCount == 2)
         {
             // Client의 Loading이 모두 완료되었으므로 게임 시작
             Logger.Log("Client Load Completed");

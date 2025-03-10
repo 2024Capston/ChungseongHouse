@@ -60,12 +60,6 @@ public class DoorController : NetworkBehaviour, IActivatable
     [ServerRpc(RequireOwnership = false)]
     public void OpenDoorServerRpc()
     {
-        OpenDoorClientRpc();
-    }
-
-    [ClientRpc]
-    private void OpenDoorClientRpc()
-    {
         if (IsOpened)
         {
             _animator.SetBool("Open", true);
@@ -77,12 +71,6 @@ public class DoorController : NetworkBehaviour, IActivatable
     /// </summary>
     [ServerRpc(RequireOwnership = false)]
     public void CloseDoorServerRpc()
-    {
-        CloseDoorClientRpc();
-    }
-
-    [ClientRpc]
-    public void CloseDoorClientRpc()
     {
         _animator.SetBool("Open", false);
     }
