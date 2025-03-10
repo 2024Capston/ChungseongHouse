@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public class NetworkPlatformFinder : NetworkBehaviour
 {
-    [SerializeField] private float _detectionThreshold = 10f;   // 플랫폼 탐색 범위
+    [SerializeField] private float _detectionThreshold = 100f;   // 플랫폼 탐색 범위
 
     private CharacterController _characterController;
     private NetworkSyncTransform _networkSyncTransform;
@@ -42,8 +42,8 @@ public class NetworkPlatformFinder : NetworkBehaviour
 
             if (_characterController && false)
             {
-                Vector3 offset = Vector3.up * (_characterController.height / 2f - _characterController.radius);
-                hits = Physics.CapsuleCastAll(transform.position + offset, transform.position - offset, _characterController.radius, Vector3.down, _detectionThreshold);
+                Vector3 offset = Vector3.up * (_characterController.height * transform.localScale.y / 2f - _characterController.radius * transform.localScale.x);
+                hits = Physics.CapsuleCastAll(transform.position + offset, transform.position - offset, _characterController.radius * transform.localScale.x, Vector3.down, _detectionThreshold);
             }
             else
             {
@@ -55,7 +55,8 @@ public class NetworkPlatformFinder : NetworkBehaviour
                 foreach (RaycastHit hit in hits)
                 {
                     if (hit.collider.gameObject.TryGetComponent<NetworkObject>(out NetworkObject networkObject) &&
-                        hit.collider.gameObject.TryGetComponent<Rigidbody>(out Rigidbody rigidbody))
+                        hit.collider.gameObject.TryGetComponent<Rigidbody>(out Rigidbody rigidbody) &&
+                        hit.collider.tag == "Platform")
                     {
                         if (hit.distance < minDistance)
                         {

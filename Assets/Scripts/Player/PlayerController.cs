@@ -1,4 +1,3 @@
-using Cinemachine;
 using System;
 using Unity.Netcode;
 using UnityEngine;
@@ -9,32 +8,29 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class PlayerController : NetworkBehaviour
 {
-    [SerializeField] private float _moveSpeed;    // 이동 속력
-    [SerializeField] private float _jumpSpeed;     // 점프 속력
+    [SerializeField] private float _walkSpeed;    // 이동 속력
+    [SerializeField] private float _jumpForce;     // 점프 속력
 
-    private const float GROUND_DETECTION_THRESHOLD = 1f;      // 접지 판정 범위
-    private const float JUMP_REMEMBER_TIME = 0.32f;             // 점프 키 입력 기억 시간
+    private const float GROUND_DETECTION_THRESHOLD = 1f;        // 접지 판정 범위
+    private const float JUMP_REMEMBER_TIME = 0.64f;             // 점프 키 입력 기억 시간
+    private const float MAXIMUM_REACH_DISTANCE = 48f;           // 상호작용 가능 범위
 
     public static float INITIAL_CAPSULE_HEIGHT = 2f;             // 최초 Capsule Collider 높이
     public static float INITIAL_CAPSULE_RADIUS = 0.5f;           // 최초 Capsule Collider 반경 
 
-    private CharacterController _characterController;
+    private Rigidbody _rigidbody;
+    private Collider _collider;
     private PlayerRenderer _playerRenderer;
-    private NetworkInterpolator _networkInterpolator;
+    private CameraController _cameraController;
     private NetworkPlatformFinder _networkPlatformFinder;
 
-    private float _colliderHeight;              // 플레이어 콜라이더 높이의 절반 값 (h/2)
     private IInteractable _interactableOnPointer;  // 플레이어가 바라보고 있는 Interactable
     private IInteractable _interactableInHand;     // 플레이어가 들고 있는 Interactable
-
-    // 서버에서 플레이어 색깔이 지정되었는지 확인하는 delegate
-    private Action<ColorType> _playerColorAssigned;
 
     // 입력 관련
     private Vector3 _moveInput;     // 방향 입력 값 (수직, 수평)
     private bool _jumpInput;        // 점프 입력 여부
     private float _jumpRemember;    // 입력된 점프를 처리할 수 있는 쿨타임
-    private float _verticalSpeed;   // 현재 수직 속력
 
     // 로컬 플레이어를 나타내는 static 변수
     private static PlayerController _localPlayer;
@@ -50,72 +46,65 @@ public class PlayerController : NetworkBehaviour
         get => _localPlayerCreated;
         set => _localPlayerCreated = value;
     }
-    
+
     // 플레이어 색깔
-    private ColorType _playerColor;
-    public ColorType PlayerColor
+    private ColorType _color;
+    public ColorType Color
     {
-        get => _playerColor;
+        get => _color;
     }
 
     public override void OnNetworkSpawn()
     {
-        // TEST
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = 60;
-
+        _collider = GetComponent<Collider>();
         _playerRenderer = GetComponent<PlayerRenderer>();
-        _characterController = GetComponent<CharacterController>();
-
-        INITIAL_CAPSULE_HEIGHT = _characterController.height;
-        INITIAL_CAPSULE_RADIUS = _characterController.radius;
-
-        _colliderHeight = _characterController.height * transform.localScale.y / 2f;
-
-        // 임시: 플레이어 색깔 지정
-        if (IsServer)
-        {
-            if (IsOwner)
-            {
-                _playerColor = ColorType.Blue;
-
-                _localPlayer = this;
-                _localPlayerCreated?.Invoke();
-            }
-            else
-            {
-                _playerColor = ColorType.Red;
-            }
-
-            _playerColorAssigned?.Invoke(_playerColor);
-            _playerRenderer.Initialize();
-        }
-        else
-        {
-            RequestPlayerColorServerRpc();
-        }
 
         if (IsOwner)
         {
-            _networkInterpolator = GetComponent<NetworkInterpolator>();
+            _rigidbody = GetComponent<Rigidbody>();
+            _cameraController = GetComponent<CameraController>();
             _networkPlatformFinder = GetComponent<NetworkPlatformFinder>();
 
-            CinemachineFreeLook camera = GetComponentInChildren<CinemachineFreeLook>();
+            InputHandler.Instance.OnMove += OnMoveInput;
+            InputHandler.Instance.OnJump += OnJumpInput;
+            InputHandler.Instance.OnInteraction += OnInteractionInput;
 
-            _networkInterpolator.AddVisualReferenceDependantFunction(() =>
+            // 색깔 배정
+            _color = NetworkManager.LocalClient.PlayerObject.GetComponent<PlayerConfig>().IsBlue ? ColorType.Blue : ColorType.Red;
+            _playerRenderer.Initialize();
+
+            // 스폰 위치 배정
+            Transform spawnPoint;
+
+            if (_color == ColorType.Blue)
             {
-                camera.Follow = _networkInterpolator.VisualReference.transform;
-                camera.LookAt = _networkInterpolator.VisualReference.transform;
-            });
+                spawnPoint = GameObject.FindWithTag("Blue Spawn Point")?.transform;
+            }
+            else
+            {
+                spawnPoint = GameObject.FindWithTag("Red Spawn Point")?.transform;
+            }
 
-            Cursor.lockState = CursorLockMode.Locked;
+            if (spawnPoint != null)
+            {
+                _rigidbody.MovePosition(spawnPoint.position);
+                _rigidbody.MoveRotation(spawnPoint.rotation);
+            }
+
+            _localPlayer = this;
+            _localPlayerCreated?.Invoke();
         }
         else
         {
-            GetComponent<PlayerInput>().enabled = false;
-
-            Destroy(GetComponentInChildren<CinemachineFreeLook>().gameObject);
-            Destroy(GetComponentInChildren<Camera>().gameObject);
+            // 상대 색깔 요청
+            if (IsServer)
+            {
+                RequestPlayerColorClientRpc();
+            }
+            else
+            {
+                RequestPlayerColorServerRpc();
+            }
         }
     }
 
@@ -126,6 +115,7 @@ public class PlayerController : NetworkBehaviour
             BaseUIData baseUIData = new BaseUIData();
             UIManager.Instance.OpenUI<LoadingUI>(baseUIData);
         }
+
         base.OnNetworkDespawn();
     }
 
@@ -135,11 +125,27 @@ public class PlayerController : NetworkBehaviour
         {
             HandleMovement();
             HandleJump();
-            HandlePlatform();
             SearchInteractables();
-            
-            Debug.Log($"interactable {_interactableOnPointer}");
+            HandlePlatform();
+
+            // !TEST
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                _cameraController.ChangeCameraMode(!_cameraController.IsFirstPerson);
+            }
         }
+    }
+
+    private new void OnDestroy()
+    {
+        if (IsOwner)
+        {
+            InputHandler.Instance.OnMove -= OnMoveInput;
+            InputHandler.Instance.OnJump -= OnJumpInput;
+            InputHandler.Instance.OnInteraction -= OnInteractionInput;
+        }
+
+        base.OnDestroy();
     }
 
     /// <summary>
@@ -147,12 +153,26 @@ public class PlayerController : NetworkBehaviour
     /// </summary>
     private void HandleMovement()
     {
-        Vector3 rotation = Camera.main.transform.rotation.eulerAngles;
-        rotation.x = 0;
-        rotation.z = 0;
+        Quaternion rotation = Quaternion.Euler(Vector3.up * Camera.main.transform.rotation.eulerAngles.y);
 
-        _characterController.Move((Quaternion.Euler(rotation) * _moveInput) * Time.deltaTime * _moveSpeed);
-        transform.rotation = Quaternion.Euler(rotation);
+        if (_cameraController.IsFirstPerson)
+        {
+            Vector3 newVelocity = rotation * _moveInput * _walkSpeed;
+            newVelocity.y = _rigidbody.velocity.y;
+
+            _rigidbody.velocity = newVelocity;
+        }
+        else
+        {
+            Vector3 newVelocity = rotation * _moveInput * _walkSpeed;
+            newVelocity.y = _rigidbody.velocity.y;
+            _rigidbody.velocity = newVelocity;
+
+            if (_moveInput.magnitude > 0f)
+            {
+                _rigidbody.MoveRotation(Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 32f));
+            }
+        }
     }
 
     /// <summary>
@@ -162,41 +182,14 @@ public class PlayerController : NetworkBehaviour
     {
         _jumpRemember -= Time.deltaTime;
 
-        if (IsGrounded())
+        if (IsGrounded() && _jumpInput)
         {
-            if (_verticalSpeed < 0f)
+            if (_jumpRemember > 0f)
             {
-                _verticalSpeed = 0f;
+                _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
             }
 
-            if (_jumpInput)
-            {
-                // 아직 점프를 처리할 수 있는 쿨타임이 남은 경우
-                if (_jumpRemember > 0f)
-                {
-                    _verticalSpeed = _jumpSpeed;
-                }
-
-                _jumpInput = false;
-            }
-        }
-        else if (!_networkPlatformFinder.Platform || !IsGrounded())
-        {
-            _verticalSpeed += Physics.gravity.y * Time.deltaTime * 10f;
-        }
-
-        _characterController.Move(new Vector3(0, _verticalSpeed * Time.deltaTime, 0));
-    }
-
-    /// <summary>
-    /// 플레이어와 플랫폼의 관계를 처리한다.
-    /// </summary>
-    private void HandlePlatform()
-    {
-        // 플랫폼에 올라가 있다면 플랫폼의 이동을 플레이어에게도 적용
-        if (_networkPlatformFinder.Platform)
-        {
-            transform.position += _networkPlatformFinder.Velocity * Time.deltaTime;
+            _jumpInput = false;
         }
     }
 
@@ -210,9 +203,10 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
+        int originalLayer = gameObject.layer;
         gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
-        
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, 200f) &&
+
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, MAXIMUM_REACH_DISTANCE) &&
             hit.collider.gameObject.TryGetComponent<IInteractable>(out IInteractable interactable) &&
             interactable.IsInteractable(this))
         {
@@ -241,7 +235,20 @@ public class PlayerController : NetworkBehaviour
             _interactableOnPointer = null;
         }
 
-        gameObject.layer = 0;
+        gameObject.layer = originalLayer;
+    }
+
+    /// <summary>
+    /// 플레이어가 올라가 있는 플랫폼을 처리한다.
+    /// </summary>
+    private void HandlePlatform()
+    {
+        if (_networkPlatformFinder.Platform)
+        {
+            Vector3 velocityDiff = _networkPlatformFinder.Velocity;
+            velocityDiff.y = 0f;
+            _rigidbody.velocity += velocityDiff;
+        }
     }
 
     /// <summary>
@@ -250,8 +257,15 @@ public class PlayerController : NetworkBehaviour
     /// <returns>접지 여부</returns>
     bool IsGrounded()
     {
-        Vector3 offset = Vector3.up * (_colliderHeight - _characterController.radius * transform.localScale.x);
-        return Physics.CapsuleCast(transform.position + offset, transform.position - offset, _characterController.radius * transform.localScale.x, Vector3.down, GROUND_DETECTION_THRESHOLD);
+        if (_collider is CapsuleCollider)
+        {
+            Vector3 offset = Vector3.up * (_collider.bounds.extents.y - _collider.bounds.extents.x) * 0.9f;
+            return Physics.CapsuleCast(transform.position + offset, transform.position - offset, _collider.bounds.extents.x, Vector3.down, GROUND_DETECTION_THRESHOLD);
+        }
+        else
+        {
+            return Physics.BoxCast(transform.position, _collider.bounds.extents * 0.9f, Vector3.down, transform.rotation, GROUND_DETECTION_THRESHOLD);
+        }
     }
 
     /// <summary>
@@ -293,81 +307,110 @@ public class PlayerController : NetworkBehaviour
             {
                 _interactableOnPointer.Outline.enabled = false;
                 _interactableInHand = _interactableOnPointer;
+                _interactableOnPointer = null;
             }
         }
     }
 
     /// <summary>
-    /// ESC 입력을 받는 Callback.
+    /// 서버 측에서 클라이언트에게 상대의 색깔을 요청한다.
     /// </summary>
-    void OnEscapeInput()
-    {
-
-    }
-
-    /// <summary>
-    /// 클라이언트 측에서 서버에게 플레이어 색깔을 묻는다.
-    /// </summary>
-    [ServerRpc(RequireOwnership = false)]
-    private void RequestPlayerColorServerRpc()
-    {
-        if (_playerColor == 0)
-        {
-            _playerColorAssigned += SendPlayerColorClientRpc;
-        }
-        else
-        {
-            SendPlayerColorClientRpc(_playerColor);
-        }
-    }
-
-    /// <summary>
-    /// 서버 측에서 클라이언트에게 플레이어 색깔을 전달한다.
-    /// </summary>
-    /// <param name="color">플레이어 색깔</param>
     [ClientRpc(RequireOwnership = false)]
-    private void SendPlayerColorClientRpc(ColorType color)
+    private void RequestPlayerColorClientRpc()
     {
         if (IsServer)
         {
             return;
         }
 
-        _playerColor = color;
-        _playerRenderer.Initialize();
+        SendPlayerColorServerRpc(_color);
+    }
 
-        if (IsOwner)
+    /// <summary>
+    /// 클라이언트 측에서 서버에게 상대의 색깔을 요청한다.
+    /// </summary>
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestPlayerColorServerRpc()
+    {
+        SendPlayerColorClientRpc(_color);
+    }
+
+    /// <summary>
+    /// 서버에서 클라이언트에게 자신의 색깔을 전달한다.
+    /// </summary>
+    /// <param name="color">색깔</param>
+    [ClientRpc]
+    private void SendPlayerColorClientRpc(ColorType color)
+    {
+        _color = color;
+        _playerRenderer.Initialize();
+    }
+
+    /// <summary>
+    /// 클라이언트에서 서버에게 자신의 색깔을 전달한다.
+    /// </summary>
+    /// <param name="color">색깔</param>
+    [ServerRpc]
+    private void SendPlayerColorServerRpc(ColorType color)
+    {
+        _color = color;
+        _playerRenderer.Initialize();
+    }
+
+    /// <summary>
+    /// 플레이어의 Collider 정보를 갱신한다.
+    /// </summary>
+    /// <param name="newCollider">새로운 Collider</param>
+    /// <param name="colliderScale">새로운 Collider의 Local Scale</param>
+    public void UpdateCollider(Collider newCollider, Vector3 colliderScale)
+    {
+        Destroy(_collider);
+
+        if (newCollider == null)
         {
-            _localPlayer = this;
-            _localPlayerCreated?.Invoke();
+            _collider = gameObject.AddComponent<CapsuleCollider>();
+            (_collider as CapsuleCollider).height = INITIAL_CAPSULE_HEIGHT;
+            (_collider as CapsuleCollider).radius = INITIAL_CAPSULE_RADIUS;
+        }
+        else if (newCollider is BoxCollider)
+        {
+            Vector3 newSize = (newCollider as BoxCollider).size;
+            newSize.x = newSize.x * colliderScale.x / transform.localScale.x;
+            newSize.y = newSize.y * colliderScale.y / transform.localScale.y;
+            newSize.z = newSize.z * colliderScale.z / transform.localScale.z;
+
+            _collider = gameObject.AddComponent<BoxCollider>();
+            (_collider as BoxCollider).size = newSize;
+        }
+        else if (newCollider is MeshCollider)
+        {
+            Mesh mesh = new Mesh
+            {
+                vertices = (newCollider as MeshCollider).sharedMesh.vertices,
+                normals = (newCollider as MeshCollider).sharedMesh.normals,
+                triangles = (newCollider as MeshCollider).sharedMesh.triangles
+            };
+
+            Vector3[] vertices = mesh.vertices;
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i].x = vertices[i].x * colliderScale.x / transform.localScale.x;
+                vertices[i].y = vertices[i].y * colliderScale.y / transform.localScale.y;
+                vertices[i].z = vertices[i].z * colliderScale.z / transform.localScale.z;
+            }
+
+            mesh.RecalculateBounds();
+            mesh.RecalculateNormals();
+
+            _collider = gameObject.AddComponent<MeshCollider>();
+            (_collider as MeshCollider).sharedMesh = mesh;
         }
     }
 
     /// <summary>
-    /// 플레이어의 Capsule Collider 정보를 갱신한다
+    /// 현재 플레이어와 물체의 상호 작용을 강제 중단한다.
     /// </summary>
-    /// <param name="collider">반영할 Collider 정보</param>
-    /// <param name="height">Mesh Collider에서 사용할 높이</param>
-    /// <param name="radius">Mesh Collider에서 사용할 반경</param>
-    public void UpdateCollider(Collider collider = null, float height = 0f, float radius = 0f)
-    {
-        // 새 Collider가 Null이면 최초 상태로 초기화한다.
-        if (collider == null)
-        {
-            _characterController.radius = INITIAL_CAPSULE_RADIUS;
-            _characterController.height = INITIAL_CAPSULE_HEIGHT;
-
-            _colliderHeight = INITIAL_CAPSULE_HEIGHT * transform.localScale.y / 2f;
-        }
-        else if (collider is BoxCollider)
-        {
-            _characterController.radius = ((BoxCollider)collider).size.x / 2f;
-            _characterController.height = ((BoxCollider)collider).size.y;
-
-            _colliderHeight = ((BoxCollider)collider).size.y * transform.localScale.y / 2f;
-        }
-    }
-
     public void ForceStopInteraction()
     {
         if (_interactableInHand != null)

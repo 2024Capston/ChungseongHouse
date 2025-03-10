@@ -6,15 +6,16 @@ TagManager:
   tags:
   - Blue Spawn Point
   - Red Spawn Point
+  - Platform
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ignore Player
   - Water
   - UI
   - Camera
-  - 
+  - Movable
   - 
   - 
   - 

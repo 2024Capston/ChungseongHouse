@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -17,6 +15,25 @@ public class PlayerRenderer : NetworkBehaviour
     private NetworkInterpolator _networkInterpolator;
 
     private GameObject _playerRender;
+    public GameObject PlayerRender
+    {
+        get => _playerRender;
+        set => _playerRender = value;
+    }
+
+    private MeshFilter _meshFilter;
+    public MeshFilter MeshFilter
+    {
+        get => _meshFilter;
+        set => _meshFilter = value;
+    }
+
+    private MeshRenderer _meshRenderer;
+    public MeshRenderer MeshRenderer
+    {
+        get => _meshRenderer;
+        set => _meshRenderer = value;
+    }
 
     private void Awake()
     {
@@ -28,7 +45,10 @@ public class PlayerRenderer : NetworkBehaviour
     {
         _networkInterpolator.AddVisualReferenceDependantFunction(() =>
         {
-            int colorIndex = (int)_playerController.PlayerColor - 1;
+            _meshFilter = _networkInterpolator.VisualReference.AddComponent<MeshFilter>();
+            _meshRenderer = _networkInterpolator.VisualReference.AddComponent<MeshRenderer>();
+
+            int colorIndex = (int)_playerController.Color - 1;
 
             _playerRender = Instantiate(_playerRenderPrefab[colorIndex]);
             _playerRender.transform.SetParent(_networkInterpolator.VisualReference.transform);
@@ -42,14 +62,7 @@ public class PlayerRenderer : NetworkBehaviour
     /// <summary>
     /// 플레이어 모습을 표시한다.
     /// </summary>
-    [ServerRpc]
-    public void ShowPlayerRenderServerRpc()
-    {
-        ShowPlayerRenderClientRpc();
-    }
-
-    [ClientRpc]
-    public void ShowPlayerRenderClientRpc()
+    public void ShowPlayerRender()
     {
         _playerRender.SetActive(true);
     }
@@ -57,14 +70,7 @@ public class PlayerRenderer : NetworkBehaviour
     /// <summary>
     /// 플레이어 모습을 숨긴다.
     /// </summary>
-    [ServerRpc]
-    public void HidePlayerRenderServerRpc()
-    {
-        HidePlayerRenderClientRpc();
-    }
-
-    [ClientRpc]
-    public void HidePlayerRenderClientRpc()
+    public void HidePlayerRender()
     {
         _playerRender.SetActive(false);
     }

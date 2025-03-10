@@ -67,5 +67,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _networkObjects:
-  - {fileID: 2987878429939592881, guid: 7e3ba9bcd94342640b6a3e95831303dd, type: 3}
-  _localObjects: []
+  - {fileID: 4760297340198228138, guid: d7619b955c6e9c249ab07b9154f2af02, type: 3}
+  _localObjects:
+  - {fileID: 5011434199590831736, guid: c42d82b6a0d63334da71275de861046d, type: 3}

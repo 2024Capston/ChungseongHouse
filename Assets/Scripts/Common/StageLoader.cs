@@ -16,6 +16,8 @@ public class StageLoader : NetworkBehaviour
     private List<NetworkObject> _instantiatedNetworkObjects;
 
     private List<GameObject> _instantiatedLocalObjects;
+
+    private GameObject _eventBus;
     
     /// <summary>
     /// 해당 Stage에 필요한 NetworkObject와 LocalObject를 모두 Load
@@ -23,7 +25,9 @@ public class StageLoader : NetworkBehaviour
     public void LoadStage()
     {
         Init();
-        
+
+        _eventBus = Instantiate(Resources.Load<GameObject>("Prefabs/Stage/EventBus"));
+
         // NetworkObject는 모두 서버에서 Spawn
         LoadAllNetworkObjects();
         
@@ -38,6 +42,7 @@ public class StageLoader : NetworkBehaviour
     {   
         DestroyAllNetworkObject();
         DestoryAllLocalObjectClientRpc();
+        Destroy(_eventBus);
     }
     
     private void Init()
@@ -82,6 +87,11 @@ public class StageLoader : NetworkBehaviour
     [ClientRpc]
     private void LoadAllLocalObjectClientRpc()
     {
+        if (IsClient)
+        {
+            _instantiatedLocalObjects = new List<GameObject>();
+        }
+
         if (_localObjects.Count != 0)
         {
             foreach (GameObject localObject in _localObjects)

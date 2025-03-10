@@ -36,13 +36,36 @@ public class NetworkInterpolator : NetworkBehaviour
         _visualReference.transform.rotation = transform.rotation;
         _visualReference.transform.localScale = transform.localScale;
 
+        MeshFilter meshFilter;
+        MeshRenderer meshRenderer;
+
         // 시각 정보를 복사한다.
-        if (TryGetComponent<MeshFilter>(out MeshFilter meshFilter) && TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer))
+        if (TryGetComponent<MeshFilter>(out meshFilter) && TryGetComponent<MeshRenderer>(out meshRenderer))
         {
             _visualReference.AddComponent<MeshFilter>().mesh = meshFilter.mesh;
-            _visualReference.AddComponent<MeshRenderer>().material = meshRenderer.material;
+            _visualReference.AddComponent<MeshRenderer>().materials = meshRenderer.materials;
             Destroy(meshFilter);
             Destroy(meshRenderer);
+        }
+
+        foreach (Transform child in transform)
+        {
+            if (child.TryGetComponent<MeshFilter>(out meshFilter) && child.TryGetComponent<MeshRenderer>(out meshRenderer))
+            {
+                GameObject childVisual = new GameObject(child.name + " (Visual)");
+
+                childVisual.transform.parent = _visualReference.transform;
+
+                childVisual.transform.localPosition = child.localPosition;
+                childVisual.transform.localRotation = child.localRotation;
+                childVisual.transform.localScale = child.localScale;
+
+                childVisual.AddComponent<MeshFilter>().mesh = meshFilter.mesh;
+                childVisual.AddComponent<MeshRenderer>().materials = meshRenderer.materials;
+
+                Destroy(meshFilter);
+                Destroy(meshRenderer);
+            }
         }
 
         // Outline 컴포넌트가 있다면 복사한다.
@@ -64,6 +87,11 @@ public class NetworkInterpolator : NetworkBehaviour
         _visualReferenceCreated?.Invoke();
     }
 
+    public override void OnNetworkDespawn()
+    {
+        _visualReferenceCreated = null;
+    }
+
     /// <summary>
     /// Owner가 바뀌면 보간 속력을 조절한다.
     /// </summary>
@@ -81,15 +109,6 @@ public class NetworkInterpolator : NetworkBehaviour
     {
         _networkInterpolatorUtil.transform.position = position;
         _networkInterpolatorUtil.transform.rotation = rotation;
-    }
-
-    /// <summary>
-    /// Parenting 보간을 시작한다.
-    /// </summary>
-    /// <param name="parentingCooldown">보간할 시간</param>
-    public void StartParenting(float parentingCooldown)
-    {
-        _networkInterpolatorUtil.StartParenting(parentingCooldown);
     }
 
     /// <summary>

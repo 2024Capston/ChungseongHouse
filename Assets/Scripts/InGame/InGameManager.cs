@@ -94,7 +94,7 @@ public class InGameManager : NetworkSingletonBehaviour<InGameManager>
             _inGameState = InGameState.Progress;
             
             // StageManager를 상속받은 스크립트가 Loader에 포함되어 있어야 정상작동합니다.
-            // StageManager.Instance.StartGame();
+            StageManager.Instance.StartGame();
 
             // 테스트용으로 일정 시간 후에 Lobby로 복귀
             StartCoroutine(CoTest());
@@ -109,7 +109,7 @@ public class InGameManager : NetworkSingletonBehaviour<InGameManager>
     private IEnumerator CoTest()
     {
         yield return new WaitForSeconds(60f);
-        EndGameServerRpc();
+        // EndGameServerRpc();
     }
     
     /// <summary>

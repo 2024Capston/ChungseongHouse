@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Resources/Prefabs/InGame.meta
 guid: 730a26cbf4bac16459cc4d5291342c9d
+========
+guid: 6c457137037e01c488b8d6b192d0ad60
+>>>>>>>> 919ee5548555f9f956db504f4eed75bc7b146a4b:Assets/Resources/Prefabs/Object/Button.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
