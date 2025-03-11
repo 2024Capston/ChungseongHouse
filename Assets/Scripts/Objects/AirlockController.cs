@@ -12,16 +12,6 @@ public class AirlockController : NetworkBehaviour
     
     [SerializeField] private DoorController _doorIn;
     [SerializeField] private DoorController _doorOut;
-
-    /// <summary>
-    /// 0 : Lock Material, 1 : Open Material
-    /// </summary>
-    [SerializeField] private Material[] _doorLightMaterials = new Material[2];
-
-    /// <summary>
-    /// 0 : _doorIn Mesh, 1 : _doorOut Mesh
-    /// </summary>
-    [SerializeField] private MeshRenderer[] _doorLightMeshRenderers = new MeshRenderer[2];
     
     /// <summary>
     /// 0 : off Material, 1 : Blue Material, 2 : Red Material
@@ -55,7 +45,6 @@ public class AirlockController : NetworkBehaviour
             _isInOpened = value;
             _doorIn.IsOpened = _isInOpened && IsAirlockOpened;
             _doorOut.IsOpened = !_isInOpened && IsAirlockOpened;
-            SetDoorLightClientRpc(_doorIn.IsOpened);
         }
     }
 
@@ -71,7 +60,6 @@ public class AirlockController : NetworkBehaviour
             _isAirlockOpened = value;
             _doorIn.IsOpened = _isAirlockOpened && _isInOpened;
             _doorOut.IsOpened = _isAirlockOpened && !_isInOpened;
-            SetDoorLightClientRpc(_doorIn.IsOpened);
         }
     }
     [field: SerializeField]
@@ -124,13 +112,6 @@ public class AirlockController : NetworkBehaviour
             _redInOutMeshRenderers[isInButton ? 0 : 1].material = _inoutMaterials[2];
             _redInOutMeshRenderers[isInButton ? 1 : 0].material = _inoutMaterials[0];
         }
-    }
-
-    [ClientRpc]
-    private void SetDoorLightClientRpc(bool doorInOpened)
-    {
-        _doorLightMeshRenderers[0].material = _doorLightMaterials[doorInOpened ? 1 : 0];
-        _doorLightMeshRenderers[1].material = _doorLightMaterials[doorInOpened ? 0 : 1];
     }
 
     /// <summary>

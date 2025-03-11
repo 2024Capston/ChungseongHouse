@@ -60,12 +60,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _doorIn: {fileID: 5792320476020161606}
   _doorOut: {fileID: 4131434965355162112}
-  _doorLightMaterials:
-  - {fileID: 2100000, guid: 51dfc72ca7e4e254b85e71b0b9454588, type: 2}
-  - {fileID: 2100000, guid: 6072cc8bdb1f2d84482cf8df5319431f, type: 2}
-  _doorLightMeshRenderers:
-  - {fileID: 3694403152700885002}
-  - {fileID: 5234629832167414629}
   _inoutMaterials:
   - {fileID: 2100000, guid: c44e02954f506f349ae8ccfa8a31cd6e, type: 2}
   - {fileID: 2100000, guid: f768c524af8f249458f0a33bfa415962, type: 2}
@@ -150,7 +144,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ef553543feb05e4892d102c6788700d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <IsOpened>k__BackingField: 0
+  _lightRenderer: {fileID: 5234629832167414629}
+  _isTriggerable: 1
+  _subscribeForActivation: 
+  _subscribeForDeactivation: 
+  _isOpened: 0
 --- !u!95 &5017732461582134471
 Animator:
   serializedVersion: 5
@@ -414,7 +412,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2824091754
+  GlobalObjectIdHash: 1907119348
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
@@ -605,7 +603,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1723912855
+  GlobalObjectIdHash: 3272257144
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
@@ -889,6 +887,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Airlock_Door_In
       objectReference: {fileID: 0}
+    - target: {fileID: 3041769135658692568, guid: 93f059f9024d0d54cb7961ca69750fe2,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3068776394
+      objectReference: {fileID: 0}
     - target: {fileID: 3766056515176292902, guid: 93f059f9024d0d54cb7961ca69750fe2,
         type: 3}
       propertyPath: m_Enabled
@@ -959,12 +962,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 93f059f9024d0d54cb7961ca69750fe2, type: 3}
---- !u!23 &3694403152700885002 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 249306097652429886, guid: 93f059f9024d0d54cb7961ca69750fe2,
-    type: 3}
-  m_PrefabInstance: {fileID: 3472449606153452596}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5792320476020161606 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6940867589838962802, guid: 93f059f9024d0d54cb7961ca69750fe2,
@@ -1321,7 +1318,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1947714196
+  GlobalObjectIdHash: 2251908067
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
@@ -1512,7 +1509,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3760269752
+  GlobalObjectIdHash: 2942365949
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0

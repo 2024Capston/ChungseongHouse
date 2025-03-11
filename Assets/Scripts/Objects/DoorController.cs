@@ -10,6 +10,9 @@ using UnityEngine.Events;
 [RequireComponent(typeof(SphereCollider))]
 public class DoorController : NetworkBehaviour, IActivatable
 {
+    [Tooltip("Light Material")] [SerializeField]
+    private Renderer _lightRenderer;
+    
     /// <summary>
     /// 근처에 가면 열릴지 여부
     /// </summary>
@@ -28,11 +31,20 @@ public class DoorController : NetworkBehaviour, IActivatable
     private Animator _animator;
     private float _playerCount = 0;
 
+    [SerializeField] private bool _isOpened = false;
+
     /// <summary>
     /// 문이 열리기 위해선 Host에서 IsOpened가 true 상태이어야 함.
     /// </summary>
-    [field: SerializeField]
-    public bool IsOpened { get; set; } = false;
+    public bool IsOpened
+    {
+        get => _isOpened;
+        set
+        {
+            SetDoorLightClientRpc(value);
+            _isOpened = value;
+        }
+    } 
     
     private void Awake()
     {
@@ -153,5 +165,11 @@ public class DoorController : NetworkBehaviour, IActivatable
         {
             EventBus.Instance.SubscribeEvent<UnityAction>(eventType, CloseDoorServerRpc);
         }
+    }
+    
+    [ClientRpc]
+    private void SetDoorLightClientRpc(bool isOpen)
+    {
+        _lightRenderer.material.SetObjectColor(isOpen ? ColorType.Purple : ColorType.None);
     }
 }
