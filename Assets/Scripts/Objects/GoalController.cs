@@ -14,7 +14,7 @@ public class GoalController : MonoBehaviour
         if (NetworkManager.Singleton.IsServer && other.TryGetComponent<PlayerController>(out PlayerController playerController))
         {
             // !! 플레이어 둘이 모두 들어온 경우
-            if (++_playersCount == 2)
+            if (++_playersCount == 1)   //test로 1로 바꿈
             {
                 // !! CLEAR
                 StageManager.Instance.EndGame();
