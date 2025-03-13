@@ -93,18 +93,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _color: 0
-  _eventsOnEnter:
-    m_PersistentCalls:
-      m_Calls: []
-  _eventsOnExit:
-    m_PersistentCalls:
-      m_Calls: []
+  _publishOnEnter: 
+  _publishOnExit: 
   _lightMeshRenderer: {fileID: 2934731457585335423}
-  _materials:
-  - {fileID: 2100000, guid: c44e02954f506f349ae8ccfa8a31cd6e, type: 2}
-  - {fileID: 2100000, guid: f768c524af8f249458f0a33bfa415962, type: 2}
-  - {fileID: 2100000, guid: 396ff0c0b627b1b4e81a51719a5948f5, type: 2}
-  - {fileID: 2100000, guid: d29b03c00f68e664b8f9c4faefb323ac, type: 2}
 --- !u!95 &7479537352940703773
 Animator:
   serializedVersion: 5
@@ -290,6 +281,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: b6a58fd0a38a8a94f8db38659aa02034,
+        type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 98e94b2a59060f245929cda7ae04833f, type: 2}
     - target: {fileID: 919132149155446097, guid: b6a58fd0a38a8a94f8db38659aa02034,
         type: 3}
       propertyPath: m_Name

@@ -28,11 +28,6 @@ public class PlateController : NetworkBehaviour
     /// </summary>
     [SerializeField] MeshRenderer _lightMeshRenderer;
 
-    /// <summary>
-    /// 발판 옆의 빛에 대한 매터리얼
-    /// </summary>
-    [SerializeField] Material[] _materials;
-
     private Animator _animator;
     private BoxCollider _boxCollider;
 
@@ -140,7 +135,7 @@ public class PlateController : NetworkBehaviour
         _color = color;
 
         Material[] materials = _lightMeshRenderer.materials;
-        materials[1] = _materials[(int)_color];
+        materials[1].SetMaterial(_color, IsHost ? ColorType.Blue : ColorType.Red, 0);
         _lightMeshRenderer.materials = materials;
     }
 
