@@ -67,7 +67,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 11756401979392
-    m_Localized: CONTROLE
+    m_Localized: "C\xD3DIGO DA SALA"
     m_Metadata:
       m_Items: []
   - m_Id: 11927504416768
@@ -100,6 +100,26 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 13286672822272
     m_Localized: Brilho
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1205243867602944
+    m_Localized: Novo jogo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1206938819403776
+    m_Localized: "Cap\xEDtulo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5255583249330176
+    m_Localized: LOBBY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5255859062566912
+    m_Localized: RESSURGIR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5256338630897664
+    m_Localized: CLIQUE PARA COPIAR
     m_Metadata:
       m_Items: []
   references:

@@ -185,6 +185,7 @@ public class VideoUIController
             _fullScreenToggle.value = savedFullScreen;
             
             Screen.SetResolution(savedWidth, savedHeight, savedFullScreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
+            
             VideoManager.Instance.SetBrightness(savedBrightness);
         }
         

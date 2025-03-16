@@ -64,7 +64,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 11756401979392
-    m_Key: CONTROL
+    m_Key: ROOM CODE
     m_Metadata:
       m_Items: []
   - m_Id: 11927504416768
@@ -105,6 +105,18 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 1206938819403776
     m_Key: Chapter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5255583249330176
+    m_Key: LOBBY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5255859062566912
+    m_Key: RESPAWN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5256338630897664
+    m_Key: CLICK TO COPY
     m_Metadata:
       m_Items: []
   m_Metadata:

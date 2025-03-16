@@ -67,7 +67,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 11756401979392
-    m_Localized: CONTROL
+    m_Localized: "C\xD3DIGO DE SALA"
     m_Metadata:
       m_Items: []
   - m_Id: 11927504416768
@@ -100,6 +100,26 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 13286672822272
     m_Localized: Brillo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1205243867602944
+    m_Localized: Nuevo juego
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1206938819403776
+    m_Localized: "Cap\xEDtulo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5255583249330176
+    m_Localized: LOBBY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5255859062566912
+    m_Localized: REAPARECER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5256338630897664
+    m_Localized: HAZ CLIC PARA COPIAR
     m_Metadata:
       m_Items: []
   references:

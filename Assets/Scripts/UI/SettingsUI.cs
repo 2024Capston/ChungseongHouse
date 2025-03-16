@@ -14,13 +14,11 @@ public class SettingsUI
     private Button _closeSettingButton;
     private Button _audio;
     private Button _video;
-    private Button _control;
     private Button _language;
     private Action OnCloseSetting;
 
     private VisualElement _audioPanel;
     private VisualElement _videoPanel;
-    private VisualElement _controlPanel;
     private VisualElement _languagePanel;
 
     private VisualElement _newPanel;
@@ -29,10 +27,9 @@ public class SettingsUI
 
     private static readonly string AudioUI_PATH = "Prefabs/UI/Setting/AudioUI";
     private static readonly string VideoUI_PATH = "Prefabs/UI/Setting/VideoUI";
-    // private static readonly string ControlUI_PATH = "Prefabs/UI/Setting/ControlUI";
     private static readonly string LanguageUI_PATH = "Prefabs/UI/Setting/LanguageUI";
 
-    public SettingsUI(VisualElement root, Action OnCloseSettingButtonClick, UIDocumentLocalization localization)
+    public SettingsUI(VisualElement root, Action OnCloseSettingButtonClick, UIDocumentLocalization localization, bool _FromUIManager = false)
     {
         _root = root;
         _localization = localization; // UIDocumentLocalization 참조 저장
@@ -46,15 +43,18 @@ public class SettingsUI
 
         _audio = _root.Q<Button>("AudioSettingButton");
         _video = _root.Q<Button>("VideoSettingButton");
-        _control = _root.Q<Button>("ControlSettingButton");
         _language = _root.Q<Button>("LanguageSettingButton");
         _closeSettingButton = _root.Q<Button>("CloseSettingButton");
 
         _audio.RegisterCallback<ClickEvent>(OnClickAudio);
         _video.RegisterCallback<ClickEvent>(OnClickVideo);
-        _control.RegisterCallback<ClickEvent>(OnClickControl);
         _language.RegisterCallback<ClickEvent>(OnClickLanguage);
         _closeSettingButton.RegisterCallback<ClickEvent>(OnClickCloseSettingButton);
+
+        if (_FromUIManager)
+        {
+            _settingUI.style.backgroundColor = new Color(0, 0, 0, 0);
+        }
 
         // 초기 번역 적용
         ApplyLocalization(_root);
@@ -69,9 +69,7 @@ public class SettingsUI
     {
         NewSettingUI<VideoUIController>(VideoUI_PATH);
     }
-
-    private void OnClickControl(ClickEvent evt) { }
-
+    
     private void OnClickLanguage(ClickEvent evt)
     {
         NewSettingUI<LanguageUIController>(LanguageUI_PATH);

@@ -5,7 +5,6 @@
         <ui:VisualElement name="SettingPanel" class="settingPanel" style="width: 1920px; background-color: rgba(0, 0, 0, 0); height: 1080px; -unity-font-definition: url(&quot;project://database/Assets/Resources/Fonts/NotoSans-Regular%20SDF.asset?fileID=11400000&amp;guid=0d1f838670768be4c891260af0b39d6e&amp;type=2#NotoSans-Regular SDF&quot;);">
             <ui:Button text="#AUDIO" parse-escape-sequences="true" display-tooltip-when-elided="true" name="AudioSettingButton" class="button--default" style="width: 700px; height: 100px;" />
             <ui:Button text="#VIDEO" parse-escape-sequences="true" display-tooltip-when-elided="true" name="VideoSettingButton" class="button--default" style="width: 700px; height: 100px;" />
-            <ui:Button text="#CONTROL" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ControlSettingButton" class="button--default" style="width: 700px; height: 100px;" />
             <ui:Button text="#LANGUAGE" parse-escape-sequences="true" display-tooltip-when-elided="true" name="LanguageSettingButton" class="button--default" style="width: 700px; height: 100px;" />
             <ui:Button text="#BACK" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CloseSettingButton" class="button--default" style="width: 700px; height: 100px;" />
         </ui:VisualElement>

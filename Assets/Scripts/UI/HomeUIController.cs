@@ -80,7 +80,7 @@ public class HomeUIController : MonoBehaviour
     /// <summary>
     /// 방 만들기 버튼을 누르면 호출된다.
     /// </summary>
-    public void OnClickCreateButton(ClickEvent evt)
+    private void OnClickCreateButton(ClickEvent evt)
     {
         var playDataSelect = Resources.Load<VisualTreeAsset>(PlayDataSelectUI_PATH);
         _playDataSelectPanel = playDataSelect.CloneTree();
@@ -106,7 +106,7 @@ public class HomeUIController : MonoBehaviour
     /// <summary>
     /// 방 참가 버튼을 누르면 호출된다.
     /// </summary>
-    public void OnClickEnterButton(ClickEvent evt)
+    private void OnClickEnterButton(ClickEvent evt)
     {
         var codeInput = Resources.Load<VisualTreeAsset>(CodeInputUI_PATH);
         _codeInputPanel = codeInput.CloneTree();
@@ -128,7 +128,7 @@ public class HomeUIController : MonoBehaviour
     /// <summary>
     /// 설정 버튼을 누르면 호출된다.
     /// </summary>
-    public void OnClickSettingButton(ClickEvent evt)
+    private void OnClickSettingButton(ClickEvent evt)
     {
         Debug.Log("OnClickSettingButton");
         

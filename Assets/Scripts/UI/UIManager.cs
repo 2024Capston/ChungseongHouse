@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System;
+using Cursor = UnityEngine.UIElements.Cursor;
 
 public class UIManager : SingletonBehavior<UIManager>
 {
@@ -13,9 +14,9 @@ public class UIManager : SingletonBehavior<UIManager>
     private Dictionary<Type, BaseUI> _uiPool = new Dictionary<Type, BaseUI>();
     private VisualElement _root;
     
-    private static readonly string SettingsUI_PATH = "Prefabs/UI/SettingsUI";
-    private VisualElement _settingPanel;
-    private bool _isSettingOpen = false;
+    private static readonly string EscUI_PATH = "Prefabs/UI/EscUI";
+    private VisualElement _escPanel;
+    private bool _isESCOpen = false;
 
 
     protected override void Init()
@@ -134,52 +135,55 @@ public class UIManager : SingletonBehavior<UIManager>
     void OnEscapeInput()
     {
         Debug.Log("OnEscapeInput");
-        if (!_isSettingOpen)
+        if (!_isESCOpen)
         {
-            _isSettingOpen = true;
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
+
+            _isESCOpen = true;
             
             _root.style.display = DisplayStyle.Flex;
         
-            var setting = Resources.Load<VisualTreeAsset>(SettingsUI_PATH);
+            var setting = Resources.Load<VisualTreeAsset>(EscUI_PATH);
 
-            _settingPanel = setting.CloneTree();
+            _escPanel = setting.CloneTree();
 
-            _settingPanel.style.position = Position.Absolute;
+            _escPanel.style.position = Position.Absolute;
         
             // UIDocumentLocalization 참조 가져오기
             var localization = GetComponent<UIDocumentLocalization>();
 
             // SettingUI 생성 및 번역 적용
-            new SettingsUI(_settingPanel, () =>
+            new EscUI(_escPanel, () =>
             {
-                ClosePanel(_settingPanel);
+                ClosePanel(_escPanel);
             }, localization); // UIDocumentLocalization 참조 전달
-        
-        
+            
             // UI 화면에 SettingPanel 추가
-            _root.Add(_settingPanel);
+            _root.Add(_escPanel);
         
             // settingPanel이 오른쪽에서 중앙으로 이동하기위해 class 추가
-            _settingPanel.AddToClassList("right");
+            _escPanel.AddToClassList("right");
         
             // settingPanel을 중앙으로 이동
-            StartPopupIn(_settingPanel);
+            StartPopupIn(_escPanel);
         }
         else
         {
-            ClosePanel(_settingPanel);
+            ClosePanel(_escPanel);
             
-            _isSettingOpen = false;
+            _isESCOpen = false;
         }
     }
     
     private void ClosePanel(VisualElement panel)
     {
+        UnityEngine.Cursor.lockState = CursorLockMode.None;
+
         StartPopupOut(panel);
 
         _root.style.display = DisplayStyle.None;
         
-        _isSettingOpen = false;
+        _isESCOpen = false;
 
     }
 }
