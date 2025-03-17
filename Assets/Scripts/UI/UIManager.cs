@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System;
+using UnityEngine.SceneManagement;
 using Cursor = UnityEngine.UIElements.Cursor;
 
 public class UIManager : SingletonBehavior<UIManager>
@@ -16,7 +17,11 @@ public class UIManager : SingletonBehavior<UIManager>
     
     private static readonly string EscUI_PATH = "Prefabs/UI/EscUI";
     private VisualElement _escPanel;
-    private bool _isESCOpen = false;
+    private bool _isESCOpen;
+
+    private string _sceneName;
+    private string _lobbyName = SceneType.Lobby.ToString();
+    private string _inGameName = SceneType.InGame.ToString();
 
 
     protected override void Init()
@@ -134,56 +139,66 @@ public class UIManager : SingletonBehavior<UIManager>
 
     void OnEscapeInput()
     {
-        Debug.Log("OnEscapeInput");
-        if (!_isESCOpen)
+        _sceneName = SceneManager.GetActiveScene().name;
+        if (_sceneName == _lobbyName || _sceneName == _inGameName)
         {
-            UnityEngine.Cursor.lockState = CursorLockMode.None;
+            if (!_isESCOpen)
+            {
+                UnityEngine.Cursor.lockState = CursorLockMode.None;
 
-            _isESCOpen = true;
+                _isESCOpen = true;
             
-            _root.style.display = DisplayStyle.Flex;
+                _root.style.display = DisplayStyle.Flex;
         
-            var setting = Resources.Load<VisualTreeAsset>(EscUI_PATH);
+                var setting = Resources.Load<VisualTreeAsset>(EscUI_PATH);
 
-            _escPanel = setting.CloneTree();
+                _escPanel = setting.CloneTree();
 
-            _escPanel.style.position = Position.Absolute;
+                _escPanel.style.position = Position.Absolute;
         
-            // UIDocumentLocalization 참조 가져오기
-            var localization = GetComponent<UIDocumentLocalization>();
+                // UIDocumentLocalization 참조 가져오기
+                var localization = GetComponent<UIDocumentLocalization>();
 
-            // SettingUI 생성 및 번역 적용
-            new EscUI(_escPanel, () =>
+                // SettingUI 생성 및 번역 적용
+                new EscUI(_escPanel, () =>
+                {
+                    ClosePanel(_escPanel);
+                }, localization); // UIDocumentLocalization 참조 전달
+            
+                // UI 화면에 SettingPanel 추가
+                _root.Add(_escPanel);
+        
+                // settingPanel이 오른쪽에서 중앙으로 이동하기위해 class 추가
+                _escPanel.AddToClassList("right");
+        
+                // settingPanel을 중앙으로 이동
+                StartPopupIn(_escPanel);
+            }
+            else
             {
                 ClosePanel(_escPanel);
-            }, localization); // UIDocumentLocalization 참조 전달
-            
-            // UI 화면에 SettingPanel 추가
-            _root.Add(_escPanel);
-        
-            // settingPanel이 오른쪽에서 중앙으로 이동하기위해 class 추가
-            _escPanel.AddToClassList("right");
-        
-            // settingPanel을 중앙으로 이동
-            StartPopupIn(_escPanel);
-        }
-        else
-        {
-            ClosePanel(_escPanel);
-            
-            _isESCOpen = false;
+            }
         }
     }
     
     private void ClosePanel(VisualElement panel)
     {
-        UnityEngine.Cursor.lockState = CursorLockMode.None;
+        _sceneName = SceneManager.GetActiveScene().name;
+        
+        if (_sceneName == _lobbyName || _sceneName == _inGameName)
+        {
+            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+        }
 
         StartPopupOut(panel);
 
+        if (panel != null)
+        {
+            panel.style.display = DisplayStyle.None;
+        }
+        
         _root.style.display = DisplayStyle.None;
         
         _isESCOpen = false;
-
     }
 }

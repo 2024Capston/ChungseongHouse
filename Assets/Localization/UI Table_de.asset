@@ -122,6 +122,10 @@ MonoBehaviour:
     m_Localized: KLICKEN ZUM KOPIEREN
     m_Metadata:
       m_Items: []
+  - m_Id: 5528760466665472
+    m_Localized: HAUPT
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Steamworks;
+using Steamworks.Data;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using ConnectionManager = RaB.Connection.ConnectionManager;
 using UnityEngine.UIElements;
 
@@ -13,6 +15,7 @@ public class EscUI
     private VisualElement _escPanel;
 
     private Button _roomCodeButton;
+    private Button _mainButton;
     private Button _lobbyButton;
     private Button _respawnButton;
     private Button _settingButton;
@@ -23,6 +26,8 @@ public class EscUI
     private Label _roomCodeLabel;
     
     private VisualElement _settingPanel;
+
+    private string sceneName;
 
     
     private static readonly string SettingsUI_PATH = "Prefabs/UI/SettingsUI";
@@ -43,6 +48,7 @@ public class EscUI
         
         _roomCodeLabel = root.Q<Label>("RoomCodeLabel");
         
+        _mainButton = _root.Q<Button>("MainButton");
         _roomCodeButton = _root.Q<Button>("RoomCodeButton");
         _lobbyButton = _root.Q<Button>("LobbyButton");
         _respawnButton = _root.Q<Button>("RespawnButton");
@@ -51,14 +57,29 @@ public class EscUI
         
         _roomCodeLabel.text = ConnectionManager.Instance.CurrentLobby?.Id.Value.ToString();
 
+        _mainButton.RegisterCallback<ClickEvent>(OnClickMain);
         _roomCodeButton.RegisterCallback<ClickEvent>(OnClickRoomCode);
         _lobbyButton.RegisterCallback<ClickEvent>(OnClickLobby);
         _respawnButton.RegisterCallback<ClickEvent>(OnClickRespawn);
         _settingButton.RegisterCallback<ClickEvent>(OnClickSettingButton);
         _backButton.RegisterCallback<ClickEvent>(OnClickCloseUI);
+        
+        sceneName = SceneManager.GetActiveScene().name;
+
+        if (sceneName != "InGame")
+        {
+            _lobbyButton.style.display = DisplayStyle.None;
+            _respawnButton.style.display = DisplayStyle.None;
+        }
 
         // 초기 번역 적용
         ApplyLocalization(_root);
+    }
+
+    private void OnClickMain(ClickEvent evt)
+    {
+        // Main 가는 기능
+        ConnectionManager.Instance.RequestShutdown();
     }
 
     private void OnClickRoomCode(ClickEvent evt)
@@ -69,13 +90,12 @@ public class EscUI
     // 로비
     private void OnClickLobby(ClickEvent evt)
     {
-        throw new NotImplementedException();
+        InGameManager.Instance.EndGameServerRpc();
     }
 
     // Respawn시 소환될 위치 설정
     private void OnClickRespawn(ClickEvent evt)
     {
-        throw new NotImplementedException();
     }
     
     private void OnClickSettingButton(ClickEvent evt)

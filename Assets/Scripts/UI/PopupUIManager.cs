@@ -17,7 +17,8 @@ public class PopupUIManager
         // 짧은 지연 시간 후 팝업 숨김
         yield return new WaitForSeconds(0.01f);
         popupPanel.RemoveFromClassList("center"); // center 클래스를 제거하여 애니메이션 적용
-        yield return new WaitForSeconds(1f);
+        
+        yield return new WaitForSeconds(0.5f);
         popupPanel.RemoveFromHierarchy();
     }
 }
