@@ -28,6 +28,9 @@ public enum ColorType
     Purple = 3
 }
 
+public enum MoveDirection { Up, Down, Left, Right, Forward, Back } // 벽 이동 방향
+public enum MovementType { None, Linear, Oscillating }   //벽움직임의 종류
+public enum CollisionHandleType { Passable, Blocked, Bouncy, Deadly }
 /// <summary>
 /// 버튼 작동 방식
 /// </summary>

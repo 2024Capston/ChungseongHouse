@@ -9,12 +9,10 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
+using ColorWall;
 
 namespace ColorWall
 {
-    enum MoveDirection { Up, Down, Left, Right, Forward, Back } // 벽 이동 방향
-    enum MovementType { None, Linear, Oscillating }   //벽움직임의 종류
-    enum CollisionHandleType { Passable, Blocked, Bouncy, Deadly}
     public class DynamicColorWallController : NetworkBehaviour
     {
         // 각종 설정 체크 변수
@@ -34,7 +32,7 @@ namespace ColorWall
         [SerializeField] private ColorType _initColor;
 
         private Vector3 _spawnedPosition;
-        private Rigidbody _rigidbody;
+        //private Rigidbody _rigidbody;
         private BoxCollider _boxCollider;
         private MeshRenderer[] _meshRenderers;
 
@@ -49,31 +47,38 @@ namespace ColorWall
         private float _turnedTime = 0;
 
 
-        [SerializeField] private NetworkVariable<ColorType> _color = new NetworkVariable<ColorType>();
-        public NetworkVariable<ColorType> Color
+        /// <summary>
+        /// 큐브 색깔
+        /// </summary>
+        [SerializeField] private ColorType _color;
+        public ColorType Color
         {
             get => _color;
+            set
+            {
+                OnWallColorChanged(_color, value);
+                _color = value;
+            }
+        }
+        private void OnValidate()
+        {
+            if (_colorMeshRenderer != null)
+            {
+                Color = _color;
+            }
         }
         private void Awake()
         {
             _childWall = transform.Find("Color_Wall");
             _colorMeshRenderer = _childWall.GetComponent<MeshRenderer>();
+            Debug.Log($"_colorMeshRenderer:{_colorMeshRenderer}");
         }
         public override void OnNetworkSpawn()
         {
-            if (IsServer && _initColor == ColorType.None)
-            {
-                _initColor = (ColorType)UnityEngine.Random.Range(1, 4);
-            }
-            _color.Value = _initColor;
+            //Color = _color;
             _meshRenderers = GetComponentsInChildren<MeshRenderer>();
-            _rigidbody = GetComponent<Rigidbody>();
             _boxCollider = GetComponent<BoxCollider>();
 
-            // 큐브의 색깔이 변하면 함수 호출하도록 지정
-            _color.OnValueChanged += (ColorType before, ColorType after) => {
-                OnWallColorChanged(before, after);
-            };
             // 큐브 최초 생성 후 초기화 작업을 수행
             // MultiplayerManager의 LocalPlayer를 참조하므로, 해당 변수가 지정될 때까지 대기
             //if (MultiplayerManager.Instance.LocalPlayer == null)
@@ -87,12 +92,10 @@ namespace ColorWall
             //{
             //    _color.OnValueChanged.Invoke(_color.Value, _color.Value);
             //}
-            _color.OnValueChanged.Invoke(_color.Value, _color.Value);
         }
         private void Start()
         {
             _meshRenderers = GetComponentsInChildren<MeshRenderer>();
-            _rigidbody = GetComponent<Rigidbody>();
             _boxCollider = GetComponent<BoxCollider>();
             _spawnedPosition = transform.position;
             _movingVector = Vector3.zero;
@@ -163,6 +166,7 @@ namespace ColorWall
         /// <param name="after">변경 후 색깔</param>
         private void OnWallColorChanged(ColorType before, ColorType after)
         {
+            if (after == ColorType.None) return;
             Color newColor = (after == ColorType.Red) ? new Color(1, 0, 0) 
                             : (after == ColorType.Blue) ? new Color(0, 0, 1) 
                             : (after == ColorType.Purple) ? new Color(1, 0, 1)
@@ -172,8 +176,8 @@ namespace ColorWall
             //int excludedLayer = (after == ColorType.Red) ? LayerMask.GetMask("Blue") : LayerMask.GetMask("Red");
 
             // 색깔이 다른 물체는 투명도 추가로 추가    // IsHost==True는 P가 Blue란뜻
-            if ((IsHost && _color.Value == ColorType.Blue) || (!IsHost && _color.Value == ColorType.Red) ||
-                (_color.Value == ColorType.Purple))   // 현 옵젝과 플레이어의 색이 같다면
+            if ((IsHost && after == ColorType.Blue) || (!IsHost && after == ColorType.Red) ||
+                (after == ColorType.Purple))   // 현 옵젝과 플레이어의 색이 같다면
             {
                 if (_handleSameColor == CollisionHandleType.Passable)
                 {
@@ -184,6 +188,7 @@ namespace ColorWall
                     if (GetComponent<BoxCollider>().enabled == false) GetComponent<BoxCollider>().enabled = true;
                 }
                 newColor.a = 0.7f;  //반투명
+                _colorMeshRenderer.enabled = true;
             }
             else   // 현 옵젝과 플레이어의 색이 다르다면
             {
@@ -216,23 +221,35 @@ namespace ColorWall
         /// <param name="rotation">회전</param>
         /// <param name="scale">스케일</param>
         [ClientRpc]
-        private void InitializeClientRpc(ColorType color, Vector3 position, Quaternion rotation, Vector3 scale)
+        private void InitializeClientRpc(ColorType color, Vector3 position, Quaternion rotation, Vector3 scale,
+            MovementType movementType, MoveDirection moveDirection, float movingSpeed, float moveDistance, 
+            bool canSeeOtherColor, CollisionHandleType handleSameColor, CollisionHandleType handleDiffrentColor)
         {
-            _color = color;
-            _wallRenderer.Initialize();
-
-            _rigidbody.MovePosition(position);
-            _rigidbody.MoveRotation(rotation);
+            //_wallRenderer.Initialize();
+            Debug.Log($"ClientRPC{color},{transform.position},{transform.rotation},{transform.localScale},{movementType},{moveDirection},{movingSpeed},{moveDistance},{canSeeOtherColor}, {handleSameColor}, {handleDiffrentColor}");
+            transform.position = position;
+            transform.rotation = rotation;
             transform.localScale = scale;
 
-            if (PlayerController.LocalPlayer)
-            {
-                RequestOwnership();
-            }
-            else
-            {
-                PlayerController.LocalPlayerCreated += RequestOwnership;
-            }
+            // 나머지 변수 동기화
+            _movementType= movementType;
+            _moveDirection= moveDirection;
+            _movingSpeed = movingSpeed;
+            _moveDistance = moveDistance ;
+            _canSeeOtherColor = canSeeOtherColor;
+            _handleSameColor= handleSameColor;
+            _handleDiffrentColor = handleDiffrentColor;
+
+            Color = color;  // 색 변화시 함수 호출
+
+            //if (PlayerController.LocalPlayer)
+            //{
+            //    RequestOwnership();
+            //}
+            //else
+            //{
+            //    PlayerController.LocalPlayerCreated += RequestOwnership;
+            //}
         }
 
 
@@ -245,7 +262,7 @@ namespace ColorWall
 
             if (collisionObject.tag == "Player")
             {
-                if ((IsHost && _color.Value == ColorType.Blue) || (!IsHost && _color.Value == ColorType.Red))   // 현 옵젝과 플레이어의 색이 같다면
+                if ((IsHost && _color == ColorType.Blue) || (!IsHost && _color == ColorType.Red))   // 현 옵젝과 플레이어의 색이 같다면
                 {
                     switch (_handleSameColor)
                     {
@@ -271,15 +288,15 @@ namespace ColorWall
                             {
                                 collisionRB.MovePosition(spawnPoint.transform.position);
                                 //collisionObject.transform.position = spawnPoint.transform.position;
+                                //collisionObject.GetComponent<PlayerController>().Move(spawnPoint.transform.position);
                             }
-                            spawnPoint = GameObject.FindWithTag("Red Spawn Point");
-                            Vector3 hardSpawnPoint = new Vector3(0, 1000, 0);
+                            //spawnPoint = GameObject.FindWithTag("Red Spawn Point");
+                            //Vector3 hardSpawnPoint = new Vector3(0, 1000, 0);
                             //collisionObject.transform.position = hardSpawnPoint;
                             //collisionRB.position = hardSpawnPoint;
-                            Debug.Log(collisionObject.transform.position);
                             //collisionRB.MovePosition(hardSpawnPoint);
-                            collisionObject.GetComponent<CharacterController>().Move(hardSpawnPoint - collisionObject.transform.position);
-                            Debug.Log(collisionObject.transform.position);
+                            //collisionObject.GetComponent<PlayerController>().Move(hardSpawnPoint - collisionObject.transform.position);
+                            //collisionObject.GetComponent<PlayerController>().Move(spawnPoint);
 
                             break;
                     }
@@ -297,28 +314,32 @@ namespace ColorWall
                             break;
                         case CollisionHandleType.Deadly:
                             GameObject spawnPoint = null;
-                            if (collisionObject.layer == LayerMask.NameToLayer("Red"))
+                            ColorType collisionPColor = collisionObject.GetComponent<PlayerController>().Color;
+                            if (collisionPColor == ColorType.Red)
                             {
-
                                 spawnPoint = GameObject.FindWithTag("Red Spawn Point");
                             }
-                            else if (collisionObject.layer == LayerMask.NameToLayer("Blue"))
+                            else if (collisionPColor == ColorType.Blue)
                             {
                                 spawnPoint = GameObject.FindWithTag("Blue Spawn Point");
                             }
                             if (spawnPoint != null)
                             {
+                                Debug.Log("포인트 찾음! 이동 실행!");
                                 collisionRB.MovePosition(spawnPoint.transform.position);
-                                //collisionObject.transform.position = spawnPoint.transform.position;
+                                //collisionObject.GetComponent<PlayerController>().Move(spawnPoint.transform.position);
                             }
-                            spawnPoint = GameObject.FindWithTag("Red Spawn Point");
-                            Vector3 hardSpawnPoint = new Vector3(0, 1000, 0);
+                            Debug.Log("위에 없으면 못한거 ㅋㅋ");
+                            //spawnPoint = GameObject.FindWithTag("Red Spawn Point");
+                            //Vector3 hardSpawnPoint = new Vector3(0, 1000, 0);
+                            //Debug.Log(collisionObject.transform.position);
+                            //collisionObject.GetComponent<PlayerController>().Move(hardSpawnPoint);
+                            //Debug.Log(collisionObject.transform.position);
+
                             //collisionObject.transform.position = hardSpawnPoint;
                             //collisionRB.position = hardSpawnPoint;
-                            Debug.Log(collisionObject.transform.position);
                             //collisionRB.MovePosition(hardSpawnPoint);
-                            collisionObject.GetComponent<CharacterController>().Move(hardSpawnPoint - collisionObject.transform.position);
-                            Debug.Log(collisionObject.transform.position);
+                            //collisionObject.GetComponent<PlayerController>().Move(hardSpawnPoint - collisionObject.transform.position);
 
                             break;
                     }
@@ -330,9 +351,21 @@ namespace ColorWall
         /// 오브젝트 상태를 초기화하고 클라이언트와 동기화한다. 이 함수는 서버에서만 호출한다.
         /// </summary>
         /// <param name="color">오브젝트 색깔</param>
-        public void Initialize(ColorType color)
+        public void Initialize(ColorType color, 
+            MovementType movementType, MoveDirection moveDirection, float movingSpeed, float moveDistance,
+            bool canSeeOtherColor, CollisionHandleType handleSameColor, CollisionHandleType handleDiffrentColor)
         {
-            InitializeClientRpc(color, transform.position, transform.rotation, transform.localScale);
+            InitializeClientRpc(color, transform.position, transform.rotation, transform.localScale
+                , movementType, moveDirection, movingSpeed, moveDistance, canSeeOtherColor, handleSameColor, handleDiffrentColor);
+            Debug.Log($"Initialize{color},{transform.position},{transform.rotation},{transform.localScale},{movementType},{moveDirection},{movingSpeed},{moveDistance},{canSeeOtherColor}, {handleSameColor}, {handleDiffrentColor}");
+            // 나머지 변수 동기화
+            //this._movementType = _movementType;
+            //this._moveDirection = _moveDirection;
+            //this._movingSpeed = _movingSpeed;
+            //this._moveDistance = _moveDistance;
+            //this._canSeeOtherColor = _canSeeOtherColor;
+            //this._handleSameColor = _handleSameColor;
+            //this._handleDiffrentColor = _handleDiffrentColor;
         }
     }
 }
