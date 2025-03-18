@@ -9,11 +9,9 @@ using System.Runtime.CompilerServices;
 /// </summary>
 public class CubeRenderer : NetworkBehaviour
 {
-    /// <summary>
-    /// 렌더링에 쓰일 매터리얼. (파랑, 빨강 순)
-    /// </summary>
-    [SerializeField] Material[] _materials;
-
+    [SerializeField] private int _viewMode;
+    private ColorType _playerColor;
+    
     private CubeController _cubeController;
     private NetworkInterpolator _networkInterpolator;
     private Outline _outline;
@@ -43,7 +41,10 @@ public class CubeRenderer : NetworkBehaviour
         for (int i = 0; i < childCount; i++)
         {
             Material[] materials = _piecesMeshRenderers[i].materials;
-            materials[1] = _materials[(int)_cubeController.Color - 1];
+            for (int j = 0; j < 2; j++)
+            {
+                materials[j].SetObjectColor(_cubeController.Color);
+            }
             _piecesMeshRenderers[i].materials = materials;
         }
 
@@ -56,6 +57,8 @@ public class CubeRenderer : NetworkBehaviour
     {
         _cubeController = GetComponent<CubeController>();
         _networkInterpolator = GetComponent<NetworkInterpolator>();
+
+        _playerColor = NetworkManager.Singleton.IsHost ? ColorType.Blue : ColorType.Red;
 
         _networkInterpolator.AddVisualReferenceDependantFunction(() =>
         {
@@ -73,7 +76,10 @@ public class CubeRenderer : NetworkBehaviour
                 _piecesMeshRenderers[i] = child.GetComponent<MeshRenderer>();
 
                 Material[] materials = _piecesMeshRenderers[i].materials;
-                materials[1] = _materials[(int)_cubeController.Color - 1];
+                for (int j = 0; j < 2; j++)
+                {
+                    materials[j].SetMaterial(_cubeController.Color, _playerColor, _viewMode);
+                }
                 _piecesMeshRenderers[i].materials = materials;
             }
         });
@@ -99,8 +105,18 @@ public class CubeRenderer : NetworkBehaviour
             _outline.enabled = false;
         }
         
-        Material startMaterial = _materials[(int)_cubeController.Color - 1];
-        Material targetMaterial = _materials[2 - (int)_cubeController.Color];
+        int targetColor = 3 - (int)_cubeController.Color;
+        for (int i = 0; i < 8; i++)
+        {
+            Material[] materials = _piecesMeshRenderers[i].materials;
+            for (int j = 0; j < 2; j++)
+            {
+                materials[j].SetInterpolationFactor(0f);
+                materials[j].SetTargetColor(targetColor);
+            }
+            
+            _piecesMeshRenderers[i].materials = materials;
+        }
 
         float timer = 0f;
         float lastTime = Time.realtimeSinceStartup;
@@ -113,8 +129,8 @@ public class CubeRenderer : NetworkBehaviour
                 _piecesTransforms[i].localRotation = Quaternion.Lerp(Quaternion.identity, Quaternion.Euler(0, 90, 0), timer * 3f / transitionTime);
                 
                 Material[] materials = _piecesMeshRenderers[0].materials;
-                materials[1].Lerp(startMaterial, targetMaterial, timer * 3f / transitionTime);
-
+                materials[0].SetInterpolationFactor(timer * 3f / transitionTime);
+                materials[1].SetInterpolationFactor(timer * 3f / transitionTime);
                 _piecesMeshRenderers[i].materials = materials;
             }
 
@@ -140,8 +156,8 @@ public class CubeRenderer : NetworkBehaviour
                 if (i == 5 || i == 7)
                 {
                     Material[] materials = _piecesMeshRenderers[5].materials;
-                    materials[1].Lerp(startMaterial, targetMaterial, timer * 3f / transitionTime);
-
+                    materials[0].SetInterpolationFactor(timer * 3f / transitionTime);
+                    materials[1].SetInterpolationFactor(timer * 3f / transitionTime);
                     _piecesMeshRenderers[i].materials = materials;
                 }
             }
@@ -168,8 +184,8 @@ public class CubeRenderer : NetworkBehaviour
                 if (i == 4 || i == 6)
                 {
                     Material[] materials = _piecesMeshRenderers[4].materials;
-                    materials[1].Lerp(startMaterial, targetMaterial, timer * 3f / transitionTime);
-
+                    materials[0].SetInterpolationFactor(timer * 3f / transitionTime);
+                    materials[1].SetInterpolationFactor(timer * 3f / transitionTime);   
                     _piecesMeshRenderers[i].materials = materials;
                 }
             }

@@ -8,7 +8,7 @@ public static class MaterialExtension
     private static readonly int PlayerColor_ID = Shader.PropertyToID("_PlayerColor");
     private static readonly int ViewType_ID = Shader.PropertyToID("_ViewType");
     private static readonly int TargetColor_ID = Shader.PropertyToID("_TargetColor");
-    private static readonly int Interpolate_ID = Shader.PropertyToID("_Interpolate");
+    private static readonly int Factor_ID = Shader.PropertyToID("_Factor");
 
     public static void SetObjectColor(this Material material, int colorType)
     {
@@ -45,11 +45,11 @@ public static class MaterialExtension
     }
     public static void SetTargetColor(this Material material, ColorType colorType) => SetTargetColor(material, (int)colorType);
 
-    public static void SetInterpolate(this Material material, float interpolate)
+    public static void SetInterpolationFactor(this Material material, float factor)
     {
-        if (material.HasProperty(Interpolate_ID))
+        if (material.HasProperty(Factor_ID))
         {
-            material.SetFloat(Interpolate_ID, interpolate);
+            material.SetFloat(Factor_ID, factor);
         }
     }
     
