@@ -3,26 +3,20 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using System;
 using UnityEngine.SceneManagement;
-using Cursor = UnityEngine.UIElements.Cursor;
 
 public class UIManager : SingletonBehavior<UIManager>
 {
     [Tooltip("UIManager의 UIDocument")] [SerializeField]
     private UIDocument _uiDocument;
 
+    private UIDocumentLocalization _localization;
+    public UIDocumentLocalization Localization => _localization;
+
     private readonly string UI_PATH = "Prefabs/UI/";
 
     private Dictionary<Type, BaseUI> _uiPool = new Dictionary<Type, BaseUI>();
     private VisualElement _root;
-    
-    private static readonly string EscUI_PATH = "Prefabs/UI/EscUI";
-    private VisualElement _escPanel;
-    private bool _isESCOpen;
-
-    private string _sceneName;
-    private string _lobbyName = SceneType.Lobby.ToString();
-    private string _inGameName = SceneType.InGame.ToString();
-
+    private BaseUI _frontUI;
 
     protected override void Init()
     {
@@ -32,6 +26,8 @@ public class UIManager : SingletonBehavior<UIManager>
         _root.RegisterButtonClickSound();
 
         _root.style.display = DisplayStyle.None;
+    
+        _localization = GetComponent<UIDocumentLocalization>();
     }
 
     public void OpenUI<T>(BaseUIData uiData) where T : BaseUI, new()
@@ -56,6 +52,8 @@ public class UIManager : SingletonBehavior<UIManager>
         _root.Add(ui.Root);
         _root.style.display = DisplayStyle.Flex;
         ui.ShowUI();
+
+        _frontUI = ui;
     }
 
     public void CloseUI(BaseUI ui)
@@ -71,10 +69,37 @@ public class UIManager : SingletonBehavior<UIManager>
         }
         
         visualElement.RemoveFromHierarchy();
-        
+
+        _frontUI = null;
         if (_root.childCount == 0)
         {
             _root.style.display = DisplayStyle.None;
+            
+            string sceneName = SceneManager.GetActiveScene().name;
+            if (sceneName == SceneType.Lobby.ToString() || sceneName == SceneType.InGame.ToString())
+            {
+                if (_frontUI is null)
+                {
+                    UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+                }
+            }
+            
+        }
+        else
+        {
+            var lastUI = _root.ElementAt(_root.childCount - 1);
+            
+            // 따로 찾을 방법이 없어서 ui pool 순회해서 Search
+            // 어짜피 BaseUI가 많진 않아서 괜찮을듯?
+            // 근데 맘에는 안드는데
+            // 다른 방법이 없어서 더 화나는
+            foreach (var baseUI in _uiPool.Values)
+            {
+                if (baseUI.Root == lastUI)
+                {
+                    _frontUI = baseUI;
+                }
+            }
         }
     }
     
@@ -136,69 +161,44 @@ public class UIManager : SingletonBehavior<UIManager>
     {
         StartCoroutine(PopupUIManager.PopupOut(panel));
     }
-
-    void OnEscapeInput()
+    
+    public void OnEscapeInput()
     {
-        _sceneName = SceneManager.GetActiveScene().name;
-        if (_sceneName == _lobbyName || _sceneName == _inGameName)
+        Logger.Log("Escape button Inputed");
+        
+        if (_root.childCount == 0)
         {
-            if (!_isESCOpen)
+            string sceneName = SceneManager.GetActiveScene().name;
+            if (sceneName == SceneType.Lobby.ToString() || sceneName == SceneType.InGame.ToString())
             {
                 UnityEngine.Cursor.lockState = CursorLockMode.None;
 
-                _isESCOpen = true;
-            
-                _root.style.display = DisplayStyle.Flex;
-        
-                var setting = Resources.Load<VisualTreeAsset>(EscUI_PATH);
-
-                _escPanel = setting.CloneTree();
-
-                _escPanel.style.position = Position.Absolute;
-        
-                // UIDocumentLocalization 참조 가져오기
-                var localization = GetComponent<UIDocumentLocalization>();
-
-                // SettingUI 생성 및 번역 적용
-                new EscUI(_escPanel, () =>
+                EscUIData escUIData = new EscUIData()
                 {
-                    ClosePanel(_escPanel);
-                }, localization); // UIDocumentLocalization 참조 전달
-            
-                // UI 화면에 SettingPanel 추가
-                _root.Add(_escPanel);
+                    Localization = UIManager.Instance.Localization,
+                    /*OnShow = () =>
+                    {
+                        // settingPanel이 오른쪽에서 중앙으로 이동하기위해 class 추가
+                        _escPanel.AddToClassList("right");
+
+                        // settingPanel을 중앙으로 이동
+                        StartPopupIn(_escPanel);
+                    },*/
+                    //OnClose = () => ClosePanel(_escPanel)
+                };
         
-                // settingPanel이 오른쪽에서 중앙으로 이동하기위해 class 추가
-                _escPanel.AddToClassList("right");
-        
-                // settingPanel을 중앙으로 이동
-                StartPopupIn(_escPanel);
+                Instance.OpenUI<EscUI>(escUIData);
             }
-            else
-            {
-                ClosePanel(_escPanel);
-            }
+        }
+        else
+        {
+            _frontUI.CloseUI();
         }
     }
-    
-    private void ClosePanel(VisualElement panel)
+
+    public void ResetUI()
     {
-        _sceneName = SceneManager.GetActiveScene().name;
-        
-        if (_sceneName == _lobbyName || _sceneName == _inGameName)
-        {
-            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-        }
-
-        StartPopupOut(panel);
-
-        if (panel != null)
-        {
-            panel.style.display = DisplayStyle.None;
-        }
-        
-        _root.style.display = DisplayStyle.None;
-        
-        _isESCOpen = false;
+        CloseAllOpenUI();
+        _uiPool.Clear();
     }
 }

@@ -15,13 +15,13 @@ public class SettingsUI
     private Button _audio;
     private Button _video;
     private Button _language;
-    private Action OnCloseSetting;
+    private Action _onCloseSetting;
 
     private VisualElement _audioPanel;
     private VisualElement _videoPanel;
     private VisualElement _languagePanel;
 
-    private VisualElement _newPanel;
+    private VisualElement newPanel;
 
     private UIDocumentLocalization _localization; // UIDocumentLocalization 참조
 
@@ -29,14 +29,14 @@ public class SettingsUI
     private static readonly string VideoUI_PATH = "Prefabs/UI/Setting/VideoUI";
     private static readonly string LanguageUI_PATH = "Prefabs/UI/Setting/LanguageUI";
 
-    public SettingsUI(VisualElement root, Action OnCloseSettingButtonClick, UIDocumentLocalization localization, bool _FromUIManager = false)
+    public SettingsUI(VisualElement root, Action onCloseSettingButtonClick, UIDocumentLocalization localization, bool fromUIManager = false)
     {
         _root = root;
         _localization = localization; // UIDocumentLocalization 참조 저장
 
         _root.RegisterButtonClickSound();
 
-        OnCloseSetting = OnCloseSettingButtonClick;
+        _onCloseSetting = onCloseSettingButtonClick;
 
         _settingUI = _root.Q<VisualElement>("SettingUI");
         _settingPanel = _root.Q<VisualElement>("SettingPanel");
@@ -51,7 +51,7 @@ public class SettingsUI
         _language.RegisterCallback<ClickEvent>(OnClickLanguage);
         _closeSettingButton.RegisterCallback<ClickEvent>(OnClickCloseSettingButton);
 
-        if (_FromUIManager)
+        if (fromUIManager)
         {
             _settingUI.style.backgroundColor = new Color(0, 0, 0, 0);
         }
@@ -77,7 +77,7 @@ public class SettingsUI
 
     private void OnClickCloseSettingButton(ClickEvent evt)
     {
-        OnCloseSetting?.Invoke();
+        _onCloseSetting?.Invoke();
     }
 
     private void ClosePanel(VisualElement panel)
@@ -89,26 +89,26 @@ public class SettingsUI
     private void NewSettingUI<T>(string PATH) where T : class
     {
         var newUI = Resources.Load<VisualTreeAsset>(PATH);
-        _newPanel = newUI.CloneTree();
-        _newPanel.style.position = Position.Absolute;
+        newPanel = newUI.CloneTree();
+        newPanel.style.position = Position.Absolute;
 
         // T가 특정 생성자를 가지도록 강제
-        var controller = Activator.CreateInstance(typeof(T), _newPanel, (Action)(() => ClosePanel(_newPanel))) as T;
+        var controller = Activator.CreateInstance(typeof(T), newPanel, (Action)(() => ClosePanel(newPanel))) as T;
 
         // SettingMenu 퇴장 애니메이션
         _settingPanel.AddToClassList("left");
 
         // UI 화면에 SettingPanel 추가
-        _settingUI.Add(_newPanel);
+        _settingUI.Add(newPanel);
         
         // 번역 적용
-        ApplyLocalization(_newPanel);
+        ApplyLocalization(newPanel);
 
         // settingPanel이 오른쪽에서 중앙으로 이동하기 위해 class 추가
-        _newPanel.AddToClassList("right");
+        newPanel.AddToClassList("right");
 
         // settingPanel을 중앙으로 이동
-        UIManager.Instance.StartPopupIn(_newPanel);
+        UIManager.Instance.StartPopupIn(newPanel);
     }
 
     private void ApplyLocalization(VisualElement panel)

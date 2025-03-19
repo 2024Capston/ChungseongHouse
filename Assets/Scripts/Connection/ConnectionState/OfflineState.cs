@@ -16,8 +16,6 @@ namespace RaB.Connection
             ConnectionManager.Instance.CurrentLobby = null;
             NetworkManager.Singleton.Shutdown();
             
-            UIManager.Instance.CloseAllOpenUI();
-            
             // Offline 상태에서는 Home Scene에 있어야 합니다.
             SceneLoadManager.Instance.LoadScene(SceneType.Home.ToString(), false);
         }

@@ -9,7 +9,7 @@ public class LanguageUIController
 {
     private VisualElement _root;
     
-    private Action OnCloseLanguage;
+    private Action _onCloseLanguage;
 
     private Button _korean;
     private Button _english;
@@ -25,13 +25,13 @@ public class LanguageUIController
     private Button _closeLanguageUIButton;
 
 
-    public LanguageUIController(VisualElement root, Action OnClickCloseLanguageUIButtonClick)
+    public LanguageUIController(VisualElement root, Action onClickCloseLanguageUIButtonClick)
     {
         _root = root;
         
         _root.RegisterButtonClickSound();
         
-        OnCloseLanguage = OnClickCloseLanguageUIButtonClick;
+        _onCloseLanguage = onClickCloseLanguageUIButtonClick;
         
         _korean = _root.Q<Button>("KoreanButton");
         _english = _root.Q<Button>("EnglishButton");
@@ -62,10 +62,11 @@ public class LanguageUIController
     private void UpdateLocales(int index)
     {
         LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[index];
+        UIManager.Instance.ResetUI();
     }
     
     private void OnClickCloseLanguageUIButton(ClickEvent evt)
     {
-        OnCloseLanguage?.Invoke();
+        _onCloseLanguage?.Invoke();
     }
 }

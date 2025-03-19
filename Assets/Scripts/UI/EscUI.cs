@@ -8,9 +8,15 @@ using UnityEngine.SceneManagement;
 using ConnectionManager = RaB.Connection.ConnectionManager;
 using UnityEngine.UIElements;
 
-public class EscUI 
-{ 
-    private VisualElement _root;
+public class EscUIData : BaseUIData
+{
+    public UIDocumentLocalization Localization;
+}
+
+public class EscUI : BaseUI
+{
+    private EscUIData _escUIData;
+    
     private VisualElement _escUI;
     private VisualElement _escPanel;
 
@@ -20,8 +26,6 @@ public class EscUI
     private Button _respawnButton;
     private Button _settingButton;
     private Button _backButton;
-    
-    private Action OnCloseUI;
     
     private Label _roomCodeLabel;
     
@@ -33,20 +37,16 @@ public class EscUI
     private static readonly string SettingsUI_PATH = "Prefabs/UI/SettingsUI";
 
     private UIDocumentLocalization _localization;
-    
-    public EscUI(VisualElement root, Action OnCloseSettingButtonClick, UIDocumentLocalization localization)
+
+    public override void Init(VisualTreeAsset visualTree)
     {
-        _root = root;
-        _localization = localization; // UIDocumentLocalization 참조 저장
-
+        base.Init(visualTree);
         _root.RegisterButtonClickSound();
-
-        OnCloseUI = OnCloseSettingButtonClick;
-
+        
         _escUI = _root.Q<VisualElement>("EscUI");
         _escPanel = _root.Q<VisualElement>("EscPanel");
         
-        _roomCodeLabel = root.Q<Label>("RoomCodeLabel");
+        _roomCodeLabel = _root.Q<Label>("RoomCodeLabel");
         
         _mainButton = _root.Q<Button>("MainButton");
         _roomCodeButton = _root.Q<Button>("RoomCodeButton");
@@ -55,8 +55,6 @@ public class EscUI
         _settingButton = _root.Q<Button>("SettingButton");
         _backButton = _root.Q<Button>("BackButton");
         
-        _roomCodeLabel.text = ConnectionManager.Instance.CurrentLobby?.Id.Value.ToString();
-
         _mainButton.RegisterCallback<ClickEvent>(OnClickMain);
         _roomCodeButton.RegisterCallback<ClickEvent>(OnClickRoomCode);
         _lobbyButton.RegisterCallback<ClickEvent>(OnClickLobby);
@@ -66,14 +64,34 @@ public class EscUI
         
         sceneName = SceneManager.GetActiveScene().name;
 
-        if (sceneName != "InGame")
+        if (sceneName != SceneType.InGame.ToString())
         {
             _lobbyButton.style.display = DisplayStyle.None;
             _respawnButton.style.display = DisplayStyle.None;
         }
+    }
 
-        // 초기 번역 적용
+    public override void SetInfo(BaseUIData uiData)
+    {
+        base.SetInfo(uiData);
+        _escUIData = uiData as EscUIData;
+
+        _localization = _escUIData.Localization;
+        _roomCodeLabel.text = ConnectionManager.Instance.CurrentLobby?.Id.Value.ToString();
         ApplyLocalization(_root);
+    }
+
+    public override void CloseUI(bool isCloseAll = false)
+    {
+        _escPanel.RemoveFromClassList("left");
+        if (_settingPanel is not null)
+        {
+            _settingPanel.RemoveFromClassList("center");
+            _settingPanel.RemoveFromHierarchy();
+            _settingPanel = null;
+        }
+        
+        base.CloseUI(isCloseAll);
     }
 
     private void OnClickMain(ClickEvent evt)
@@ -129,7 +147,7 @@ public class EscUI
     
     private void OnClickCloseUI(ClickEvent evt)
     {
-        OnCloseUI?.Invoke();
+        CloseUI();
     }
 
     private void ClosePanel(VisualElement panel)
