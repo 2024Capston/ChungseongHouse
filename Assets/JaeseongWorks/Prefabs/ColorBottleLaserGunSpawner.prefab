@@ -150,11 +150,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1596171116605146360}
-  - component: {fileID: 8345928724290738658}
-  - component: {fileID: 1708821869631099541}
-  - component: {fileID: 3182651153875862907}
+  - component: {fileID: -4718617765653564253}
   m_Layer: 0
-  m_Name: ColorBottleLaserGun
+  m_Name: ColorBottleLaserGunSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -177,7 +175,7 @@ Transform:
   - {fileID: 3883403892327297787}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8345928724290738658
+--- !u!114 &-4718617765653564253
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -186,59 +184,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2120471400099438146}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1da98828e9bc8c44f8eee5117b930b6b, type: 3}
+  m_Script: {fileID: 11500000, guid: 1c13facb10d950245b6bf29307fe1413, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isRequireBoth: 0
-  _switchColor: 0
-  _switchRange: 4
-  _connectedActivatables:
-  - {fileID: 6889131053418201756}
---- !u!114 &1708821869631099541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2120471400099438146}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
---- !u!54 &3182651153875862907
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2120471400099438146}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
+  _prefab: {fileID: 2120471400099438146, guid: 1bbcda96d63dc444ba484b98323a7577, type: 3}
+  _shotDuration: 1
+  _shotCooltime: 0
+  _angle: 0
 --- !u!1 &4183176052520515640
 GameObject:
   m_ObjectHideFlags: 0
@@ -795,7 +747,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6889131053418201756}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -822,6 +774,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5e3317808964de44811c5823b5d61ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isRequireBoth: 0
+  _switchColor: 0
+  _switchRange: 0
   _shotDuration: 1
   _shotCooltime: 0
   _angle: 0

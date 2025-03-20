@@ -357,7 +357,7 @@ namespace ColorWall
         {
             InitializeClientRpc(color, transform.position, transform.rotation, transform.localScale
                 , movementType, moveDirection, movingSpeed, moveDistance, canSeeOtherColor, handleSameColor, handleDiffrentColor);
-            Debug.Log($"Initialize{color},{transform.position},{transform.rotation},{transform.localScale},{movementType},{moveDirection},{movingSpeed},{moveDistance},{canSeeOtherColor}, {handleSameColor}, {handleDiffrentColor}");
+            
             // 나머지 변수 동기화
             //this._movementType = _movementType;
             //this._moveDirection = _moveDirection;
