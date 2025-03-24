@@ -21,49 +21,31 @@ public class TitleManager : MonoBehaviour
     private bool _isSteamClientInitialized;
 
     private ProgressBar _progressBar;
-
-    private void Awake()
-    {
-        _isSteamClientInitialized = false;
-        InitSteamClient();
-    }
-
+    
     private void Start()
-    {
-        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
-        _progressBar = root.Q<ProgressBar>("ProgressBar");
-        
-        if (_isSteamClientInitialized)
-        {
-            LoadUserData();
-
-            StartCoroutine(CoLoadHome());
-        }
-        
-        AudioManager.Instance.ApplyAudioMixerValues();
-    }
-
-    /// <summary>
-    /// SteamClient를 Initialize한다. 성공하면 _isSteamClientInitialized가 true가 된다.
-    /// </summary>
-    private void InitSteamClient()
     {
         try
         {
             SteamClient.Init(APP_ID, false);
-            _isSteamClientInitialized = true;
             _facepunch.InitSteamworks();
+            
+            VisualElement root = GetComponent<UIDocument>().rootVisualElement;
+            _progressBar = root.Q<ProgressBar>("ProgressBar");
+            
+            AudioManager.Instance.ApplyAudioMixerValues();
+            LoadUserData();
+            StartCoroutine(CoLoadHome());
         }
         catch (Exception e)
         {
-            Logger.LogError($"[{nameof(FacepunchTransport)}] - Caught an exeption during initialization of Steam client: {e}");
+            Logger.LogError($"[{nameof(FacepunchTransport)}] - Caught an exception during initialization of Steam client: {e}");
 
             // 팝업에 대한 정보를 넣는다.
             ConfirmUIData confirmUIData = new ConfirmUIData()
             {
                 ConfirmType = ConfirmType.OK,
                 TitleText = "네트워크 연결 실패",
-                ParagraphText = $"[{nameof(FacepunchTransport)}] - Caught an exeption during initialization of Steam client: {e}",
+                ParagraphText = $"[{nameof(FacepunchTransport)}] - Caught an exception during initialization of Steam client: {e}",
                 OKButtonText = "종료",
                 OnClickOKButton = () =>
                 {
@@ -75,7 +57,7 @@ public class TitleManager : MonoBehaviour
             UIManager.Instance.OpenUI<ConfirmUI>(confirmUIData);
         }
     }
-
+    
     /// <summary>
     /// UserData를 불러온다.
     /// </summary>

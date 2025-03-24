@@ -23,7 +23,7 @@ public class SingletonBehavior<T> : MonoBehaviour where T : SingletonBehavior<T>
         Init();
     }
 
-    protected virtual void OnDestory()
+    protected virtual void OnDestroy()
     {
         Dispose();
     }

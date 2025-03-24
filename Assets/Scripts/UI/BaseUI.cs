@@ -45,6 +45,7 @@ public class BaseUI
 
     public virtual void ShowUI()
     {
+        Logger.Log($"{GetType()}::ShowUI");
         _onShow?.Invoke();
         _onClose = null;
         _root.style.display = DisplayStyle.Flex;

@@ -11,8 +11,5 @@ public class PlayerConfig : NetworkBehaviour
 {
     public bool IsBlue { get { return IsHost; } }
     public PlayerController MyPlayer { get; set; }
-    public string PlayerName
-    {
-        get { return SteamClient.Name; }
-    }
+    public string PlayerName => SteamClient.Name;
 }

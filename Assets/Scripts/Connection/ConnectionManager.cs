@@ -39,7 +39,7 @@ namespace RaB.Connection
             NetworkManager.Singleton.OnTransportFailure += OnTransportFailure;
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             CurrentLobby = null;
             SteamMatchmaking.OnLobbyCreated -= OnLobbyCreated;
@@ -48,7 +48,7 @@ namespace RaB.Connection
             
             /*
              NetworkManager에 등록된 델리게이트를 제거하는 코드가 있었으나
-             NetworkManager가 더 빨리 Destory 되기 때문에 제거하였습니다.
+             NetworkManager가 더 빨리 Destroy 되기 때문에 제거하였습니다.
              */
         }
 

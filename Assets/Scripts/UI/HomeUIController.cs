@@ -180,14 +180,14 @@ public class HomeUIController : MonoBehaviour
         Application.Quit();
     }
     
-    public void HomeUIConatainerIn()
+    public void HomeUIContainerIn()
     {
         _homeUIContainer.RemoveFromClassList("HomeUIContainer--out");
     }
 
     public void ClosePanel(VisualElement panel)
     {
-        HomeUIConatainerIn();
+        HomeUIContainerIn();
 
         UIManager.Instance.StartPopupOut(panel);
     }
