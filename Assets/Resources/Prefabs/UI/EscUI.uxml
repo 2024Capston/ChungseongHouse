@@ -7,14 +7,13 @@
             <ui:VisualElement style="width: 700px; height: 740px; flex-direction: column; align-items: center; justify-content: space-around; margin-top: 150px;">
                 <ui:Button text="#MAIN" parse-escape-sequences="true" display-tooltip-when-elided="true" name="MainButton" class="button--default" style="width: 700px;" />
                 <ui:Button text="#LOBBY" parse-escape-sequences="true" display-tooltip-when-elided="true" name="LobbyButton" class="button--default" style="width: 700px;" />
-                <ui:Button text="#RESPAWN" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RespawnButton" class="button--default" style="width: 700px;" />
+                <ui:Button text="#RESTART" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RespawnButton" class="button--default" style="width: 700px;" />
                 <ui:Button text="#OPTIONS" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SettingButton" class="button--default" style="width: 700px;" />
                 <ui:Button text="#BACK" parse-escape-sequences="true" display-tooltip-when-elided="true" name="BackButton" class="button--default" style="width: 700px;" />
             </ui:VisualElement>
-            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="RoomCodeButton" class="button--default" style="width: 1400px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0; background-color: rgba(209, 209, 209, 0.78); -unity-text-align: middle-left; padding-right: 30px; padding-left: 30px; flex-direction: row; justify-content: space-around; height: 100px; align-items: center; align-self: center;">
-                <ui:Label tabindex="-1" text="#ROOM CODE" parse-escape-sequences="true" display-tooltip-when-elided="true" />
-                <ui:Label tabindex="-1" text="#CLICK TO COPY" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(89, 89, 89); font-size: 30px;" />
-                <ui:Label tabindex="-1" text="-Room Code-" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RoomCodeLabel" />
+            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="RoomCodeButton" style="width: 1400px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0; background-color: rgba(209, 209, 209, 0); -unity-text-align: middle-left; padding-right: 30px; padding-left: 30px; flex-direction: row; justify-content: center; height: 100px; align-items: center; align-self: center; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;">
+                <ui:Label tabindex="-1" text="#ROOM CODE" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 30px; color: rgb(255, 255, 255);" />
+                <ui:Label tabindex="-1" text="-Room Code-" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RoomCodeLabel" style="color: rgb(255, 255, 255); font-size: 30px;" />
             </ui:Button>
         </ui:VisualElement>
     </ui:VisualElement>

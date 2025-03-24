@@ -114,6 +114,7 @@ public class EscUI : BaseUI
     // Respawn시 소환될 위치 설정
     private void OnClickRespawn(ClickEvent evt)
     {
+        StageManager.Instance.RestartGame();
     }
     
     private void OnClickSettingButton(ClickEvent evt)

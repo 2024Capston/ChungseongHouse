@@ -112,7 +112,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 5255859062566912
-    m_Key: RESPAWN
+    m_Key: RESTART
     m_Metadata:
       m_Items: []
   - m_Id: 5256338630897664
