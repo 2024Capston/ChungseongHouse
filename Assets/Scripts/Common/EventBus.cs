@@ -19,6 +19,7 @@ public class EventBus : SingletonBehavior<EventBus>
 
     protected override void Init()
     {
+        _isDestroyOnLoad = true;
         base.Init();
 
         _events = new Dictionary<EventType, UnityEventBase>();
