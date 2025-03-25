@@ -93,6 +93,8 @@ public class PlayerController : NetworkBehaviour
 
             _localPlayer = this;
             _localPlayerCreated?.Invoke();
+            
+            UIManager.Instance.CloseAllOpenUI();
         }
         else
         {
