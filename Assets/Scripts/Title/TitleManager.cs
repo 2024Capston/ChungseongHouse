@@ -21,20 +21,34 @@ public class TitleManager : MonoBehaviour
     private bool _isSteamClientInitialized;
 
     private ProgressBar _progressBar;
-    
+
+    private void OnEnable()
+    {
+        UIManager.Instance.Localization.onLocalizationCompleted += InitSteamClient;
+    }
+
     private void Start()
+    {
+        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
+        _progressBar = root.Q<ProgressBar>("ProgressBar");
+        AudioManager.Instance.ApplyAudioMixerValues();
+        
+        StartCoroutine(CoLoadHome());
+    }
+
+    private void OnDisable()
+    {
+        UIManager.Instance.Localization.onLocalizationCompleted -= InitSteamClient;
+    }
+
+    private void InitSteamClient()
     {
         try
         {
+            _isSteamClientInitialized = false;
             SteamClient.Init(APP_ID, false);
             _facepunch.InitSteamworks();
-            
-            VisualElement root = GetComponent<UIDocument>().rootVisualElement;
-            _progressBar = root.Q<ProgressBar>("ProgressBar");
-            
-            AudioManager.Instance.ApplyAudioMixerValues();
-            LoadUserData();
-            StartCoroutine(CoLoadHome());
+            _isSteamClientInitialized = true;
         }
         catch (Exception e)
         {
@@ -57,7 +71,7 @@ public class TitleManager : MonoBehaviour
             UIManager.Instance.OpenUI<ConfirmUI>(confirmUIData);
         }
     }
-    
+
     /// <summary>
     /// UserData를 불러온다.
     /// </summary>
@@ -84,11 +98,22 @@ public class TitleManager : MonoBehaviour
         _progressBar.title = "0%";
         _progressBar.value = 0;
 
+        // SteamClient의 Init을 기다린다.
+        yield return new WaitUntil(() => _isSteamClientInitialized);
+        
+        _progressBar.title = "10%";
+        _progressBar.value = 10;
+        
+        LoadUserData();
+        
+        _progressBar.title = "20%";
+        _progressBar.value = 20;
+
         // NetworkManager Instance가 생성될 때까지 대기한다.
         yield return new WaitUntil(() => NetworkManager.Singleton != null);
 
-        _progressBar.title = "10%";
-        _progressBar.value = 10;
+        _progressBar.title = "30%";
+        _progressBar.value = 30;
 
         // Home Scene을 비동기적으로 불러오기 위해 시도한다.
         _asyncOperation = SceneLoadManager.Instance.LoadScene(SceneType.Home.ToString(), false);
