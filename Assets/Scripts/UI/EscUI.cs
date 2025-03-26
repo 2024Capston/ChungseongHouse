@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Steamworks;
 using Steamworks.Data;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 using UnityEngine.SceneManagement;
 using ConnectionManager = RaB.Connection.ConnectionManager;
 using UnityEngine.UIElements;
@@ -57,6 +58,9 @@ public class EscUI : BaseUI
         
         _mainButton.RegisterCallback<ClickEvent>(OnClickMain);
         _roomCodeButton.RegisterCallback<ClickEvent>(OnClickRoomCode);
+        _roomCodeButton.RegisterCallback<MouseEnterEvent>(OnMouseEnterRoomCode);
+        _roomCodeButton.RegisterCallback<MouseLeaveEvent>(OnMouseLeaveRoomCode);
+
         _lobbyButton.RegisterCallback<ClickEvent>(OnClickLobby);
         _respawnButton.RegisterCallback<ClickEvent>(OnClickRespawn);
         _settingButton.RegisterCallback<ClickEvent>(OnClickSettingButton);
@@ -100,11 +104,22 @@ public class EscUI : BaseUI
         ConnectionManager.Instance.RequestShutdown();
     }
 
+    private void OnMouseEnterRoomCode(MouseEnterEvent evt)
+    {
+        string localizedCopy = LocalizationSettings.StringDatabase.GetLocalizedString("UI Table", "CLICK TO COPY");
+        _roomCodeLabel.text =  localizedCopy;
+    }
+
     private void OnClickRoomCode(ClickEvent evt)
     {
         GUIUtility.systemCopyBuffer =  ConnectionManager.Instance.CurrentLobby?.Id.Value.ToString();
     }
 
+    private void OnMouseLeaveRoomCode(MouseLeaveEvent evt)
+    {
+        _roomCodeLabel.text =  ConnectionManager.Instance.CurrentLobby?.Id.Value.ToString();
+    }
+    
     // 로비
     private void OnClickLobby(ClickEvent evt)
     {

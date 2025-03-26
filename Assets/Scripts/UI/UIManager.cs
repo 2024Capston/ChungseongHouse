@@ -35,13 +35,6 @@ public class UIManager : SingletonBehavior<UIManager>
         InputHandler.Instance.OnEscape += OnEscapeInput;
     }
 
-    protected override void Dispose()
-    {
-        base.Dispose();
-        InputHandler.Instance.OnEscape -= OnEscapeInput;
-    }
-
-
     public void OpenUI<T>(BaseUIData uiData) where T : BaseUI, new()
     {
         Type uiType = typeof(T);

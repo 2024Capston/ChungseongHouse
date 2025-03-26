@@ -41,4 +41,6 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/ColorChangerSample/Test Stage 06.unity
     guid: c461c6f38bf116c40ba112930229b288
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.localization.settings: {fileID: 11400000, guid: eea254ee45212234ba482cc0c03c51ac,
+      type: 2}
