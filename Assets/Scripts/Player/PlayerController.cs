@@ -114,12 +114,13 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsOwner)
         {
+            Cursor.lockState = CursorLockMode.None;
             BaseUIData baseUIData = new BaseUIData();
             UIManager.Instance.OpenUI<LoadingUI>(baseUIData);
         }
 
         base.OnNetworkDespawn();
-    }
+    }   
 
     private void Update()   
     {
