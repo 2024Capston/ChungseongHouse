@@ -32,6 +32,9 @@ public class PlayerController : NetworkBehaviour
     private bool _jumpInput;        // 점프 입력 여부
     private float _jumpRemember;    // 입력된 점프를 처리할 수 있는 쿨타임
 
+    private Vector3 _lastPosition;
+    private Quaternion _lastRotation;
+
     // 로컬 플레이어를 나타내는 static 변수
     private static PlayerController _localPlayer;
     public static PlayerController LocalPlayer
@@ -54,8 +57,35 @@ public class PlayerController : NetworkBehaviour
         get => _color;
     }
 
+    private Vector3 _velocity;
+    public Vector3 Velocity
+    {
+        get => _velocity;
+    }
+
+    private Vector3 _angularVelocity;
+    public Vector3 AngularVelocity
+    {
+        get => _angularVelocity;
+    }
+
+    private bool _isGrounded;
+    public bool IsGrounded
+    {
+        get => _isGrounded;
+    }
+
+    private bool _isJumping;
+    public bool IsJumping
+    {
+        get => _isJumping;
+    }
+
     public override void OnNetworkSpawn()
     {
+        //QualitySettings.vSyncCount = 0;
+        //Application.targetFrameRate = 30;
+
         _collider = GetComponent<Collider>();
         _playerRenderer = GetComponent<PlayerRenderer>();
 
@@ -122,10 +152,14 @@ public class PlayerController : NetworkBehaviour
         base.OnNetworkDespawn();
     }   
 
-    private void Update()   
+    private void Update()
     {
+        UpdatePlayerState();
+
         if (IsOwner)
         {
+            CheckGrounded();
+
             HandleMovement();
             HandleJump();
             SearchInteractables();
@@ -146,9 +180,41 @@ public class PlayerController : NetworkBehaviour
             InputHandler.Instance.OnMove -= OnMoveInput;
             InputHandler.Instance.OnJump -= OnJumpInput;
             InputHandler.Instance.OnInteraction -= OnInteractionInput;
+
+            _localPlayerCreated = null;
         }
 
         base.OnDestroy();
+    }
+
+    /// <summary>
+    /// 플레이어의 상태를 갱신한다.
+    /// </summary>
+    private void UpdatePlayerState()
+    {
+        _velocity = (transform.position - _lastPosition) / Time.deltaTime;
+        _lastPosition = transform.position;
+
+        _angularVelocity = (transform.rotation * Quaternion.Inverse(_lastRotation)).eulerAngles;
+
+        if (_angularVelocity.x > 180f)
+        {
+            _angularVelocity.x -= 360f;
+        }
+
+        if (_angularVelocity.y > 180f)
+        {
+            _angularVelocity.y -= 360f;
+        }
+
+        if (_angularVelocity.z > 180f)
+        {
+            _angularVelocity.z -= 360f;
+        }
+
+        _angularVelocity /= Time.deltaTime;
+
+        _lastRotation = transform.rotation;
     }
 
     /// <summary>
@@ -161,6 +227,10 @@ public class PlayerController : NetworkBehaviour
         if (_cameraController.IsFirstPerson)
         {
             Vector3 newVelocity = rotation * _moveInput * _walkSpeed;
+            if (!_isGrounded)
+            {
+                newVelocity /= 2f;
+            }
             newVelocity.y = _rigidbody.velocity.y;
 
             _rigidbody.velocity = newVelocity;
@@ -168,12 +238,17 @@ public class PlayerController : NetworkBehaviour
         else
         {
             Vector3 newVelocity = rotation * _moveInput * _walkSpeed;
+            if (!_isGrounded)
+            {
+                newVelocity /= 2f;
+            }
             newVelocity.y = _rigidbody.velocity.y;
+
             _rigidbody.velocity = newVelocity;
 
             if (_moveInput.magnitude > 0f)
             {
-                _rigidbody.MoveRotation(Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 32f));
+                _rigidbody.MoveRotation(Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 8));
             }
         }
     }
@@ -185,14 +260,20 @@ public class PlayerController : NetworkBehaviour
     {
         _jumpRemember -= Time.deltaTime;
 
-        if (IsGrounded() && _jumpInput)
+        if (_isGrounded)
         {
-            if (_jumpRemember > 0f)
-            {
-                _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
-            }
+            _isJumping = false;
 
-            _jumpInput = false;
+            if (_jumpInput)
+            {
+                if (_jumpRemember > 0f)
+                {
+                    _isJumping = true;
+                    _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+                }
+
+                _jumpInput = false;
+            }
         }
     }
 
@@ -257,17 +338,16 @@ public class PlayerController : NetworkBehaviour
     /// <summary>
     /// 접지 여부를 판단한다.
     /// </summary>
-    /// <returns>접지 여부</returns>
-    bool IsGrounded()
+    void CheckGrounded()
     {
         if (_collider is CapsuleCollider)
         {
             Vector3 offset = Vector3.up * (_collider.bounds.extents.y - _collider.bounds.extents.x) * 0.9f;
-            return Physics.CapsuleCast(transform.position + offset, transform.position - offset, _collider.bounds.extents.x, Vector3.down, GROUND_DETECTION_THRESHOLD);
+            _isGrounded = Physics.CapsuleCast(transform.position + offset, transform.position - offset, _collider.bounds.extents.x, Vector3.down, GROUND_DETECTION_THRESHOLD);
         }
         else
         {
-            return Physics.BoxCast(transform.position, _collider.bounds.extents * 0.9f, Vector3.down, transform.rotation, GROUND_DETECTION_THRESHOLD);
+            _isGrounded = Physics.BoxCast(transform.position, _collider.bounds.extents * 0.9f, Vector3.down, transform.rotation, GROUND_DETECTION_THRESHOLD);
         }
     }
 

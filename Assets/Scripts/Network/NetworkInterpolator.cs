@@ -89,13 +89,12 @@ public class NetworkInterpolator : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
-        if (_visualReference is not null)
+        _visualReferenceCreated = null;
+
+        if (_visualReference)
         {
             Destroy(_visualReference);
-            _visualReferenceCreated = null;
         }
-        
-        base.OnNetworkDespawn();
     }
 
     /// <summary>

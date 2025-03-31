@@ -11,15 +11,14 @@ public class CameraController : NetworkBehaviour
     [SerializeField] CinemachineVirtualCamera _firstPersonCamera;
     [SerializeField] CinemachineFreeLook _thirdPersonCamera;
 
-    private GameObject _firstPersonCameraHolder;
+    private GameObject _cameraHolder;
+    private GameObject _visualReference;
 
     private CinemachinePOV _cinemachinePOV;
     private Vector2 _lookAroundInput;
 
     private Rigidbody _rigidbody;
     private AxisState _axisState;
-    private float _currentYaw;
-    private float _lastYaw;
 
     private bool _isFirstPerson;
     public bool IsFirstPerson
@@ -31,8 +30,9 @@ public class CameraController : NetworkBehaviour
     {
         if (IsOwner)
         {
-            _firstPersonCameraHolder = new GameObject("Camera Holder");
-            _firstPersonCamera.transform.parent = _firstPersonCameraHolder.transform;
+            _cameraHolder = new GameObject("Camera Holder");
+            _firstPersonCamera.transform.SetParent(_cameraHolder.transform);
+            _thirdPersonCamera.transform.SetParent(_cameraHolder.transform);
 
             _cinemachinePOV = _firstPersonCamera.GetCinemachineComponent<CinemachinePOV>();
             _isFirstPerson = _firstPersonCamera.m_Priority > _thirdPersonCamera.m_Priority;
@@ -52,6 +52,8 @@ public class CameraController : NetworkBehaviour
 
             networkInterpolator.AddVisualReferenceDependantFunction(() =>
             {
+                _visualReference = networkInterpolator.VisualReference;
+
                 _thirdPersonCamera.Follow = networkInterpolator.VisualReference.transform;
                 _thirdPersonCamera.LookAt = networkInterpolator.VisualReference.transform;
             });
@@ -72,29 +74,15 @@ public class CameraController : NetworkBehaviour
         {
             if (_isFirstPerson)
             {
-                _firstPersonCameraHolder.transform.position = transform.position;
+                _cameraHolder.transform.position = _visualReference.transform.position;
 
                 _cinemachinePOV.m_VerticalAxis.m_InputAxisValue = _lookAroundInput.y;
 
                 _axisState.m_InputAxisValue = _lookAroundInput.x;
                 _axisState.Update(Time.deltaTime);
 
-                float newYaw = _axisState.Value;
-                _currentYaw += newYaw - _lastYaw;
-
-                if (_currentYaw > 180f)
-                {
-                    _currentYaw -= 360f;
-                }
-                else if (_currentYaw < -180f)
-                {
-                    _currentYaw += 360f;
-                }
-
-                _firstPersonCameraHolder.transform.rotation = Quaternion.Euler(Vector3.up * _currentYaw);
-                _rigidbody.MoveRotation(_firstPersonCameraHolder.transform.rotation);
-
-                _lastYaw = newYaw;
+                _cameraHolder.transform.rotation = Quaternion.Euler(Vector3.up * _axisState.Value);
+                _rigidbody.MoveRotation(_cameraHolder.transform.rotation);
             }
             else
             {
@@ -108,9 +96,9 @@ public class CameraController : NetworkBehaviour
     {
         InputHandler.Instance.OnLookAround -= OnLookAroundInput;
 
-        if (_firstPersonCameraHolder)
+        if (_cameraHolder)
         {
-            Destroy(_firstPersonCameraHolder);
+            Destroy(_cameraHolder);
         }
 
         base.OnDestroy();
@@ -125,7 +113,7 @@ public class CameraController : NetworkBehaviour
             _firstPersonCamera.m_Priority = 10;
             _thirdPersonCamera.m_Priority = 0;
 
-            _cinemachinePOV.m_HorizontalAxis.Value = Camera.main.transform.rotation.eulerAngles.y;
+            _axisState.Value = Camera.main.transform.rotation.eulerAngles.y;
             _cinemachinePOV.m_VerticalAxis.Value = 0f;
         }
         else if (!toFirstPerson && _isFirstPerson)
