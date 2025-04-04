@@ -727,6 +727,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 5887160851764175374}
   m_PrefabAsset: {fileID: 0}
+--- !u!137 &3322973541301242952 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -22809033178796474, guid: 9bf2fc011336fbd48a11a7412637abcd,
+    type: 3}
+  m_PrefabInstance: {fileID: 5887160851764175374}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3995763631977042035 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -1819269255643270531, guid: 9bf2fc011336fbd48a11a7412637abcd,
@@ -754,6 +760,12 @@ Transform:
 --- !u!4 &5225211160234003512 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -7408201176487104970, guid: 9bf2fc011336fbd48a11a7412637abcd,
+    type: 3}
+  m_PrefabInstance: {fileID: 5887160851764175374}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &5373261327254618722 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7268021246059192212, guid: 9bf2fc011336fbd48a11a7412637abcd,
     type: 3}
   m_PrefabInstance: {fileID: 5887160851764175374}
   m_PrefabAsset: {fileID: 0}
@@ -902,6 +914,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f283200926ca9f2489aeb97ea5652744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _bodyMeshRenderer: {fileID: 3322973541301242952}
+  _eyesMeshRenderer: {fileID: 5373261327254618722}
   _headTarget: {fileID: 6613068825369734745}
   _headCenter: {fileID: 7649701152777972589}
   _leftArmTarget: {fileID: 1596311270173899886}

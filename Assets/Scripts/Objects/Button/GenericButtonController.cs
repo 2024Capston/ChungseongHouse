@@ -122,6 +122,7 @@ public class GenericButtonController : ButtonController
 
     public override bool OnStartInteraction(PlayerController player)
     {
+        player.GetComponent<PlayerRenderer>().PlayTouchAnimation(transform.position + Vector3.up * 10f);
         PressButtonServerRpc();
 
         return false;

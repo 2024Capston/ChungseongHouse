@@ -23,10 +23,10 @@ public class PlayerRenderer : NetworkBehaviour
         set => _playerRender = value;
     }
 
-    private PlayerAnimator _playerAnimator;
-    public PlayerAnimator PlayerAnimator
+    private PlayerRendererUtil _playerRendererUtil;
+    public PlayerRendererUtil PlayerRendererUtil
     {
-        get => _playerAnimator;
+        get => _playerRendererUtil;
     }
 
     private MeshFilter _meshFilter;
@@ -65,8 +65,13 @@ public class PlayerRenderer : NetworkBehaviour
             _playerRender.transform.localRotation = Quaternion.identity;
             _playerRender.transform.localScale = Vector3.one * 0.075f;
 
-            _playerAnimator = _playerRender.GetComponent<PlayerAnimator>();
-            _playerAnimator.SetPlayerController(_playerController);
+            _playerRendererUtil = _playerRender.GetComponent<PlayerRendererUtil>();
+            _playerRendererUtil.SetPlayerController(_playerController);
+
+            if (IsOwner)
+            {
+                _playerRendererUtil.HideFirstPersonPlayerRender();
+            }
         });
     }
 
@@ -75,7 +80,7 @@ public class PlayerRenderer : NetworkBehaviour
     /// </summary>
     public void ShowPlayerRender()
     {
-        _playerRender.SetActive(true);
+        _playerRendererUtil.ShowPlayerRender();
     }
 
     /// <summary>
@@ -83,13 +88,13 @@ public class PlayerRenderer : NetworkBehaviour
     /// </summary>
     public void HidePlayerRender()
     {
-        _playerRender.SetActive(false);
+        _playerRendererUtil.HidePlayerRender();
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void SetHeadTargetServerRpc(Vector3 targetPosition)
     {
-        _playerAnimator.SetHeadTarget(targetPosition);
+        _playerRendererUtil.SetHeadTarget(targetPosition);
     }
 
     [ClientRpc(RequireOwnership = false)]
@@ -100,12 +105,12 @@ public class PlayerRenderer : NetworkBehaviour
             return;
         }
 
-        _playerAnimator.SetHeadTarget(targetPosition);
+        _playerRendererUtil.SetHeadTarget(targetPosition);
     }
 
     public void SetHeadTarget(Vector3 targetPosition)
     {
-        _playerAnimator.SetHeadTarget(targetPosition);
+        _playerRendererUtil.SetHeadTarget(targetPosition);
 
         if (IsServer)
         {
@@ -120,7 +125,7 @@ public class PlayerRenderer : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SetArmTargetServerRpc(ArmType armType, Vector3 targetPosition)
     {
-        _playerAnimator.SetArmTarget(armType, targetPosition);
+        _playerRendererUtil.SetArmTarget(armType, targetPosition);
     }
 
     [ClientRpc(RequireOwnership = false)]
@@ -131,12 +136,12 @@ public class PlayerRenderer : NetworkBehaviour
             return;
         }
 
-        _playerAnimator.SetArmTarget(armType, targetPosition);
+        _playerRendererUtil.SetArmTarget(armType, targetPosition);
     }
 
     public void SetArmTarget(ArmType armType, Vector3 targetPosition)
     {
-        _playerAnimator.SetArmTarget(armType, targetPosition);
+        _playerRendererUtil.SetArmTarget(armType, targetPosition);
 
         if (IsServer)
         {
@@ -151,7 +156,7 @@ public class PlayerRenderer : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SetArmWeightServerRpc(ArmType armType, float weight)
     {
-        _playerAnimator.SetArmWeight(armType, weight);
+        _playerRendererUtil.SetArmWeight(armType, weight);
     }
 
     [ClientRpc(RequireOwnership = false)]
@@ -162,20 +167,51 @@ public class PlayerRenderer : NetworkBehaviour
             return;
         }
 
-        _playerAnimator.SetArmWeight(armType, weight);
+        _playerRendererUtil.SetArmWeight(armType, weight);
     }
 
     public void SetArmWeight(ArmType armType, float weight)
     {
-        _playerAnimator.SetArmWeight(armType, weight);
+        _playerRendererUtil.SetArmWeight(armType, weight);
 
         if (IsServer)
         {
-            SetArmWeight(armType, weight);
+            SetArmWeightClientRpc(armType, weight);
         }
         else
         {
-            SetArmWeight(armType, weight);
+            SetArmWeightServerRpc(armType, weight);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void PlayTouchAnimationServerRpc(Vector3 touchPosition)
+    {
+        _playerRendererUtil.PlayTouchAnimation(touchPosition);
+    }
+
+    [ClientRpc(RequireOwnership = false)]
+    private void PlayTouchAnimationClientRpc(Vector3 touchPosition)
+    {
+        if (IsServer)
+        {
+            return;
+        }
+
+        _playerRendererUtil.PlayTouchAnimation(touchPosition);
+    }
+
+    public void PlayTouchAnimation(Vector3 touchPosition)
+    {
+        _playerRendererUtil.PlayTouchAnimation(touchPosition);
+
+        if (IsServer)
+        {
+            PlayTouchAnimationClientRpc(touchPosition);
+        }
+        else
+        {
+            PlayTouchAnimationServerRpc(touchPosition);
         }
     }
 }

@@ -21,6 +21,8 @@ public class CameraController : NetworkBehaviour
     private PlayerRenderer _playerRenderer;
     private AxisState _axisState;
 
+    private bool _isEnabled = true;
+
     private bool _isFirstPerson;
     public bool IsFirstPerson
     {
@@ -60,7 +62,7 @@ public class CameraController : NetworkBehaviour
                 _thirdPersonCamera.LookAt = networkInterpolator.VisualReference.transform;
             });
 
-            Cursor.lockState = CursorLockMode.Locked;
+            // Cursor.lockState = CursorLockMode.Locked;
         }
         else
         {
@@ -72,7 +74,7 @@ public class CameraController : NetworkBehaviour
 
     private void Update()
     {
-        if (IsOwner)
+        if (IsOwner && _isEnabled)
         {
             if (_isFirstPerson)
             {
@@ -86,7 +88,7 @@ public class CameraController : NetworkBehaviour
                 _cameraHolder.transform.rotation = Quaternion.Euler(Vector3.up * _axisState.Value);
                 _rigidbody.MoveRotation(_cameraHolder.transform.rotation);
 
-                _playerRenderer.PlayerAnimator.SetHeadTarget(Camera.main.transform.forward);
+                _playerRenderer.PlayerRendererUtil.SetHeadTarget(Camera.main.transform.forward);
             }
             else
             {
@@ -132,5 +134,15 @@ public class CameraController : NetworkBehaviour
     public void OnLookAroundInput(InputValue value)
     {
         _lookAroundInput = value.Get<Vector2>() / Time.deltaTime / 2048f;
+    }
+
+    public void EnableInput()
+    {
+        _isEnabled = true;
+    }
+
+    public void DisableInput()
+    {
+        _isEnabled = false;
     }
 }

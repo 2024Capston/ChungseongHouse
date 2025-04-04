@@ -1,9 +1,14 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.Rendering;
 
-public class PlayerAnimator : MonoBehaviour
+public class PlayerRendererUtil : MonoBehaviour
 {
+    [SerializeField] SkinnedMeshRenderer _bodyMeshRenderer;
+    [SerializeField] SkinnedMeshRenderer _eyesMeshRenderer;
+
     [SerializeField] Transform _headTarget;
     [SerializeField] Transform _headCenter;
 
@@ -22,6 +27,8 @@ public class PlayerAnimator : MonoBehaviour
 
     private float _leftWeightInterpolator;
     private float _rightWeightInterpolator;
+
+    private bool _touchInterrupted;
 
     private void Awake()
     {
@@ -79,6 +86,7 @@ public class PlayerAnimator : MonoBehaviour
 
         if (armType == ArmType.RightArm || armType == ArmType.BothArms)
         {
+            _touchInterrupted = true;
             _rightArmInterpolator = targetPosition;
         }
     }
@@ -92,8 +100,47 @@ public class PlayerAnimator : MonoBehaviour
 
         if (armType == ArmType.RightArm || armType == ArmType.BothArms)
         {
+            _touchInterrupted = true;
             _rightWeightInterpolator = weight;
         }
+    }
+
+    public void PlayTouchAnimation(Vector3 touchPosition)
+    {
+        StartCoroutine(CoPlayTouchAnimation(touchPosition));
+    }
+
+    private IEnumerator CoPlayTouchAnimation(Vector3 touchPosition)
+    {
+        _rightArmInterpolator = touchPosition;
+        _rightWeightInterpolator = 1.0f;
+
+        _touchInterrupted = false;
+
+        yield return new WaitForSeconds(0.2f);
+
+        if (!_touchInterrupted)
+        {
+            _rightWeightInterpolator = 0.0f;
+        }
+    }
+
+    public void HideFirstPersonPlayerRender()
+    {
+        _bodyMeshRenderer.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
+        _eyesMeshRenderer.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
+    }
+
+    public void ShowPlayerRender()
+    {
+        _bodyMeshRenderer.enabled = true;
+        _eyesMeshRenderer.enabled = true;
+    }
+
+    public void HidePlayerRender()
+    {
+        _bodyMeshRenderer.enabled = false;
+        _eyesMeshRenderer.enabled = false;
     }
 
     public void PlayFootstepSound()

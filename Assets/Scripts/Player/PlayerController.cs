@@ -13,7 +13,7 @@ public class PlayerController : NetworkBehaviour
 
     private const float GROUND_DETECTION_THRESHOLD = 1f;        // 접지 판정 범위
     private const float JUMP_REMEMBER_TIME = 0.64f;             // 점프 키 입력 기억 시간
-    private const float MAXIMUM_REACH_DISTANCE = 48f;           // 상호작용 가능 범위
+    private const float MAXIMUM_REACH_DISTANCE = 16f;           // 상호작용 가능 범위
 
     public static float INITIAL_CAPSULE_HEIGHT = 2f;             // 최초 Capsule Collider 높이
     public static float INITIAL_CAPSULE_RADIUS = 0.5f;           // 최초 Capsule Collider 반경 
@@ -31,6 +31,7 @@ public class PlayerController : NetworkBehaviour
     private Vector3 _moveInput;     // 방향 입력 값 (수직, 수평)
     private bool _jumpInput;        // 점프 입력 여부
     private float _jumpRemember;    // 입력된 점프를 처리할 수 있는 쿨타임
+    private bool _isEnabled = true; // 플레이어 조작 활성화 여부
 
     private Vector3 _lastPosition;
     private Quaternion _lastRotation;
@@ -84,7 +85,7 @@ public class PlayerController : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         //QualitySettings.vSyncCount = 0;
-        //Application.targetFrameRate = 30;
+        //Application.targetFrameRate = 60;
 
         _collider = GetComponent<Collider>();
         _playerRenderer = GetComponent<PlayerRenderer>();
@@ -160,9 +161,13 @@ public class PlayerController : NetworkBehaviour
         {
             CheckGrounded();
 
-            HandleMovement();
-            HandleJump();
-            SearchInteractables();
+            if (_isEnabled)
+            {
+                HandleMovement();
+                HandleJump();
+                SearchInteractables();
+            }
+
             HandlePlatform();
 
             // !TEST
@@ -530,5 +535,17 @@ public class PlayerController : NetworkBehaviour
                 _interactableInHand = null;
             }
         }
+    }
+
+    public void EnableInput()
+    {
+        _isEnabled = true;
+        _cameraController.EnableInput();
+    }
+
+    public void DisableInput()
+    {
+        _isEnabled = false;
+        _cameraController.DisableInput();
     }
 }

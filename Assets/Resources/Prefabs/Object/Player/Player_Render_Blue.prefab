@@ -796,6 +796,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f283200926ca9f2489aeb97ea5652744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _bodyMeshRenderer: {fileID: 2224967387974036737}
+  _eyesMeshRenderer: {fileID: 5253432696388618060}
   _headTarget: {fileID: 400413584177620272}
   _headCenter: {fileID: 8414239205525135246}
   _leftArmTarget: {fileID: 2046128039886972628}
@@ -837,6 +839,12 @@ Transform:
 --- !u!4 &2167358353443898256 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 881ae5eaf2034674393bea9983274243,
+    type: 3}
+  m_PrefabInstance: {fileID: 1846116912698926203}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &2224967387974036737 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 539892644936403322, guid: 881ae5eaf2034674393bea9983274243,
     type: 3}
   m_PrefabInstance: {fileID: 1846116912698926203}
   m_PrefabAsset: {fileID: 0}
@@ -891,6 +899,12 @@ Transform:
 --- !u!4 &4684509069865582728 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6384980162624988403, guid: 881ae5eaf2034674393bea9983274243,
+    type: 3}
+  m_PrefabInstance: {fileID: 1846116912698926203}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &5253432696388618060 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5870803549145277239, guid: 881ae5eaf2034674393bea9983274243,
     type: 3}
   m_PrefabInstance: {fileID: 1846116912698926203}
   m_PrefabAsset: {fileID: 0}
