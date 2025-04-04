@@ -16,8 +16,8 @@ public class CubeController : NetworkBehaviour, IInteractable
         set => _color = value;
     }
 
-    private const float DISTANCE_FROM_PLAYER = 32f;         // 플레이어와 큐브 사이의 거리
-    private const float MAXIMUM_DISTANCE_FROM_PLAYER = 64f; // 플레이어와 큐브가 멀어질 수 있는 최대 거리
+    private const float DISTANCE_FROM_PLAYER = 16f;         // 플레이어와 큐브 사이의 거리
+    private const float MAXIMUM_DISTANCE_FROM_PLAYER = 32f; // 플레이어와 큐브가 멀어질 수 있는 최대 거리
     private const float MAXIMUM_CUBE_SPEED = 128f;           // 큐브의 최대 이동 속력
     private const float CUBE_SPEED = 2f;                    // 큐브의 이동 속력
 
@@ -26,6 +26,7 @@ public class CubeController : NetworkBehaviour, IInteractable
     private NetworkInterpolator _networkInterpolator;
 
     private PlayerController _interactingPlayer;    // 큐브를 들고 있는 플레이어
+    private PlayerRenderer _interactingPlayerRenderer;
     private bool _isActive = true;
 
     /// <summary>
@@ -70,7 +71,9 @@ public class CubeController : NetworkBehaviour, IInteractable
 
         if (_interactingPlayer)
         {
-            Vector3 target = Camera.main.transform.position + Camera.main.transform.forward * DISTANCE_FROM_PLAYER;
+            Vector3 target = Camera.main.transform.position + Camera.main.transform.forward * DISTANCE_FROM_PLAYER - Camera.main.transform.up * 2f;
+            _interactingPlayerRenderer.PlayerAnimator.SetArmTarget(ArmType.LeftArm, target - transform.right * 10f);
+            _interactingPlayerRenderer.PlayerAnimator.SetArmTarget(ArmType.RightArm, target + transform.right * 10f);
 
             Vector3 direction = (target - transform.position).normalized;
             float magnitude = Mathf.Clamp(Mathf.Pow((target - transform.position).magnitude * CUBE_SPEED, 2), 0, MAXIMUM_CUBE_SPEED);
@@ -81,7 +84,7 @@ public class CubeController : NetworkBehaviour, IInteractable
                 magnitude /= 4f;
             }
 
-            _rigidbody.velocity = direction * magnitude;
+            _rigidbody.velocity = direction * magnitude + _interactingPlayer.Velocity;
 
             _rigidbody.MoveRotation(Quaternion.Slerp(_rigidbody.rotation, Quaternion.LookRotation(transform.position - Camera.main.transform.position), Time.deltaTime * 16f));
 
@@ -100,6 +103,9 @@ public class CubeController : NetworkBehaviour, IInteractable
     public bool StartInteraction(PlayerController player)
     {
         _interactingPlayer = player;
+        _interactingPlayerRenderer = player.GetComponent<PlayerRenderer>();
+
+        _interactingPlayerRenderer.PlayerAnimator.SetArmWeight(ArmType.BothArms, 1f);
         _rigidbody.useGravity = false;
 
         SetTakenServerRpc(true);
@@ -109,7 +115,11 @@ public class CubeController : NetworkBehaviour, IInteractable
 
     public bool StopInteraction(PlayerController player)
     {
+        _interactingPlayerRenderer.PlayerAnimator.SetArmWeight(ArmType.BothArms, 0f);
+
         _interactingPlayer = null;
+        _interactingPlayerRenderer = null;
+
         _rigidbody.useGravity = true;
 
         SetTakenServerRpc(false);

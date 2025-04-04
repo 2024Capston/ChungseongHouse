@@ -45,3 +45,8 @@ public enum EventType
 {
     EventA, EventB, EventC, EventD, EventE, EventF, EventG, EventH
 }
+
+public enum ArmType
+{
+    LeftArm, RightArm, BothArms
+}

@@ -388,8 +388,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerRenderPrefab:
-  - {fileID: 2598954008640769726, guid: 94bc8158e8f1e4b459c718ace409fb9f, type: 3}
-  - {fileID: 2598954008640769726, guid: 0fcc6d5663fd3d84abbceeb5611c69f9, type: 3}
+  - {fileID: 1540178695154538794, guid: 1261ccb8e1ebf9b47992b6a321990033, type: 3}
+  - {fileID: 6733457911498956639, guid: 4c906569f73201741936c1d3bd7118b8, type: 3}
 --- !u!114 &-1680078530824072864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -512,7 +512,7 @@ Transform:
   m_GameObject: {fileID: 3100783602383196205}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.3, z: 0.4}
+  m_LocalPosition: {x: 0, y: 0.6, z: 0.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1008,11 +1008,11 @@ MonoBehaviour:
   m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
   m_CameraRadius: 5
-  m_Strategy: 1
+  m_Strategy: 0
   m_MaximumEffort: 4
   m_SmoothingTime: 0
-  m_Damping: 0.2
-  m_DampingWhenOccluded: 0.2
+  m_Damping: 0
+  m_DampingWhenOccluded: 0
   m_OptimalTargetDistance: 0
 --- !u!114 &6652962310175076781
 MonoBehaviour:
@@ -1198,7 +1198,7 @@ Transform:
   m_GameObject: {fileID: 6386757970748849068}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.3, z: 0.4}
+  m_LocalPosition: {x: 0, y: 0.6, z: 0.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

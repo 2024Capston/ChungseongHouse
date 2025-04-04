@@ -215,6 +215,15 @@ public class PlayerController : NetworkBehaviour
         _angularVelocity /= Time.deltaTime;
 
         _lastRotation = transform.rotation;
+
+        if (IsServer)
+        {
+            SendPlayerStateClientRpc(_isJumping, _isGrounded);
+        }
+        else
+        {
+            SendPlayerStateServerRpc(_isJumping, _isGrounded);
+        }
     }
 
     /// <summary>
@@ -262,8 +271,6 @@ public class PlayerController : NetworkBehaviour
 
         if (_isGrounded)
         {
-            _isJumping = false;
-
             if (_jumpInput)
             {
                 if (_jumpRemember > 0f)
@@ -273,6 +280,11 @@ public class PlayerController : NetworkBehaviour
                 }
 
                 _jumpInput = false;
+            }
+
+            if (_isJumping && _velocity.y < 0f)
+            {
+                _isJumping = false;
             }
         }
     }
@@ -438,6 +450,20 @@ public class PlayerController : NetworkBehaviour
     {
         _color = color;
         _playerRenderer.Initialize();
+    }
+
+    [ServerRpc]
+    private void SendPlayerStateServerRpc(bool isJumping, bool isGrounded)
+    {
+        _isJumping = isJumping;
+        _isGrounded = isGrounded;
+    }
+
+    [ClientRpc]
+    private void SendPlayerStateClientRpc(bool isJumping, bool isGrounded)
+    {
+        _isJumping = isJumping;
+        _isGrounded = isGrounded;
     }
 
     /// <summary>

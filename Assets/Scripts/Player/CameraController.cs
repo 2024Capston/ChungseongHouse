@@ -18,6 +18,7 @@ public class CameraController : NetworkBehaviour
     private Vector2 _lookAroundInput;
 
     private Rigidbody _rigidbody;
+    private PlayerRenderer _playerRenderer;
     private AxisState _axisState;
 
     private bool _isFirstPerson;
@@ -38,6 +39,7 @@ public class CameraController : NetworkBehaviour
             _isFirstPerson = _firstPersonCamera.m_Priority > _thirdPersonCamera.m_Priority;
 
             _rigidbody = GetComponent<Rigidbody>();
+            _playerRenderer = GetComponent<PlayerRenderer>();
             _axisState = _cinemachinePOV.m_HorizontalAxis;
 
             // 처음 시작시 카메라 위치를 초기화
@@ -83,6 +85,8 @@ public class CameraController : NetworkBehaviour
 
                 _cameraHolder.transform.rotation = Quaternion.Euler(Vector3.up * _axisState.Value);
                 _rigidbody.MoveRotation(_cameraHolder.transform.rotation);
+
+                _playerRenderer.PlayerAnimator.SetHeadTarget(Camera.main.transform.forward);
             }
             else
             {
