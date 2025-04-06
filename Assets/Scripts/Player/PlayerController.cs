@@ -155,10 +155,9 @@ public class PlayerController : NetworkBehaviour
 
     private void Update()
     {
-        UpdatePlayerState();
-
         if (IsOwner)
         {
+            UpdatePlayerState();
             CheckGrounded();
 
             if (_isEnabled)
@@ -169,6 +168,7 @@ public class PlayerController : NetworkBehaviour
             }
 
             HandlePlatform();
+            SendPlayerState();
 
             // !TEST
             if (Input.GetKeyDown(KeyCode.C))
@@ -218,17 +218,7 @@ public class PlayerController : NetworkBehaviour
         }
 
         _angularVelocity /= Time.deltaTime;
-
         _lastRotation = transform.rotation;
-
-        if (IsServer)
-        {
-            SendPlayerStateClientRpc(_isJumping, _isGrounded);
-        }
-        else
-        {
-            SendPlayerStateServerRpc(_isJumping, _isGrounded);
-        }
     }
 
     /// <summary>
@@ -355,7 +345,7 @@ public class PlayerController : NetworkBehaviour
     /// <summary>
     /// 접지 여부를 판단한다.
     /// </summary>
-    void CheckGrounded()
+    private void CheckGrounded()
     {
         if (_collider is CapsuleCollider)
         {
@@ -365,6 +355,21 @@ public class PlayerController : NetworkBehaviour
         else
         {
             _isGrounded = Physics.BoxCast(transform.position, _collider.bounds.extents * 0.9f, Vector3.down, transform.rotation, GROUND_DETECTION_THRESHOLD);
+        }
+    }
+
+    /// <summary>
+    /// 플레이어의 현재 상태를 상대에게 보낸다.
+    /// </summary>
+    private void SendPlayerState()
+    {
+        if (IsServer)
+        {
+            SendPlayerStateClientRpc(_velocity, _angularVelocity, _isJumping, _isGrounded);
+        }
+        else
+        {
+            SendPlayerStateServerRpc(_velocity, _angularVelocity, _isJumping, _isGrounded);
         }
     }
 
@@ -450,23 +455,34 @@ public class PlayerController : NetworkBehaviour
     /// 클라이언트에서 서버에게 자신의 색깔을 전달한다.
     /// </summary>
     /// <param name="color">색깔</param>
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void SendPlayerColorServerRpc(ColorType color)
     {
         _color = color;
         _playerRenderer.Initialize();
     }
 
-    [ServerRpc]
-    private void SendPlayerStateServerRpc(bool isJumping, bool isGrounded)
+    [ServerRpc(RequireOwnership = false)]
+    private void SendPlayerStateServerRpc(Vector3 velocity, Vector3 angularVelocity, bool isJumping, bool isGrounded)
     {
+        _velocity = velocity;
+        _angularVelocity = angularVelocity;
+
         _isJumping = isJumping;
         _isGrounded = isGrounded;
     }
 
-    [ClientRpc]
-    private void SendPlayerStateClientRpc(bool isJumping, bool isGrounded)
+    [ClientRpc(RequireOwnership = false)]
+    private void SendPlayerStateClientRpc(Vector3 velocity, Vector3 angularVelocity, bool isJumping, bool isGrounded)
     {
+        if (IsServer)
+        {
+            return;
+        }
+
+        _velocity = velocity;
+        _angularVelocity = angularVelocity;
+
         _isJumping = isJumping;
         _isGrounded = isGrounded;
     }

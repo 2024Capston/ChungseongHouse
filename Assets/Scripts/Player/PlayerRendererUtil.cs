@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.Rendering;
 
+/// <summary>
+/// 생성된 플레이어 리깅 모델을 관리하는 Class
+/// </summary>
 public class PlayerRendererUtil : MonoBehaviour
 {
     [SerializeField] SkinnedMeshRenderer _bodyMeshRenderer;
@@ -21,13 +24,16 @@ public class PlayerRendererUtil : MonoBehaviour
     private PlayerController _playerController;
     private Animator _animator;
 
+    // 목표 위치 보간용
     private Vector3 _headInterpolator;
     private Vector3 _leftArmInterpolator;
     private Vector3 _rightArmInterpolator;
 
+    // 목표 Weight 보간용
     private float _leftWeightInterpolator;
     private float _rightWeightInterpolator;
 
+    // Coroutine에서 Weight 변경 도중에 SetArmWeight() 함수가 호출된 경우를 확인
     private bool _touchInterrupted;
 
     private void Awake()
@@ -58,11 +64,13 @@ public class PlayerRendererUtil : MonoBehaviour
         _animator.SetBool("IsJumping", _playerController.IsJumping);
         _animator.SetBool("IsGrounded", _playerController.IsGrounded);
 
+        // 목표 위치로 target 오브젝트 보간
         _headTarget.position = Vector3.Lerp(_headTarget.position, _headInterpolator, 32f * Time.deltaTime);
 
         _leftArmTarget.position = Vector3.Lerp(_leftArmTarget.position, _leftArmInterpolator, 32f * Time.deltaTime);
         _rightArmTarget.position = Vector3.Lerp(_rightArmTarget.position, _rightArmInterpolator, 32f * Time.deltaTime);
 
+        // 목표 값으로 Rig Weight 보간
         _leftArmRig.weight = Mathf.Lerp(_leftArmRig.weight, _leftWeightInterpolator, 16f * Time.deltaTime);
         _rightArmRig.weight = Mathf.Lerp(_rightArmRig.weight, _rightWeightInterpolator, 16f * Time.deltaTime);
     }
@@ -72,9 +80,9 @@ public class PlayerRendererUtil : MonoBehaviour
         _playerController = playerController;
     }
 
-    public void SetHeadTarget(Vector3 cameraForward)
+    public void SetHeadTarget(Vector3 forward)
     {
-        _headInterpolator = _headCenter.position + cameraForward * 64f;
+        _headInterpolator = _headCenter.position + forward * 64f;
     }
 
     public void SetArmTarget(ArmType armType, Vector3 targetPosition)
@@ -125,6 +133,9 @@ public class PlayerRendererUtil : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 로컬 플레이어의 메쉬를 그림자만 표시한다. (1인칭 카메라를 위해)
+    /// </summary>
     public void HideFirstPersonPlayerRender()
     {
         _bodyMeshRenderer.shadowCastingMode = ShadowCastingMode.ShadowsOnly;

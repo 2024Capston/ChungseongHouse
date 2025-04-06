@@ -46,6 +46,9 @@ public enum EventType
     EventA, EventB, EventC, EventD, EventE, EventF, EventG, EventH
 }
 
+/// <summary>
+/// 플레이어 리깅 애니메이션에서 사용할 팔 종류
+/// </summary>
 public enum ArmType
 {
     LeftArm, RightArm, BothArms

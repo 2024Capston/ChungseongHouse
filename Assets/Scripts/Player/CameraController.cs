@@ -88,7 +88,7 @@ public class CameraController : NetworkBehaviour
                 _cameraHolder.transform.rotation = Quaternion.Euler(Vector3.up * _axisState.Value);
                 _rigidbody.MoveRotation(_cameraHolder.transform.rotation);
 
-                _playerRenderer.PlayerRendererUtil.SetHeadTarget(Camera.main.transform.forward);
+                _playerRenderer.SetHeadTarget(Camera.main.transform.forward);
             }
             else
             {

@@ -72,8 +72,8 @@ public class CubeController : NetworkBehaviour, IInteractable
         if (_interactingPlayer)
         {
             Vector3 target = Camera.main.transform.position + Camera.main.transform.forward * DISTANCE_FROM_PLAYER - Camera.main.transform.up * 2f;
-            _interactingPlayerRenderer.PlayerRendererUtil.SetArmTarget(ArmType.LeftArm, target - transform.right * 10f);
-            _interactingPlayerRenderer.PlayerRendererUtil.SetArmTarget(ArmType.RightArm, target + transform.right * 10f);
+            _interactingPlayerRenderer.SetArmTarget(ArmType.LeftArm, target - transform.right * 10f);
+            _interactingPlayerRenderer.SetArmTarget(ArmType.RightArm, target + transform.right * 10f);
 
             Vector3 direction = (target - transform.position).normalized;
             float magnitude = Mathf.Clamp(Mathf.Pow((target - transform.position).magnitude * CUBE_SPEED, 2), 0, MAXIMUM_CUBE_SPEED);
@@ -104,7 +104,7 @@ public class CubeController : NetworkBehaviour, IInteractable
         _interactingPlayer = player;
         _interactingPlayerRenderer = player.GetComponent<PlayerRenderer>();
 
-        _interactingPlayerRenderer.PlayerRendererUtil.SetArmWeight(ArmType.BothArms, 1f);
+        _interactingPlayerRenderer.SetArmWeight(ArmType.BothArms, 1f);
         _rigidbody.useGravity = false;
 
         SetTakenServerRpc(true);
@@ -114,7 +114,7 @@ public class CubeController : NetworkBehaviour, IInteractable
 
     public bool StopInteraction(PlayerController player)
     {
-        _interactingPlayerRenderer.PlayerRendererUtil.SetArmWeight(ArmType.BothArms, 0f);
+        _interactingPlayerRenderer.SetArmWeight(ArmType.BothArms, 0f);
 
         _interactingPlayer = null;
         _interactingPlayerRenderer = null;

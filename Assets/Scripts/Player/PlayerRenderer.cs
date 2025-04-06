@@ -14,6 +14,7 @@ public class PlayerRenderer : NetworkBehaviour
     [SerializeField] private GameObject[] _playerRenderPrefab;
 
     private PlayerController _playerController;
+    private PlayerRendererUtil _playerRendererUtil;
     private NetworkInterpolator _networkInterpolator;
 
     private GameObject _playerRender;
@@ -21,12 +22,6 @@ public class PlayerRenderer : NetworkBehaviour
     {
         get => _playerRender;
         set => _playerRender = value;
-    }
-
-    private PlayerRendererUtil _playerRendererUtil;
-    public PlayerRendererUtil PlayerRendererUtil
-    {
-        get => _playerRendererUtil;
     }
 
     private MeshFilter _meshFilter;
@@ -92,33 +87,37 @@ public class PlayerRenderer : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SetHeadTargetServerRpc(Vector3 targetPosition)
+    private void SetHeadTargetServerRpc(Vector3 forward)
     {
-        _playerRendererUtil.SetHeadTarget(targetPosition);
+        _playerRendererUtil.SetHeadTarget(forward);
     }
 
     [ClientRpc(RequireOwnership = false)]
-    private void SetHeadTargetClientRpc(Vector3 targetPosition)
+    private void SetHeadTargetClientRpc(Vector3 forward)
     {
         if (IsServer)
         {
             return;
         }
 
-        _playerRendererUtil.SetHeadTarget(targetPosition);
+        _playerRendererUtil.SetHeadTarget(forward);
     }
 
-    public void SetHeadTarget(Vector3 targetPosition)
+    /// <summary>
+    /// 플레이어 머리의 방향을 지정한다.
+    /// </summary>
+    /// <param name="targetPosition">방향 벡터</param>
+    public void SetHeadTarget(Vector3 forward)
     {
-        _playerRendererUtil.SetHeadTarget(targetPosition);
+        _playerRendererUtil.SetHeadTarget(forward);
 
         if (IsServer)
         {
-            SetHeadTargetClientRpc(targetPosition);
+            SetHeadTargetClientRpc(forward);
         }
         else
         {
-            SetHeadTargetServerRpc(targetPosition);
+            SetHeadTargetServerRpc(forward);
         }
     }
 
@@ -139,6 +138,11 @@ public class PlayerRenderer : NetworkBehaviour
         _playerRendererUtil.SetArmTarget(armType, targetPosition);
     }
 
+    /// <summary>
+    /// 플레이어 팔의 방향을 지정한다.
+    /// </summary>
+    /// <param name="armType">팔 종류</param>
+    /// <param name="targetPosition">팔 위치</param>
     public void SetArmTarget(ArmType armType, Vector3 targetPosition)
     {
         _playerRendererUtil.SetArmTarget(armType, targetPosition);
@@ -170,6 +174,11 @@ public class PlayerRenderer : NetworkBehaviour
         _playerRendererUtil.SetArmWeight(armType, weight);
     }
 
+    /// <summary>
+    /// 플레이어 팔의 Weight를 지정한다. [0, 1]
+    /// </summary>
+    /// <param name="armType">팔 위치</param>
+    /// <param name="weight">Weight</param>
     public void SetArmWeight(ArmType armType, float weight)
     {
         _playerRendererUtil.SetArmWeight(armType, weight);
@@ -201,6 +210,10 @@ public class PlayerRenderer : NetworkBehaviour
         _playerRendererUtil.PlayTouchAnimation(touchPosition);
     }
 
+    /// <summary>
+    /// 플레이어가 오른팔로 특정 위치를 누르는 애니메이션을 재생한다.
+    /// </summary>
+    /// <param name="touchPosition">목표 위치</param>
     public void PlayTouchAnimation(Vector3 touchPosition)
     {
         _playerRendererUtil.PlayTouchAnimation(touchPosition);
