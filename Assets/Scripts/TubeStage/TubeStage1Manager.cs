@@ -27,13 +27,20 @@ namespace TubeStage
 
         public override void RestartGame()
         {
-            StopCoroutine(_currentGame);
+            if (_currentGame != null)
+            {
+                StopCoroutine(_currentGame);
+            }
+            _currentGame = null;
+            TubeStage1Mapper.Instance.SetSourceTubeLight(0);
             _tubeStage1Controller.SetStartButton(true);
+            
         }
 
         public override void EndGame()
         {
             EventBus.Instance.UnsubscribeEvent<UnityAction>(EventType.EventA, OnClickStartButton);
+            InGameManager.Instance.EndGameServerRpc();
         }
 
         private void OnClickStartButton()
@@ -64,6 +71,15 @@ namespace TubeStage
                 
                 TubeStage1Mapper.Instance.ResetState();
                 
+            }
+
+            if (isSuccess)
+            {
+                _tubeStage1Controller.EndDoorOpen();
+            }
+            else
+            {
+                RestartGame();
             }
         }
     }

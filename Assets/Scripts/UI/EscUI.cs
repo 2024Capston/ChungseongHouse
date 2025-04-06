@@ -130,6 +130,7 @@ public class EscUI : BaseUI
     private void OnClickRespawn(ClickEvent evt)
     {
         StageManager.Instance.RestartGame();
+        UIManager.Instance.CloseAllOpenUI();
     }
     
     private void OnClickSettingButton(ClickEvent evt)
