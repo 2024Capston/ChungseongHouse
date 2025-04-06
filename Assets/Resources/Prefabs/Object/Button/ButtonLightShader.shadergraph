@@ -189,6 +189,20 @@
         {
             "m_OutputSlot": {
                 "m_Node": {
+                    "m_Id": "3a99218807414ecfaa0fa9ff80c046d2"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "69cd2d3ae8fe43699f950b92dd1a57dd"
+                },
+                "m_SlotId": 0
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
                     "m_Id": "452b6bf55ff841c18019012cf0b2bc52"
                 },
                 "m_SlotId": 0
@@ -1011,10 +1025,10 @@
     "m_Guid": {
         "m_GuidSerialized": "501c5bbe-2438-4341-86f6-7efbe195a210"
     },
-    "m_Name": "ViewMode",
+    "m_Name": "ViewType",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "ViewMode",
-    "m_DefaultReferenceName": "_ViewMode",
+    "m_RefNameGeneratedByDisplayName": "ViewType",
+    "m_DefaultReferenceName": "_ViewType",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -1143,7 +1157,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "4af1167650f7445ea377c5b9d0ff32b2",
     "m_Id": 0,
-    "m_DisplayName": "ViewMode",
+    "m_DisplayName": "ViewType",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -1609,7 +1623,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "7fd780f6b87b4a968e114bd25b059dbf",
     "m_Id": 0,
-    "m_DisplayName": "ViewMode",
+    "m_DisplayName": "ViewType",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",

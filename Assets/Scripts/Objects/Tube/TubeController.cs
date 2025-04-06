@@ -8,8 +8,10 @@ public class TubeController : NetworkBehaviour
     private static readonly int FILL_ID = Shader.PropertyToID("_Fill");
     private static readonly int WOBBLE_X_ID = Shader.PropertyToID("_WobbleX");
     private static readonly int WOBBLE_Z_ID = Shader.PropertyToID("_WobbleZ");
+    private static readonly int IS_LIGHT_ON_ID = Shader.PropertyToID("_IsLightOn");
     
     [SerializeField] private Renderer _liquidRenderer;
+    [SerializeField] private Renderer _lightRenderer;
     
     private NetworkVariable<float> _fill = new NetworkVariable<float>(.5f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public float Fill
@@ -31,9 +33,7 @@ public class TubeController : NetworkBehaviour
     private float _pulse;
     private float _time = 0.5f;
 
-    [SerializeField]
-    private ColorType _color;
-
+    [SerializeField] private ColorType _color;
     public ColorType Color
     {
         get => _color;
@@ -43,6 +43,7 @@ public class TubeController : NetworkBehaviour
             _liquidRenderer.material.SetObjectColor(_color);
         }
     }
+    
     private ColorType _playerColor;
     private int _viewMode = 1;
     
@@ -92,6 +93,8 @@ public class TubeController : NetworkBehaviour
 
     private IEnumerator CoDecreaseValue(float s, float e)
     {
+        SetTubeWobble(0f, 0f, 0f);
+        
         float duration = 1f;
         float elapsed = 0f;
         float wobbleStrength = _maxWobble * Mathf.Abs(s - e);
@@ -109,5 +112,23 @@ public class TubeController : NetworkBehaviour
             yield return null;
         }
         _liquidRenderer.material.SetFloat(FILL_ID, e);
+
+        if (0f < e && e < 1f)
+        {
+            SetTubeWobble(0.3f, 1f, 1f);
+        }
+    }
+    
+    [ClientRpc]
+    public void SetTubeLightClientRpc(bool isLightOn)
+    {
+        _lightRenderer.materials[1].SetFloat(IS_LIGHT_ON_ID, isLightOn ? 1.0f : 0.0f);
+    }
+    
+    private void SetTubeWobble(float maxWobble, float wobbleSpeed, float recoverySpeed)
+    {
+        _maxWobble = maxWobble;
+        _wobbleSpeed = wobbleSpeed;
+        _recoverySpeed = recoverySpeed;
     }
 }
