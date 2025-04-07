@@ -84,8 +84,8 @@ public class PlayerController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = 60;
+        //QualitySettings.vSyncCount = 0;
+        //Application.targetFrameRate = 30;
 
         _collider = GetComponent<Collider>();
         _playerRenderer = GetComponent<PlayerRenderer>();
@@ -239,8 +239,7 @@ public class PlayerController : NetworkBehaviour
             }
             newVelocity.y = _rigidbody.velocity.y;
 
-            _rigidbody.AddForce(newVelocity - _rigidbody.velocity, ForceMode.VelocityChange);
-            //_rigidbody.velocity = newVelocity;
+            _rigidbody.velocity = newVelocity;
         }
         else
         {
@@ -341,6 +340,7 @@ public class PlayerController : NetworkBehaviour
         {
             Vector3 velocityDiff = _networkPlatformFinder.Velocity;
             velocityDiff.y = 0f;
+
             _rigidbody.velocity += velocityDiff;
         }
     }

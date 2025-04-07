@@ -26,6 +26,7 @@ public class CubeController : NetworkBehaviour, IInteractable
     private NetworkInterpolator _networkInterpolator;
 
     private PlayerController _interactingPlayer;    // 큐브를 들고 있는 플레이어
+    private Rigidbody _interactingRigidbody;
     private PlayerRenderer _interactingPlayerRenderer;
     private bool _isActive = true;
 
@@ -71,22 +72,22 @@ public class CubeController : NetworkBehaviour, IInteractable
 
         if (_interactingPlayer)
         {
-            Vector3 target = Camera.main.transform.position + Camera.main.transform.forward * DISTANCE_FROM_PLAYER - Camera.main.transform.up * 2f;
+            Vector3 target = _interactingRigidbody.position + Vector3.up * 6f + Camera.main.transform.forward * DISTANCE_FROM_PLAYER;
             _interactingPlayerRenderer.SetArmTarget(ArmType.LeftArm, target - transform.right * 10f);
             _interactingPlayerRenderer.SetArmTarget(ArmType.RightArm, target + transform.right * 10f);
 
-            Vector3 direction = (target - transform.position).normalized;
-            float magnitude = Mathf.Clamp(Mathf.Pow((target - transform.position).magnitude * CUBE_SPEED, 2), 0, MAXIMUM_CUBE_SPEED);
+            Vector3 direction = (target - _rigidbody.position).normalized;
+            float magnitude = Mathf.Clamp(Mathf.Pow((target - _rigidbody.position).magnitude * CUBE_SPEED, 2), 0, MAXIMUM_CUBE_SPEED);
 
             if (_rigidbody.SweepTest(direction, out RaycastHit hit, magnitude * Time.deltaTime))
             {
                 magnitude = 4f * Time.deltaTime;
             }
 
-            _rigidbody.AddForce(direction * magnitude + _interactingPlayer.Velocity - _rigidbody.velocity, ForceMode.VelocityChange);
+            _rigidbody.velocity = direction * magnitude + _interactingRigidbody.velocity;
             _rigidbody.MoveRotation(Quaternion.Slerp(_rigidbody.rotation, Quaternion.LookRotation(transform.position - Camera.main.transform.position), Time.deltaTime * 16f));
 
-            if (Vector3.Distance(transform.position, _interactingPlayer.transform.position) > MAXIMUM_DISTANCE_FROM_PLAYER)
+            if (Vector3.Distance(transform.position, _interactingRigidbody.position) > MAXIMUM_DISTANCE_FROM_PLAYER)
             {
                 ForceStopInteraction();
             }
@@ -101,6 +102,7 @@ public class CubeController : NetworkBehaviour, IInteractable
     public bool StartInteraction(PlayerController player)
     {
         _interactingPlayer = player;
+        _interactingRigidbody = player.GetComponent<Rigidbody>();
         _interactingPlayerRenderer = player.GetComponent<PlayerRenderer>();
 
         _interactingPlayerRenderer.SetArmWeight(ArmType.BothArms, 1f);
@@ -116,6 +118,7 @@ public class CubeController : NetworkBehaviour, IInteractable
         _interactingPlayerRenderer.SetArmWeight(ArmType.BothArms, 0f);
 
         _interactingPlayer = null;
+        _interactingRigidbody = null;
         _interactingPlayerRenderer = null;
 
         _rigidbody.useGravity = true;
