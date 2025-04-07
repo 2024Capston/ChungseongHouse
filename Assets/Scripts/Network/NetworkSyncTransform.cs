@@ -30,9 +30,17 @@ public class NetworkSyncTransform : NetworkBehaviour
     {
         _children = new List<NetworkSyncTransform>();
 
-        _lastSyncedPosition = transform.position;
-        _lastSyncedRotation = transform.rotation;
-        _lastSyncedScale = transform.localScale;
+        if (!IsOwner)
+        {
+            if (IsServer)
+            {
+                RequestTransformClientRpc();
+            }
+            else
+            {
+                RequestTransformServerRpc();
+            }
+        }
     }
 
     void Update()
@@ -194,17 +202,56 @@ public class NetworkSyncTransform : NetworkBehaviour
     }
 
     /// <summary>
+    /// 클라이언트에서 서버에 Transform 값을 요청한다.
+    /// </summary>
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestTransformServerRpc()
+    {
+        SendTransformClientRpc(transform.position, transform.rotation, transform.localScale, true);
+    }
+
+    /// <summary>
+    /// 서버에서 클라이언트에 Transform 값을 요청한다.
+    /// </summary>
+    [ClientRpc(RequireOwnership = false)]
+    private void RequestTransformClientRpc()
+    {
+        if (IsServer)
+        {
+            return;
+        }
+
+        SendTransformServerRpc(transform.position, transform.rotation, transform.localScale, true);
+    }
+
+    /// <summary>
     /// 클라이언트에서 서버로 transform을 전달한다.
     /// </summary>
     /// <param name="position">위치</param>
     /// <param name="rotation">회전</param>
     /// <param name="scale">스케일</param>
     [ServerRpc(RequireOwnership = false)]
-    private void SendTransformServerRpc(Vector3 position, Quaternion rotation, Vector3 scale)
+    private void SendTransformServerRpc(Vector3 position, Quaternion rotation, Vector3 scale, bool setInstantly = false)
     {
         _lastSyncedPosition = position;
         _lastSyncedRotation = rotation;
         _lastSyncedScale = scale;
+
+        if (setInstantly && TryGetComponent(out NetworkInterpolator networkInterpolator))
+        {
+            Vector3 positionToSet = _lastSyncedPosition;
+
+            if (_parentVisualReference)
+            {
+                positionToSet += _parentVisualReference.transform.position;
+            }
+            else if (_parent)
+            {
+                positionToSet += _parent.transform.position;
+            }
+
+            networkInterpolator.SetInstantTransform(positionToSet, _lastSyncedRotation);
+        }
     }
 
     /// <summary>
@@ -214,7 +261,7 @@ public class NetworkSyncTransform : NetworkBehaviour
     /// <param name="rotation">회전</param>
     /// /// <param name="scale">스케일</param>
     [ClientRpc]
-    private void SendTransformClientRpc(Vector3 position, Quaternion rotation, Vector3 scale)
+    private void SendTransformClientRpc(Vector3 position, Quaternion rotation, Vector3 scale, bool setInstantly = false)
     {
         if (IsServer)
         {
@@ -224,6 +271,22 @@ public class NetworkSyncTransform : NetworkBehaviour
         _lastSyncedPosition = position;
         _lastSyncedRotation = rotation;
         _lastSyncedScale = scale;
+        
+        if (setInstantly && TryGetComponent(out NetworkInterpolator networkInterpolator))
+        {
+            Vector3 positionToSet = _lastSyncedPosition;
+
+            if (_parentVisualReference)
+            {
+                positionToSet += _parentVisualReference.transform.position;
+            }
+            else if (_parent)
+            {
+                positionToSet += _parent.transform.position;
+            }
+
+            networkInterpolator.SetInstantTransform(positionToSet, _lastSyncedRotation);
+        }
     }
 
     /// <summary>

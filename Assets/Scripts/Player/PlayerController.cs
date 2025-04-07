@@ -84,8 +84,8 @@ public class PlayerController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        //QualitySettings.vSyncCount = 0;
-        //Application.targetFrameRate = 60;
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
 
         _collider = GetComponent<Collider>();
         _playerRenderer = GetComponent<PlayerRenderer>();
@@ -120,6 +120,8 @@ public class PlayerController : NetworkBehaviour
             {
                 _rigidbody.MovePosition(spawnPoint.position);
                 _rigidbody.MoveRotation(spawnPoint.rotation);
+
+                GetComponent<NetworkInterpolator>().SetInstantTransform(spawnPoint.position, spawnPoint.rotation);
             }
 
             _localPlayer = this;
@@ -237,7 +239,8 @@ public class PlayerController : NetworkBehaviour
             }
             newVelocity.y = _rigidbody.velocity.y;
 
-            _rigidbody.velocity = newVelocity;
+            _rigidbody.AddForce(newVelocity - _rigidbody.velocity, ForceMode.VelocityChange);
+            //_rigidbody.velocity = newVelocity;
         }
         else
         {

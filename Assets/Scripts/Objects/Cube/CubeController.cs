@@ -16,9 +16,9 @@ public class CubeController : NetworkBehaviour, IInteractable
         set => _color = value;
     }
 
-    private const float DISTANCE_FROM_PLAYER = 16f;         // 플레이어와 큐브 사이의 거리
-    private const float MAXIMUM_DISTANCE_FROM_PLAYER = 32f; // 플레이어와 큐브가 멀어질 수 있는 최대 거리
-    private const float MAXIMUM_CUBE_SPEED = 128f;           // 큐브의 최대 이동 속력
+    private const float DISTANCE_FROM_PLAYER = 24f;         // 플레이어와 큐브 사이의 거리
+    private const float MAXIMUM_DISTANCE_FROM_PLAYER = 48f; // 플레이어와 큐브가 멀어질 수 있는 최대 거리
+    private const float MAXIMUM_CUBE_SPEED = 64f;          // 큐브의 최대 이동 속력
     private const float CUBE_SPEED = 2f;                    // 큐브의 이동 속력
 
     private Rigidbody _rigidbody;
@@ -83,8 +83,7 @@ public class CubeController : NetworkBehaviour, IInteractable
                 magnitude = 4f * Time.deltaTime;
             }
 
-            _rigidbody.velocity = direction * magnitude;
-
+            _rigidbody.AddForce(direction * magnitude + _interactingPlayer.Velocity - _rigidbody.velocity, ForceMode.VelocityChange);
             _rigidbody.MoveRotation(Quaternion.Slerp(_rigidbody.rotation, Quaternion.LookRotation(transform.position - Camera.main.transform.position), Time.deltaTime * 16f));
 
             if (Vector3.Distance(transform.position, _interactingPlayer.transform.position) > MAXIMUM_DISTANCE_FROM_PLAYER)

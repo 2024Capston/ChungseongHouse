@@ -9,17 +9,17 @@ using UnityEngine.Rendering;
 /// </summary>
 public class PlayerRendererUtil : MonoBehaviour
 {
-    [SerializeField] SkinnedMeshRenderer _bodyMeshRenderer;
-    [SerializeField] SkinnedMeshRenderer _eyesMeshRenderer;
+    [SerializeField] private SkinnedMeshRenderer _bodyMeshRenderer;
+    [SerializeField] private SkinnedMeshRenderer _eyesMeshRenderer;
 
-    [SerializeField] Transform _headTarget;
-    [SerializeField] Transform _headCenter;
+    [SerializeField] private Transform _headTarget;
+    [SerializeField] private Transform _headCenter;
 
-    [SerializeField] Transform _leftArmTarget;
-    [SerializeField] Transform _rightArmTarget;
+    [SerializeField] private Transform _leftArmTarget;
+    [SerializeField] private Transform _rightArmTarget;
 
-    [SerializeField] Rig _leftArmRig;
-    [SerializeField] Rig _rightArmRig;
+    [SerializeField] private Rig _leftArmRig;
+    [SerializeField] private Rig _rightArmRig;
 
     private PlayerController _playerController;
     private Animator _animator;
@@ -152,20 +152,5 @@ public class PlayerRendererUtil : MonoBehaviour
     {
         _bodyMeshRenderer.enabled = false;
         _eyesMeshRenderer.enabled = false;
-    }
-
-    public void PlayFootstepSound()
-    {
-        print("Footstep");
-    }
-
-    public void PlayJumpSound()
-    {
-        print("Jump");
-    }
-
-    public void PlayLandSound()
-    {
-        print("Land");
     }
 }
