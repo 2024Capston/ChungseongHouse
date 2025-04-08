@@ -42,6 +42,8 @@ namespace TubeStage
         /// </summary>
         public abstract void SetButtonGroupColor();
 
+        public abstract void ClearAll();
+        
         public abstract void ResetAll();
 
         public abstract void OnClickButton(ColorType colorType, bool isHost, bool isPressed);

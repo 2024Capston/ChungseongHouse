@@ -79,6 +79,20 @@ namespace TubeStage
 
         #endregion
 
+        public override void ClearAll()
+        {
+            for (int i = 0; i < _buttonMap.Count; i++)
+            {
+                _buttonGroupManager.SetButtonColor(i, ColorType.Purple);
+                _buttonGroupManager.UnpressButton(i);
+                _buttonGroupManager.SetButtonEnable(i, false);
+                
+                _tubeGroupManager.SetTubeLight(i, false);
+                _tubeGroupManager.SetSourceTubeValue(i, -1f);
+            }
+            _tubeGroupManager.SetDestTubeValue(1f);
+        }
+        
         public override void ResetAll()
         {
             for (int i = 0; i < _buttonMap.Count; i++)
@@ -92,6 +106,8 @@ namespace TubeStage
             }
             _tubeGroupManager.SetDestTubeValue(-1f);
         }
+        
+        
     }
 
 }

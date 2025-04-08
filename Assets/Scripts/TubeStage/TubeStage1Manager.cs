@@ -77,6 +77,7 @@ namespace TubeStage
             if (isSuccess)
             {
                 _tubeStage1Controller.EndDoorOpen();
+                TubeStage1Mapper.Instance.ClearAll();
             }
             else
             {
