@@ -40,9 +40,35 @@ public class NetworkObjectSpawner : MonoBehaviour
         }
     }
 
-    protected void OnDestroy()
+    private void Start()
+    {
+        if (!NetworkManager.Singleton.IsServer)
+        {
+            return;
+        }
+
+        SpawnObject();
+    }
+
+    private void OnDestroy()
     {
         // 파괴 시, 스폰했던 오브젝트도 제거
+        if (_spawnedObject)
+        {
+            _spawnedObject.GetComponent<NetworkObject>().Despawn();
+        }
+    }
+
+    /// <summary>
+    /// 오브젝트를 스폰한다.
+    /// </summary>
+    public virtual void SpawnObject()
+    {
+        if (!NetworkManager.Singleton.IsServer)
+        {
+            return;
+        }
+
         if (_spawnedObject)
         {
             _spawnedObject.GetComponent<NetworkObject>().Despawn();

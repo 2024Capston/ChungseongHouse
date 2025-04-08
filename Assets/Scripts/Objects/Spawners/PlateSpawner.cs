@@ -13,12 +13,9 @@ public class PlateSpawner : NetworkObjectSpawner
     [SerializeField] private EventType[] _publishOnEnter;
     [SerializeField] private EventType[] _publishOnExit;
 
-    private void Start()
+    public override void SpawnObject()
     {
-        if (!NetworkManager.Singleton.IsServer)
-        {
-            return;
-        }
+        base.SpawnObject();
 
         _spawnedObject = Instantiate(_prefab);
 

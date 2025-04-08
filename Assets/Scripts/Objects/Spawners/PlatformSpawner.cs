@@ -11,12 +11,9 @@ public class PlatformSpawner : NetworkObjectSpawner
     [SerializeField] private EventType[] _subscribeForActivation;
     [SerializeField] private EventType[] _subscribeForDeactivation;
 
-    private void Start()
+    public override void SpawnObject()
     {
-        if (!NetworkManager.Singleton.IsServer)
-        {
-            return;
-        }
+        base.SpawnObject();
 
         _spawnedObject = Instantiate(_prefab);
 

@@ -8,12 +8,9 @@ public class CubeSpawner : NetworkObjectSpawner
 {
     [SerializeField] ColorType _color;
 
-    private void Start()
+    public override void SpawnObject()
     {
-        if (!NetworkManager.Singleton.IsServer)
-        {
-            return;
-        }
+        base.SpawnObject();
 
         _spawnedObject = Instantiate(_prefab);
 

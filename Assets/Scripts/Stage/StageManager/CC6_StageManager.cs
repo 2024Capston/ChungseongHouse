@@ -14,6 +14,16 @@ namespace ColorChanger
 
         public override void RestartGame()
         {
+            foreach(PlayerController playerController in FindObjectsOfType<PlayerController>())
+            {
+                playerController.RespawnPlayer();
+                playerController.ForceStopInteraction();
+            }
+
+            foreach(NetworkObjectSpawner networkObjectSpawner in FindObjectsOfType<NetworkObjectSpawner>())
+            {
+                networkObjectSpawner.SpawnObject();
+            }
         }
 
         public override void StartGame()

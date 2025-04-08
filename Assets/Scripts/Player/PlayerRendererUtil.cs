@@ -152,12 +152,18 @@ public class PlayerRendererUtil : MonoBehaviour
         _eyesMeshRenderer.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
     }
 
+    /// <summary>
+    /// 플레이어를 메쉬를 표시한다.
+    /// </summary>
     public void ShowPlayerRender()
     {
         _bodyMeshRenderer.enabled = true;
         _eyesMeshRenderer.enabled = true;
     }
 
+    /// <summary>
+    /// 플레이어 메쉬를 숨긴다.
+    /// </summary>
     public void HidePlayerRender()
     {
         _bodyMeshRenderer.enabled = false;

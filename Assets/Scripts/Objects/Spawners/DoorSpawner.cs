@@ -13,12 +13,9 @@ public class DoorSpawner : NetworkObjectSpawner
     [SerializeField] EventType[] _subscribeForActivation;
     [SerializeField] EventType[] _subscribeForDeactivation;
 
-    private void Start()
+    public override void SpawnObject()
     {
-        if (!NetworkManager.Singleton.IsServer)
-        {
-            return;
-        }
+        base.SpawnObject();
 
         _spawnedObject = Instantiate(_prefab);
 

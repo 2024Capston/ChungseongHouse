@@ -43,7 +43,7 @@ public enum ButtonType
 /// </summary>
 public enum EventType
 {
-    EventA, EventB, EventC, EventD, EventE, EventF, EventG, EventH
+    EventA, EventB, EventC, EventD, EventE, EventF, EventG, EventH, EventI, EventJ, EventK, EventL, EventM, EventN, EventO, EventP
 }
 
 /// <summary>

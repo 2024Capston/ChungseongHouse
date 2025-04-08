@@ -154,6 +154,9 @@ public class UIManager : SingletonBehavior<UIManager>
             }
             Logger.Log($"{uiType} close");
             baseUI.CloseUI();
+
+            PlayerController.IsInputEnabled = true;
+            CameraController.IsInputEnabled = true;
         }
     }
     
@@ -193,11 +196,17 @@ public class UIManager : SingletonBehavior<UIManager>
                 };
         
                 Instance.OpenUI<EscUI>(escUIData);
+
+                PlayerController.IsInputEnabled = false;
+                CameraController.IsInputEnabled = false;
             }
         }
         else
         {
             _frontUI.CloseUI();
+
+            PlayerController.IsInputEnabled = true;
+            CameraController.IsInputEnabled = true;
         }
     }
 

@@ -17,12 +17,9 @@ public class GenericButtonSpawner : NetworkObjectSpawner
     [SerializeField] private EventType[] _subscribeForEnable;
     [SerializeField] private EventType[] _subscribeForDisable;
 
-    private void Start()
+    public override void SpawnObject()
     {
-        if (!NetworkManager.Singleton.IsServer)
-        {
-            return;
-        }
+        base.SpawnObject();
 
         _spawnedObject = Instantiate(_prefab);
 

@@ -53,16 +53,6 @@ public class DoorController : NetworkBehaviour, IActivatable
 
     private new void OnDestroy()
     {
-        foreach (EventType eventType in _subscribeForActivation)
-        {
-            EventBus.Instance.UnsubscribeEvent<UnityAction>(eventType, OpenDoorServerRpc);
-        }
-
-        foreach (EventType eventType in _subscribeForDeactivation)
-        {
-            EventBus.Instance.UnsubscribeEvent<UnityAction>(eventType, CloseDoorServerRpc);
-        }
-
         base.OnDestroy();
     }
 

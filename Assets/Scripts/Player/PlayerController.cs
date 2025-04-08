@@ -1,5 +1,6 @@
 using System;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -20,6 +21,7 @@ public class PlayerController : NetworkBehaviour
 
     private Rigidbody _rigidbody;
     private Collider _collider;
+    private NetworkInterpolator _networkInterpolator;
     private PlayerRenderer _playerRenderer;
     private CameraController _cameraController;
     private NetworkPlatformFinder _networkPlatformFinder;
@@ -30,10 +32,18 @@ public class PlayerController : NetworkBehaviour
     // 입력 관련
     private bool _jumpInput;        // 점프 입력 여부
     private float _jumpRemember;    // 입력된 점프를 처리할 수 있는 쿨타임
-    private bool _isEnabled = true; // 플레이어 조작 활성화 여부
 
     private Vector3 _lastPosition;
     private Quaternion _lastRotation;
+    private Transform _spawnPoint;
+
+    // 플레이어 조작 활성화 여부
+    private static bool _isInputEnabled = true;
+    public static bool IsInputEnabled
+    {
+        get => _isInputEnabled;
+        set => _isInputEnabled = value;
+    }
 
     // 로컬 플레이어를 나타내는 static 변수
     private static PlayerController _localPlayer;
@@ -95,6 +105,7 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             _rigidbody = GetComponent<Rigidbody>();
+            _networkInterpolator = GetComponent<NetworkInterpolator>();
             _cameraController = GetComponent<CameraController>();
             _networkPlatformFinder = GetComponent<NetworkPlatformFinder>();
 
@@ -107,24 +118,16 @@ public class PlayerController : NetworkBehaviour
             _playerRenderer.Initialize();
 
             // 스폰 위치 배정
-            Transform spawnPoint;
-
             if (_color == ColorType.Blue)
             {
-                spawnPoint = GameObject.FindWithTag("Blue Spawn Point")?.transform;
+                _spawnPoint = GameObject.FindWithTag("Blue Spawn Point")?.transform;
             }
             else
             {
-                spawnPoint = GameObject.FindWithTag("Red Spawn Point")?.transform;
+                _spawnPoint = GameObject.FindWithTag("Red Spawn Point")?.transform;
             }
 
-            if (spawnPoint != null)
-            {
-                _rigidbody.MovePosition(spawnPoint.position);
-                _rigidbody.MoveRotation(spawnPoint.rotation);
-
-                GetComponent<NetworkInterpolator>().SetInstantTransform(spawnPoint.position, spawnPoint.rotation);
-            }
+            RespawnLocalPlayer();
 
             _localPlayer = this;
             _localPlayerCreated?.Invoke();
@@ -162,14 +165,10 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             UpdatePlayerState();
-            CheckGrounded();
 
-            if (_isEnabled)
-            {
-                HandleMovement();
-                HandleJump();
-                SearchInteractables();
-            }
+            HandleMovement();
+            HandleJump();
+            SearchInteractables();
 
             HandlePlatform();
             SendPlayerState();
@@ -219,6 +218,7 @@ public class PlayerController : NetworkBehaviour
     /// </summary>
     private void UpdatePlayerState()
     {
+        // 속도 및 각속도 계산
         _velocity = (transform.position - _lastPosition) / Time.deltaTime;
         _lastPosition = transform.position;
 
@@ -241,6 +241,17 @@ public class PlayerController : NetworkBehaviour
 
         _angularVelocity /= Time.deltaTime;
         _lastRotation = transform.rotation;
+
+        // 접지 여부 판단
+        if (_collider is CapsuleCollider)
+        {
+            Vector3 offset = Vector3.up * (_collider.bounds.extents.y - _collider.bounds.extents.x) * 0.9f;
+            _isGrounded = Physics.CapsuleCast(transform.position + offset, transform.position - offset, _collider.bounds.extents.x, Vector3.down, GROUND_DETECTION_THRESHOLD);
+        }
+        else
+        {
+            _isGrounded = Physics.BoxCast(transform.position, _collider.bounds.extents * 0.9f, Vector3.down, transform.rotation, GROUND_DETECTION_THRESHOLD);
+        }
     }
 
     /// <summary>
@@ -248,6 +259,11 @@ public class PlayerController : NetworkBehaviour
     /// </summary>
     private void HandleMovement()
     {
+        if (!_isInputEnabled)
+        {
+            return;
+        }
+
         Quaternion rotation = Quaternion.Euler(Vector3.up * Camera.main.transform.rotation.eulerAngles.y);
 
         if (_cameraController.IsFirstPerson)
@@ -282,7 +298,7 @@ public class PlayerController : NetworkBehaviour
         {
             if (_jumpInput)
             {
-                if (_jumpRemember > 0f)
+                if (_jumpRemember > 0f && _isInputEnabled)
                 {
                     _isJumping = true;
                     _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
@@ -303,7 +319,7 @@ public class PlayerController : NetworkBehaviour
     /// </summary>
     private void SearchInteractables()
     {
-        if (_interactableInHand != null)
+        if (_interactableInHand != null || !_isInputEnabled)
         {
             return;
         }
@@ -348,28 +364,19 @@ public class PlayerController : NetworkBehaviour
     /// </summary>
     private void HandlePlatform()
     {
+        if (!_isInputEnabled)
+        {
+            Vector3 newVelocity = Vector3.zero;
+            newVelocity.y = _rigidbody.velocity.y;
+            _rigidbody.velocity = newVelocity;
+        }
+
         if (_networkPlatformFinder.Platform)
         {
             Vector3 velocityDiff = _networkPlatformFinder.Velocity;
             velocityDiff.y = 0f;
 
             _rigidbody.velocity += velocityDiff;
-        }
-    }
-
-    /// <summary>
-    /// 접지 여부를 판단한다.
-    /// </summary>
-    private void CheckGrounded()
-    {
-        if (_collider is CapsuleCollider)
-        {
-            Vector3 offset = Vector3.up * (_collider.bounds.extents.y - _collider.bounds.extents.x) * 0.9f;
-            _isGrounded = Physics.CapsuleCast(transform.position + offset, transform.position - offset, _collider.bounds.extents.x, Vector3.down, GROUND_DETECTION_THRESHOLD);
-        }
-        else
-        {
-            _isGrounded = Physics.BoxCast(transform.position, _collider.bounds.extents * 0.9f, Vector3.down, transform.rotation, GROUND_DETECTION_THRESHOLD);
         }
     }
 
@@ -386,6 +393,33 @@ public class PlayerController : NetworkBehaviour
         {
             SendPlayerStateServerRpc(_moveInput, _velocity, _angularVelocity, _isJumping, _isGrounded);
         }
+    }
+
+    private void FetchPlayerState(Vector3 moveInput, Vector3 velocity, Vector3 angularVelocity, bool isJumping, bool isGrounded)
+    {
+        _moveInput = moveInput;
+        _velocity = velocity;
+        _angularVelocity = angularVelocity;
+
+        _isJumping = isJumping;
+        _isGrounded = isGrounded;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SendPlayerStateServerRpc(Vector3 moveInput, Vector3 velocity, Vector3 angularVelocity, bool isJumping, bool isGrounded)
+    {
+        FetchPlayerState(moveInput, velocity, angularVelocity, isJumping, isGrounded);
+    }
+
+    [ClientRpc(RequireOwnership = false)]
+    private void SendPlayerStateClientRpc(Vector3 moveInput, Vector3 velocity, Vector3 angularVelocity, bool isJumping, bool isGrounded)
+    {
+        if (IsServer)
+        {
+            return;
+        }
+
+        FetchPlayerState(moveInput, velocity, angularVelocity, isJumping, isGrounded);
     }
 
     /// <summary>
@@ -477,33 +511,6 @@ public class PlayerController : NetworkBehaviour
         _playerRenderer.Initialize();
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void SendPlayerStateServerRpc(Vector3 moveInput, Vector3 velocity, Vector3 angularVelocity, bool isJumping, bool isGrounded)
-    {
-        _moveInput = moveInput;
-        _velocity = velocity;
-        _angularVelocity = angularVelocity;
-
-        _isJumping = isJumping;
-        _isGrounded = isGrounded;
-    }
-
-    [ClientRpc(RequireOwnership = false)]
-    private void SendPlayerStateClientRpc(Vector3 moveInput, Vector3 velocity, Vector3 angularVelocity, bool isJumping, bool isGrounded)
-    {
-        if (IsServer)
-        {
-            return;
-        }
-
-        _moveInput = moveInput;
-        _velocity = velocity;
-        _angularVelocity = angularVelocity;
-
-        _isJumping = isJumping;
-        _isGrounded = isGrounded;
-    }
-
     /// <summary>
     /// 플레이어의 Collider 정보를 갱신한다.
     /// </summary>
@@ -560,6 +567,22 @@ public class PlayerController : NetworkBehaviour
     /// </summary>
     public void ForceStopInteraction()
     {
+        if (IsOwner)
+        {
+            StopInteraction();
+        }
+        else if (IsServer)
+        {
+            StopInteractionClientRpc();
+        }
+        else
+        {
+            StopInteractionServerRpc();
+        }
+    }
+
+    private void StopInteraction()
+    {
         if (_interactableInHand != null)
         {
             if (_interactableInHand.StopInteraction(this))
@@ -570,15 +593,70 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    public void EnableInput()
+    [ServerRpc(RequireOwnership = false)]
+    private void StopInteractionServerRpc()
     {
-        _isEnabled = true;
-        _cameraController.EnableInput();
+        StopInteraction();
     }
 
-    public void DisableInput()
+    [ClientRpc(RequireOwnership = false)]
+    private void StopInteractionClientRpc()
     {
-        _isEnabled = false;
-        _cameraController.DisableInput();
+        if (IsServer)
+        {
+            return;
+        }
+
+        StopInteraction();
+    }
+
+    /// <summary>
+    /// 플레이어를 스폰 위치에 리스폰한다.
+    /// </summary>
+    public void RespawnPlayer()
+    {
+        if (IsOwner)
+        {
+            RespawnLocalPlayer();
+        }
+        else if (IsServer)
+        {
+            RespawnLocalPlayerClientRpc();
+        }
+        else
+        {
+            RespawnLocalPlayerServerRpc();
+        }
+    }
+
+    private void RespawnLocalPlayer()
+    {
+        if (!_spawnPoint)
+        {
+            Logger.Log($"The spawn Point for {_color} player doesn't exist!");
+            return;
+        }
+
+        _rigidbody.MovePosition(_spawnPoint.position);
+        _cameraController.ResetCamera(_spawnPoint.rotation.eulerAngles.y);
+
+        _networkInterpolator.SetInstantTransform(_spawnPoint.position, _spawnPoint.rotation);
+    }
+
+    [ServerRpc]
+    private void RespawnLocalPlayerServerRpc()
+    {
+        RespawnLocalPlayer();
+    }
+
+    [ClientRpc]
+    private void RespawnLocalPlayerClientRpc()
+    {
+        if (IsServer)
+        {
+            return;
+        }
+
+        RespawnLocalPlayer();
     }
 }

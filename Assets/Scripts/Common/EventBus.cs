@@ -143,4 +143,18 @@ public class EventBus : SingletonBehavior<EventBus>
             invokeMethod.Invoke(_events[eventType], parameters);
         }
     }
+
+    /// <summary>
+    /// 이벤트 버스를 초기화한다.
+    /// </summary>
+    public void ClearEventBus()
+    {
+        foreach(EventType key in _events.Keys)
+        {
+            _events[key].RemoveAllListeners();
+        }
+
+        _events.Clear();
+        _counts.Clear();
+    }
 }

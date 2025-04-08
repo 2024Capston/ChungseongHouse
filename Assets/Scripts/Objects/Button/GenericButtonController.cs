@@ -83,16 +83,6 @@ public class GenericButtonController : ButtonController
 
     private new void OnDestroy()
     {
-        foreach (EventType eventType in _subscribeForEnable)
-        {
-            EventBus.Instance.UnsubscribeEvent<UnityAction>(eventType, EnableButton);
-        }
-
-        foreach (EventType eventType in _subscribeForDisable)
-        {
-            EventBus.Instance.UnsubscribeEvent<UnityAction>(eventType, DisableButton);
-        }
-
         base.OnDestroy();
     }
 

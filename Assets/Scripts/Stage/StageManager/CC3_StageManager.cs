@@ -14,7 +14,6 @@ namespace ColorChanger
 
         public override void EndGame()
         {
-            EventBus.Instance.UnsubscribeEvent<UnityAction<PlateController, GameObject>>(EventType.EventA, OnPlatePressed);
             InGameManager.Instance.EndGameServerRpc();
         }
 
