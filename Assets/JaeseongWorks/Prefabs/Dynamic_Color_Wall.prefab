@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8782862606345600198}
   - component: {fileID: 5629638317416070342}
   - component: {fileID: 1548867308462305257}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Dynamic_Color_Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

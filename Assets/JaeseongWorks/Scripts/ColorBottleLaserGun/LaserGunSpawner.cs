@@ -12,6 +12,8 @@ using StageJS;
 public class LaserGunSpawner : NetworkObjectSpawner
 {
     //[SerializeField] private bool _isOpen;
+    [SerializeField] private ColorType _color;
+    //[SerializeField] private ColorType _destroyColor;
     [SerializeField] private float _shotDuration;
     [SerializeField] private float _shotCooltime;
     [SerializeField] private float _angle;
@@ -33,6 +35,6 @@ public class LaserGunSpawner : NetworkObjectSpawner
         _spawnedObject.transform.localScale = transform.lossyScale;
 
         _spawnedObject.GetComponent<NetworkObject>().Spawn();
-        _spawnedObject.GetComponent<LaserGun>().Initialize(_shotDuration, _shotCooltime, _angle);
+        _spawnedObject.GetComponent<LaserGun>().Initialize(_color, _shotDuration, _shotCooltime, _angle);
     }
 }

@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7491870980377275817}
   - component: {fileID: -7003528103421170569}
-  - component: {fileID: -4888093720654665678}
+  - component: {fileID: 3196925785554906065}
   m_Layer: 0
-  m_Name: Floor1_1Loader
+  m_Name: CW5_StageManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 829660867
+  GlobalObjectIdHash: 3495516748
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -54,7 +54,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &-4888093720654665678
+--- !u!114 &3196925785554906065
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,10 +63,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 4760297340198228138}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3269885e930f0c544927bd1745655329, type: 3}
+  m_Script: {fileID: 11500000, guid: 5a00967dd86d3e24ea30f6a8e1907e7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _networkObjects:
-  - {fileID: 4760297340198228138, guid: f260984a264324240a216f450c496895, type: 3}
-  _localObjects:
-  - {fileID: 5285842312753564015, guid: 67e7a20f8ea8169428f9ca5b8c2e553a, type: 3}

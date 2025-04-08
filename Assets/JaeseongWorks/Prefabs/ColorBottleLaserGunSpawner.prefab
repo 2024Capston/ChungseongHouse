@@ -188,6 +188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _prefab: {fileID: 2120471400099438146, guid: 1bbcda96d63dc444ba484b98323a7577, type: 3}
+  _color: 1
   _shotDuration: 1
   _shotCooltime: 0
   _angle: 0
@@ -730,8 +731,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1817959438543936287}
-  - component: {fileID: 2871252665806515558}
-  - component: {fileID: 3913152660656111406}
   m_Layer: 0
   m_Name: UpperBody
   m_TagString: Untagged
@@ -762,37 +761,6 @@ Transform:
   - {fileID: 5510453942629883557}
   m_Father: {fileID: 1596171116605146360}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2871252665806515558
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6889131053418201756}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5e3317808964de44811c5823b5d61ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _isRequireBoth: 0
-  _switchColor: 0
-  _switchRange: 0
-  _shotDuration: 1
-  _shotCooltime: 0
-  _angle: 0
---- !u!114 &3913152660656111406
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6889131053418201756}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3924b982f34ac245aebe04f5ae2a7a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _lineWidth: 5
 --- !u!1 &6934555236519999544
 GameObject:
   m_ObjectHideFlags: 0

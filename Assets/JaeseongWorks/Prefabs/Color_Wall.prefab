@@ -247,7 +247,7 @@ GameObject:
   - component: {fileID: 5850926102787796103}
   - component: {fileID: 8782862606345600198}
   - component: {fileID: 463587358942045281}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Color_Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

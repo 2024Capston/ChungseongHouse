@@ -1,20 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class RenderLine : MonoBehaviour
 {
     // Use this for initialization
     [SerializeField] float _lineWidth = 5f;
-    LineRenderer lineRenderer;
+    public LineRenderer lineRenderer;
+    [SerializeField] private LaserGun _laserGun;
+    GameObject _emptyChild;
+
+    private void Awake()
+    {
+        if (_laserGun == null)
+            _laserGun = GetComponent<LaserGun>();
+        lineRenderer = transform.Find("RayStartPoint").GetComponent<LineRenderer>();
+    }
     void Start()
     {
-        lineRenderer = gameObject.AddComponent<LineRenderer>();
-        lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.startColor = Color.red;
-        lineRenderer.endColor = Color.yellow;
+        lineRenderer.startColor = Color.white;
+        lineRenderer.endColor = Color.white;
         lineRenderer.startWidth = _lineWidth;
         lineRenderer.endWidth = _lineWidth;
+        
     }
     void Update()
     {
@@ -36,11 +46,11 @@ public class RenderLine : MonoBehaviour
     public IEnumerator DrawLay(Vector3 endPoint)
     {
         lineRenderer.enabled = true;
-        lineRenderer.SetPosition(0, transform.position);
+        lineRenderer.SetPosition(0, _laserGun.GunPoint.position);
         lineRenderer.SetPosition(1, endPoint);
-        yield return new WaitForSeconds(1f);
-        lineRenderer.SetPosition(0, transform.position);
-        lineRenderer.SetPosition(1, transform.position);
+        yield return new WaitForSeconds(0.5f);
+        lineRenderer.SetPosition(0, _laserGun.GunPoint.transform.position);
+        lineRenderer.SetPosition(1, _laserGun.GunPoint.transform.position);
         lineRenderer.enabled = false;
     }
 }

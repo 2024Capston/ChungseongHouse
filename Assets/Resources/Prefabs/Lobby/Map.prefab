@@ -101,6 +101,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ef553543feb05e4892d102c6788700d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isTriggerable: 1
+  _subscribeForActivation: 
+  _subscribeForDeactivation: 
   <IsOpened>k__BackingField: 1
 --- !u!135 &8762538242589933695
 SphereCollider:
@@ -2131,6 +2134,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Airlock5
       objectReference: {fileID: 0}
+    - target: {fileID: 1875210954008318956, guid: 3b69376290d1f3e43a31a95a4c5dda68,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3889473959
+      objectReference: {fileID: 0}
     - target: {fileID: 2829361031322962103, guid: 3b69376290d1f3e43a31a95a4c5dda68,
         type: 3}
       propertyPath: GlobalObjectIdHash
@@ -2551,6 +2559,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Airlock1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1875210954008318956, guid: 3b69376290d1f3e43a31a95a4c5dda68,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3889473959
       objectReference: {fileID: 0}
     - target: {fileID: 2829361031322962103, guid: 3b69376290d1f3e43a31a95a4c5dda68,
         type: 3}
@@ -3491,6 +3504,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Airlock6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1875210954008318956, guid: 3b69376290d1f3e43a31a95a4c5dda68,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3889473959
       objectReference: {fileID: 0}
     - target: {fileID: 2829361031322962103, guid: 3b69376290d1f3e43a31a95a4c5dda68,
         type: 3}
@@ -4980,6 +4998,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Airlock2
       objectReference: {fileID: 0}
+    - target: {fileID: 1875210954008318956, guid: 3b69376290d1f3e43a31a95a4c5dda68,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3889473959
+      objectReference: {fileID: 0}
     - target: {fileID: 2829361031322962103, guid: 3b69376290d1f3e43a31a95a4c5dda68,
         type: 3}
       propertyPath: GlobalObjectIdHash
@@ -5489,6 +5512,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Airlock4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1875210954008318956, guid: 3b69376290d1f3e43a31a95a4c5dda68,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3889473959
       objectReference: {fileID: 0}
     - target: {fileID: 2829361031322962103, guid: 3b69376290d1f3e43a31a95a4c5dda68,
         type: 3}
@@ -6466,6 +6494,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Airlock3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1875210954008318956, guid: 3b69376290d1f3e43a31a95a4c5dda68,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3889473959
       objectReference: {fileID: 0}
     - target: {fileID: 2829361031322962103, guid: 3b69376290d1f3e43a31a95a4c5dda68,
         type: 3}
