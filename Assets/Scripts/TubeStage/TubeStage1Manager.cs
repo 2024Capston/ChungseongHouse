@@ -21,6 +21,7 @@ namespace TubeStage
         public override void StartGame()
         {
             _tubeStage1Controller.SetStartButton(true);
+            TubeStage1Mapper.Instance.ResetAll();
             EventBus.Instance.SubscribeEvent<UnityAction>(EventType.EventA, OnClickStartButton);
             _tubeStage1Controller.StartDoorOpen();
         }
@@ -34,7 +35,7 @@ namespace TubeStage
             _currentGame = null;
             TubeStage1Mapper.Instance.SetSourceTubeLight(0);
             _tubeStage1Controller.SetStartButton(true);
-            
+            TubeStage1Mapper.Instance.ResetAll();
         }
 
         public override void EndGame()
@@ -52,7 +53,7 @@ namespace TubeStage
         private IEnumerator CoProgressGame()
         {
             TubeStage1Mapper.Instance.InitTube(); 
-            TubeStage1Mapper.Instance.ResetState();
+            TubeStage1Mapper.Instance.ClearState();
 
             bool isSuccess = true;
             
@@ -64,12 +65,12 @@ namespace TubeStage
                 
                 
                 yield return new WaitForSeconds(15f);
-                TubeStage1Mapper.Instance.ApplyState();
+                TubeStage1Mapper.Instance.ApplyButtonState();
 
                 isSuccess &= lightMap == TubeStage1Mapper.Instance.ButtonState;
                 Logger.Log($"{lightMap} {TubeStage1Mapper.Instance.ButtonState}");
                 
-                TubeStage1Mapper.Instance.ResetState();
+                TubeStage1Mapper.Instance.ClearState();
                 
             }
 

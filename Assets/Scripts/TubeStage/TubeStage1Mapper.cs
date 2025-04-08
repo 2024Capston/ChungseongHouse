@@ -21,7 +21,7 @@ namespace TubeStage
             }
         }
         
-        public override void ApplyState()
+        public override void ApplyButtonState()
         {
             int count = 0;
             for (int i = 0; i < _buttonMap.Count; i++)
@@ -61,6 +61,7 @@ namespace TubeStage
             {
                 _buttonGroupManager.SetButtonColor(i, _buttonMap[i]);
                 _buttonGroupManager.UnpressButton(i);
+                _buttonGroupManager.SetButtonEnable(i, true);
             }
         }
 
@@ -78,7 +79,19 @@ namespace TubeStage
 
         #endregion
 
-        
+        public override void ResetAll()
+        {
+            for (int i = 0; i < _buttonMap.Count; i++)
+            {
+                _buttonGroupManager.SetButtonColor(i, ColorType.None);
+                _buttonGroupManager.UnpressButton(i);
+                _buttonGroupManager.SetButtonEnable(i, false);
+                
+                _tubeGroupManager.SetTubeLight(i, false);
+                _tubeGroupManager.SetSourceTubeValue(i, -1f);
+            }
+            _tubeGroupManager.SetDestTubeValue(-1f);
+        }
     }
 
 }

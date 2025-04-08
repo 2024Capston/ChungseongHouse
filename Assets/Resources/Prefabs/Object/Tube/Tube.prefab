@@ -16,17 +16,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: b6ef5e0f6e7a0d44c86a2be5801f27fe,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b6ef5e0f6e7a0d44c86a2be5801f27fe,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b6ef5e0f6e7a0d44c86a2be5801f27fe,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b6ef5e0f6e7a0d44c86a2be5801f27fe,
         type: 3}
@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3897799796
+  GlobalObjectIdHash: 3952030959
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1

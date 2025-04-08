@@ -18,5 +18,17 @@ namespace TubeStage
             _buttonGroup[index].UnpressButton();
             _buttonGroup[index].PlayPressAnimation(false);
         }
+
+        public void SetButtonEnable(int index, bool isEnable)
+        {
+            if (isEnable)
+            {
+                _buttonGroup[index].EnableButton();
+            }
+            else
+            {
+                _buttonGroup[index].DisableButton();
+            }
+        }
     }   
 }

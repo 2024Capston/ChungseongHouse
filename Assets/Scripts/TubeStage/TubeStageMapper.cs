@@ -29,7 +29,7 @@ namespace TubeStage
         /// <summary>
         /// 현재 ButtonState에 따라 Tube의 Value를 수정한다.
         /// </summary>
-        public abstract void ApplyState();
+        public abstract void ApplyButtonState();
 
         /// <summary>
         /// 주어진 LightMap에 따라 Tube Light를 키거나 끈다.
@@ -41,6 +41,8 @@ namespace TubeStage
         /// Button의 색상 배치를 변경한다.
         /// </summary>
         public abstract void SetButtonGroupColor();
+
+        public abstract void ResetAll();
 
         protected abstract void OnClickButton(ColorType colorType, bool isHost, bool isPressed);
         
@@ -59,10 +61,12 @@ namespace TubeStage
         /// <summary>
         /// Button State를 초기화 한다.
         /// </summary>
-        public void ResetState()
+        public void ClearState()
         {
             ButtonState = 0;
         }
+
+        
     }
 }
 
