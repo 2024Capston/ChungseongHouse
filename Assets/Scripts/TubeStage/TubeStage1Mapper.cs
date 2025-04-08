@@ -65,7 +65,7 @@ namespace TubeStage
             }
         }
 
-        protected override void OnClickButton(ColorType colorType, bool isHost, bool isPressed)
+        public override void OnClickButton(ColorType colorType, bool isHost, bool isPressed)
         {
             if (isPressed)
             {

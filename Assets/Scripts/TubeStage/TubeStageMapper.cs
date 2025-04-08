@@ -44,19 +44,8 @@ namespace TubeStage
 
         public abstract void ResetAll();
 
-        protected abstract void OnClickButton(ColorType colorType, bool isHost, bool isPressed);
+        public abstract void OnClickButton(ColorType colorType, bool isHost, bool isPressed);
         
-        /// <summary>
-        /// Player가 Button의 Press 상태를 변화하면 이를 ButtonState에 적용한다.
-        /// </summary>
-        /// <param name="colorType"></param>
-        /// <param name="isHost"></param>
-        /// <param name="isPressed"></param>
-        [ServerRpc]
-        public void OnClickButtonServerRpc(ColorType colorType, bool isHost, bool isPressed)
-        {
-            OnClickButton(colorType, isHost, isPressed);
-        }
         
         /// <summary>
         /// Button State를 초기화 한다.

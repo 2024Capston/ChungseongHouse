@@ -14,23 +14,24 @@ namespace TubeStage
 
         public override bool OnStartInteraction(PlayerController player)
         {
-            ClickButton();
+            ClickButtonServerRpc();
             return false;
         }
         
-        private void ClickButton()
+        [ServerRpc(RequireOwnership = false)]
+        private void ClickButtonServerRpc()
         {
             if (_isPressed)
             {
                 UnpressButton();
                 PlayPressAnimation(false);
-                TubeStageMapper.Instance.OnClickButtonServerRpc(_color, IsHost, false);
+                TubeStageMapper.Instance.OnClickButton(_color, IsHost, false);
             }
             else
             {
                 PressButton();
                 PlayPressAnimation(true);
-                TubeStageMapper.Instance.OnClickButtonServerRpc(_color, IsHost, true);
+                TubeStageMapper.Instance.OnClickButton(_color, IsHost, true);
             }
         }
     }

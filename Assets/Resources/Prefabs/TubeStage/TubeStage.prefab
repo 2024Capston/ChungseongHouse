@@ -2757,6 +2757,11 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 1720337497
       objectReference: {fileID: 0}
+    - target: {fileID: 1786408737702434949, guid: 6c809758ac1d0ae4aa709907681ea577,
+        type: 3}
+      propertyPath: _viewMode
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3919533273047247701, guid: 6c809758ac1d0ae4aa709907681ea577,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2848,6 +2853,11 @@ PrefabInstance:
         type: 3}
       propertyPath: GlobalObjectIdHash
       value: 2598941217
+      objectReference: {fileID: 0}
+    - target: {fileID: 1786408737702434949, guid: 6c809758ac1d0ae4aa709907681ea577,
+        type: 3}
+      propertyPath: _viewMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3919533273047247701, guid: 6c809758ac1d0ae4aa709907681ea577,
         type: 3}
@@ -2945,6 +2955,11 @@ PrefabInstance:
         type: 3}
       propertyPath: GlobalObjectIdHash
       value: 398974270
+      objectReference: {fileID: 0}
+    - target: {fileID: 1786408737702434949, guid: 6c809758ac1d0ae4aa709907681ea577,
+        type: 3}
+      propertyPath: _viewMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3919533273047247701, guid: 6c809758ac1d0ae4aa709907681ea577,
         type: 3}
@@ -3131,6 +3146,11 @@ PrefabInstance:
         type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1732417687
+      objectReference: {fileID: 0}
+    - target: {fileID: 1786408737702434949, guid: 6c809758ac1d0ae4aa709907681ea577,
+        type: 3}
+      propertyPath: _viewMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3919533273047247701, guid: 6c809758ac1d0ae4aa709907681ea577,
         type: 3}
