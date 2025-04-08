@@ -87,11 +87,21 @@ public class PlatformController : NetworkBehaviour, IActivatable
         return true;
     }
 
+    private void DeliverActivation()
+    {
+        SetActiveClientRpc(true);
+    }
+
     public bool Deactivate(GameObject activator = null)
     {
         SetActiveServerRpc(false);
 
         return true;
+    }
+
+    private void DeliverDeactivation()
+    {
+        SetActiveClientRpc(false);
     }
 
     /// <summary>
@@ -209,13 +219,23 @@ public class PlatformController : NetworkBehaviour, IActivatable
     /// </summary>
     /// <param name="targets">목표 위치</param>
     /// <param name="moveSpeed">이동 속력</param>
-    public void Initialize(Transform[] targets, float moveSpeed)
+    public void Initialize(Transform[] targets, float moveSpeed, EventType[] subscribeForActivation, EventType[] subscribeForDeactivation)
     {
         InitializeClientRpc(targets.Length, moveSpeed, transform.position, transform.rotation, transform.localScale);
 
         for (int i = 0; i < targets.Length; i++)
         {
             AppendTargetClientRpc(i, targets[i].position, targets[i].rotation, targets[i].localScale);
+        }
+
+        foreach (EventType eventType in subscribeForActivation)
+        {
+            EventBus.Instance.SubscribeEvent<UnityAction>(eventType, DeliverActivation);
+        }
+
+        foreach (EventType eventType in subscribeForDeactivation)
+        {
+            EventBus.Instance.SubscribeEvent<UnityAction>(eventType, DeliverDeactivation);
         }
     }
 }

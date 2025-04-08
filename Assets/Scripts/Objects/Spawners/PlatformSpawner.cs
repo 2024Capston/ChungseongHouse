@@ -8,6 +8,9 @@ public class PlatformSpawner : NetworkObjectSpawner
     [SerializeField] private Transform[] _targets;
     [SerializeField] private float _moveSpeed;
 
+    [SerializeField] private EventType[] _subscribeForActivation;
+    [SerializeField] private EventType[] _subscribeForDeactivation;
+
     private void Start()
     {
         if (!NetworkManager.Singleton.IsServer)
@@ -22,6 +25,6 @@ public class PlatformSpawner : NetworkObjectSpawner
         _spawnedObject.transform.localScale = transform.lossyScale;
 
         _spawnedObject.GetComponent<NetworkObject>().Spawn();
-        _spawnedObject.GetComponent<PlatformController>().Initialize(_targets, _moveSpeed);
+        _spawnedObject.GetComponent<PlatformController>().Initialize(_targets, _moveSpeed, _subscribeForActivation, _subscribeForDeactivation);
     }
 }

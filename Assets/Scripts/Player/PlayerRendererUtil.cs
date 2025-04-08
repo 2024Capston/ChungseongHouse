@@ -55,6 +55,16 @@ public class PlayerRendererUtil : MonoBehaviour
         velocity.y = 0;
         velocity = Quaternion.Inverse(transform.rotation) * velocity;
 
+        if (_playerController.MoveInput.x == 0)
+        {
+            velocity.x = 0;
+        }
+
+        if (_playerController.MoveInput.z == 0)
+        {
+            velocity.z = 0;
+        }
+
         _animator.SetFloat("Velocity", velocity.magnitude / 80f, 0.1f, Time.deltaTime);
         _animator.SetFloat("Angular Velocity", _playerController.AngularVelocity.y / 360f, 0.1f, Time.deltaTime);
 

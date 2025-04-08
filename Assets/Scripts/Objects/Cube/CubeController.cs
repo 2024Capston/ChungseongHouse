@@ -1,5 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// 큐브를 조작하는 Class.
@@ -63,7 +64,7 @@ public class CubeController : NetworkBehaviour, IInteractable
         });
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (!IsOwner)
         {
@@ -72,22 +73,28 @@ public class CubeController : NetworkBehaviour, IInteractable
 
         if (_interactingPlayer)
         {
-            Vector3 target = _interactingRigidbody.position + Vector3.up * 6f + Camera.main.transform.forward * DISTANCE_FROM_PLAYER;
-            _interactingPlayerRenderer.SetArmTarget(ArmType.LeftArm, target - transform.right * 10f);
-            _interactingPlayerRenderer.SetArmTarget(ArmType.RightArm, target + transform.right * 10f);
+            Vector3 targetPosition = _interactingRigidbody.position + Vector3.up * 6f + Camera.main.transform.forward * DISTANCE_FROM_PLAYER;
+            Quaternion targetRotation = Quaternion.LookRotation(_rigidbody.position - Camera.main.transform.position);
 
-            Vector3 direction = (target - _rigidbody.position).normalized;
-            float magnitude = Mathf.Clamp(Mathf.Pow((target - _rigidbody.position).magnitude * CUBE_SPEED, 2), 0, MAXIMUM_CUBE_SPEED);
+            // 플레이어 팔 위치 조정
+            _interactingPlayerRenderer.SetArmTarget(ArmType.LeftArm, targetPosition - transform.right * 5f);
+            _interactingPlayerRenderer.SetArmTarget(ArmType.RightArm, targetPosition + transform.right * 5f);
 
-            if (_rigidbody.SweepTest(direction, out RaycastHit hit, magnitude * Time.deltaTime))
+            Vector3 direction = (targetPosition - _rigidbody.position).normalized;
+            float magnitude = Mathf.Clamp(Mathf.Pow((targetPosition - _rigidbody.position).magnitude * CUBE_SPEED, 2), 0, MAXIMUM_CUBE_SPEED);
+
+            direction = direction * magnitude + _interactingRigidbody.velocity;
+
+            // 벽에 부딪힐 땐 감속
+            if (_rigidbody.SweepTest(direction.normalized, out RaycastHit hit, direction.magnitude * Time.fixedDeltaTime) && !hit.collider.isTrigger)
             {
-                magnitude = 4f * Time.deltaTime;
+                direction = direction.normalized * 2f;
             }
 
-            _rigidbody.velocity = direction * magnitude + _interactingRigidbody.velocity;
-            _rigidbody.MoveRotation(Quaternion.Slerp(_rigidbody.rotation, Quaternion.LookRotation(transform.position - Camera.main.transform.position), Time.deltaTime * 16f));
+            _rigidbody.velocity = direction;
+            _rigidbody.MoveRotation(Quaternion.Slerp(_rigidbody.rotation, targetRotation, Time.deltaTime * 16f));
 
-            if (Vector3.Distance(transform.position, _interactingRigidbody.position) > MAXIMUM_DISTANCE_FROM_PLAYER)
+            if (CheckForceStopCondition(targetPosition))
             {
                 ForceStopInteraction();
             }
@@ -145,6 +152,51 @@ public class CubeController : NetworkBehaviour, IInteractable
         {
             _rigidbody.isKinematic = true;
         }
+    }
+
+    /// <summary>
+    /// 플레이어가 들고 있는 큐브를 놓아야 하는지 확인한다.
+    /// </summary>
+    /// <returns></returns>
+    private bool CheckForceStopCondition(Vector3 target)
+    {
+        // 플레이어로부터 너무 멀어진 경우
+        if (Vector3.Distance(_rigidbody.position, _interactingRigidbody.position) > MAXIMUM_DISTANCE_FROM_PLAYER) {
+            return true;
+        }
+
+        // 목표 위치와 현재 위치가 너무 다른 경우 (플레이어를 중심으로 한 각도로 계산)
+        Quaternion targetAngle = Quaternion.LookRotation(target - _interactingRigidbody.position);
+        Quaternion cubeAngle = Quaternion.LookRotation(_rigidbody.position - _interactingRigidbody.position);
+
+        if (Quaternion.Angle(targetAngle, cubeAngle) > 120f)
+        {
+            return true;
+        }
+
+        // 장애물에 막혀 플레이어의 시점에 큐브가 없는 경우
+        RaycastHit hit;
+        Vector3[] raycastPosition = { _rigidbody.position + transform.up * 5f, _rigidbody.position - transform.up * 5f,
+                                      _rigidbody.position + transform.right * 5f, _rigidbody.position - transform.right * 5f,
+                                      _rigidbody.position + transform.forward * 5f, _rigidbody.position - transform.forward * 5f};
+
+        int originalLayer = gameObject.layer;
+        gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+
+        foreach (Vector3 position in raycastPosition)
+        {
+            if (Physics.Raycast(position, _interactingRigidbody.position - position, out hit) &&
+                hit.collider.gameObject == _interactingPlayer.gameObject)
+            {
+                gameObject.layer = originalLayer;
+
+                return false;
+            }
+        }
+
+        gameObject.layer = originalLayer;
+
+        return true;
     }
 
     /// <summary>

@@ -30410,12 +30410,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
+      propertyPath: _publishOnPress.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
       propertyPath: _activatables.Array.data[0]
       value: 
       objectReference: {fileID: 8677145642534471184}
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
         type: 3}
+      propertyPath: _publishOnUnpress.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
       propertyPath: _subscribeForEnable.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
+        type: 3}
+      propertyPath: _publishOnUnpress.Array.data[0]
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4019316036991599575, guid: 1d3b69f763eb628458bedfb0c9dfcb93,
@@ -87725,6 +87740,21 @@ PrefabInstance:
       propertyPath: _targets.Array.data[5]
       value: 
       objectReference: {fileID: 6151713770822818562}
+    - target: {fileID: 718437452904340941, guid: 36fa03bb6c45d1d4d95fac3a4e629e92,
+        type: 3}
+      propertyPath: _subscribeForActivation.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 718437452904340941, guid: 36fa03bb6c45d1d4d95fac3a4e629e92,
+        type: 3}
+      propertyPath: _subscribeForDeactivation.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 718437452904340941, guid: 36fa03bb6c45d1d4d95fac3a4e629e92,
+        type: 3}
+      propertyPath: _subscribeForDeactivation.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2268501196984302396, guid: 36fa03bb6c45d1d4d95fac3a4e629e92,
         type: 3}
       propertyPath: m_Name

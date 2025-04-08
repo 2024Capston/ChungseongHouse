@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 540267531118509011}
   - component: {fileID: 5798344946265156390}
   - component: {fileID: 6940867589838962802}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Door_Gather
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -184,6 +184,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RightDoor
       objectReference: {fileID: 0}
+    - target: {fileID: 5033790415592458150, guid: ba7bd5610c5eee342a51d8c87b508877,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5661109509454028060, guid: ba7bd5610c5eee342a51d8c87b508877,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -308,6 +313,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Door_Light
       objectReference: {fileID: 0}
+    - target: {fileID: 6801351132467109075, guid: 152b30d431983cc4f9d77738bd4cbcf2,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 8006590907468067754, guid: 152b30d431983cc4f9d77738bd4cbcf2,
         type: 3}
       propertyPath: m_Convex
@@ -398,6 +408,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Door
       objectReference: {fileID: 0}
+    - target: {fileID: 6540255540152801253, guid: b83fc04cc15886c49be50ced47700fa6,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 260421074440696473, guid: b83fc04cc15886c49be50ced47700fa6, type: 3}
@@ -427,6 +442,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: LeftDoor
+      objectReference: {fileID: 0}
+    - target: {fileID: 4637332281466162009, guid: ecd1f8e89aec6e24384d5684f2500701,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5409049168491467235, guid: ecd1f8e89aec6e24384d5684f2500701,
         type: 3}

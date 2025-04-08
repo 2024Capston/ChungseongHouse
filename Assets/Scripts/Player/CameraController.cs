@@ -72,7 +72,7 @@ public class CameraController : NetworkBehaviour
         }
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (IsOwner && _isEnabled)
         {

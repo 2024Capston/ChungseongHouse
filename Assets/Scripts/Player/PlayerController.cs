@@ -28,7 +28,6 @@ public class PlayerController : NetworkBehaviour
     private IInteractable _interactableInHand;     // 플레이어가 들고 있는 Interactable
 
     // 입력 관련
-    private Vector3 _moveInput;     // 방향 입력 값 (수직, 수평)
     private bool _jumpInput;        // 점프 입력 여부
     private float _jumpRemember;    // 입력된 점프를 처리할 수 있는 쿨타임
     private bool _isEnabled = true; // 플레이어 조작 활성화 여부
@@ -58,6 +57,12 @@ public class PlayerController : NetworkBehaviour
         get => _color;
     }
 
+    private Vector3 _moveInput;
+    public Vector3 MoveInput
+    {
+        get => _moveInput;
+    }
+
     private Vector3 _velocity;
     public Vector3 Velocity
     {
@@ -84,9 +89,6 @@ public class PlayerController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        //QualitySettings.vSyncCount = 0;
-        //Application.targetFrameRate = 30;
-
         _collider = GetComponent<Collider>();
         _playerRenderer = GetComponent<PlayerRenderer>();
 
@@ -177,6 +179,24 @@ public class PlayerController : NetworkBehaviour
             {
                 _cameraController.ChangeCameraMode(!_cameraController.IsFirstPerson);
             }
+
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                QualitySettings.vSyncCount = 0;
+                Application.targetFrameRate = 30;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                QualitySettings.vSyncCount = 0;
+                Application.targetFrameRate = 60;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                QualitySettings.vSyncCount = 1;
+                Application.targetFrameRate = 0;
+            }
         }
     }
 
@@ -233,10 +253,6 @@ public class PlayerController : NetworkBehaviour
         if (_cameraController.IsFirstPerson)
         {
             Vector3 newVelocity = rotation * _moveInput * _walkSpeed;
-            if (!_isGrounded)
-            {
-                newVelocity /= 2f;
-            }
             newVelocity.y = _rigidbody.velocity.y;
 
             _rigidbody.velocity = newVelocity;
@@ -244,10 +260,6 @@ public class PlayerController : NetworkBehaviour
         else
         {
             Vector3 newVelocity = rotation * _moveInput * _walkSpeed;
-            if (!_isGrounded)
-            {
-                newVelocity /= 2f;
-            }
             newVelocity.y = _rigidbody.velocity.y;
 
             _rigidbody.velocity = newVelocity;
@@ -368,11 +380,11 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsServer)
         {
-            SendPlayerStateClientRpc(_velocity, _angularVelocity, _isJumping, _isGrounded);
+            SendPlayerStateClientRpc(_moveInput, _velocity, _angularVelocity, _isJumping, _isGrounded);
         }
         else
         {
-            SendPlayerStateServerRpc(_velocity, _angularVelocity, _isJumping, _isGrounded);
+            SendPlayerStateServerRpc(_moveInput, _velocity, _angularVelocity, _isJumping, _isGrounded);
         }
     }
 
@@ -466,8 +478,9 @@ public class PlayerController : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SendPlayerStateServerRpc(Vector3 velocity, Vector3 angularVelocity, bool isJumping, bool isGrounded)
+    private void SendPlayerStateServerRpc(Vector3 moveInput, Vector3 velocity, Vector3 angularVelocity, bool isJumping, bool isGrounded)
     {
+        _moveInput = moveInput;
         _velocity = velocity;
         _angularVelocity = angularVelocity;
 
@@ -476,13 +489,14 @@ public class PlayerController : NetworkBehaviour
     }
 
     [ClientRpc(RequireOwnership = false)]
-    private void SendPlayerStateClientRpc(Vector3 velocity, Vector3 angularVelocity, bool isJumping, bool isGrounded)
+    private void SendPlayerStateClientRpc(Vector3 moveInput, Vector3 velocity, Vector3 angularVelocity, bool isJumping, bool isGrounded)
     {
         if (IsServer)
         {
             return;
         }
 
+        _moveInput = moveInput;
         _velocity = velocity;
         _angularVelocity = angularVelocity;
 
