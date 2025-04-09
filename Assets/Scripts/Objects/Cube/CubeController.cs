@@ -85,11 +85,11 @@ public class CubeController : NetworkBehaviour, IInteractable
 
             direction = direction * magnitude + _interactingRigidbody.velocity;
 
-            // 벽에 부딪힐 땐 감속
-            if (_rigidbody.SweepTest(direction.normalized, out RaycastHit hit, direction.magnitude * Time.fixedDeltaTime) && !hit.collider.isTrigger)
-            {
-                direction = direction.normalized * 2f;
-            }
+            //// 벽에 부딪힐 땐 감속
+            //if (_rigidbody.SweepTest(direction.normalized, out RaycastHit hit, direction.magnitude * Time.fixedDeltaTime) && !hit.collider.isTrigger)
+            //{
+            //    //direction = direction.normalized * 2f;
+            //}
 
             _rigidbody.velocity = direction;
             _rigidbody.MoveRotation(Quaternion.Slerp(_rigidbody.rotation, targetRotation, Time.deltaTime * 16f));
@@ -169,7 +169,7 @@ public class CubeController : NetworkBehaviour, IInteractable
         Quaternion targetAngle = Quaternion.LookRotation(target - _interactingRigidbody.position);
         Quaternion cubeAngle = Quaternion.LookRotation(_rigidbody.position - _interactingRigidbody.position);
 
-        if (Quaternion.Angle(targetAngle, cubeAngle) > 120f)
+        if (Quaternion.Angle(targetAngle, cubeAngle) > 160f)
         {
             return true;
         }
