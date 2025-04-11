@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 4663235442134027245}
   - component: {fileID: 7712089242263223322}
   - component: {fileID: 5252351216785704200}
-  - component: {fileID: 6702264363803790203}
+  - component: {fileID: 7339739848764835294}
   m_Layer: 7
   m_Name: cm
   m_TagString: Untagged
@@ -179,7 +179,7 @@ MonoBehaviour:
   m_LegacyHeightOffset: 3.4028235e+38
   m_LegacyHeadingBias: 3.4028235e+38
   m_HeadingIsSlave: 1
---- !u!114 &6702264363803790203
+--- !u!114 &7339739848764835294
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -195,8 +195,8 @@ MonoBehaviour:
   m_LookaheadTime: 0
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 0
-  m_HorizontalDamping: 0
-  m_VerticalDamping: 0
+  m_HorizontalDamping: 0.5
+  m_VerticalDamping: 0.5
   m_ScreenX: 0.5
   m_ScreenY: 0.5
   m_DeadZoneWidth: 0
@@ -511,7 +511,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3100783602383196205}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.6, z: 0.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1007,7 +1007,7 @@ MonoBehaviour:
   m_AvoidObstacles: 1
   m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 5
+  m_CameraRadius: 2
   m_Strategy: 0
   m_MaximumEffort: 4
   m_SmoothingTime: 0
@@ -1056,7 +1056,7 @@ GameObject:
   - component: {fileID: 5912897766301459743}
   - component: {fileID: 3808469907369743198}
   - component: {fileID: 8829934798127044921}
-  - component: {fileID: 2286996222675663224}
+  - component: {fileID: 7820930634540336880}
   m_Layer: 7
   m_Name: cm
   m_TagString: Untagged
@@ -1145,7 +1145,7 @@ MonoBehaviour:
   m_LegacyHeightOffset: 3.4028235e+38
   m_LegacyHeadingBias: 3.4028235e+38
   m_HeadingIsSlave: 1
---- !u!114 &2286996222675663224
+--- !u!114 &7820930634540336880
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1161,8 +1161,8 @@ MonoBehaviour:
   m_LookaheadTime: 0
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 0
-  m_HorizontalDamping: 0
-  m_VerticalDamping: 0
+  m_HorizontalDamping: 0.5
+  m_VerticalDamping: 0.5
   m_ScreenX: 0.5
   m_ScreenY: 0.5
   m_DeadZoneWidth: 0
@@ -1255,7 +1255,7 @@ GameObject:
   - component: {fileID: 2552645901088036529}
   - component: {fileID: 3160299148279839754}
   - component: {fileID: 1195200961192212556}
-  - component: {fileID: 7036585217068370155}
+  - component: {fileID: 9048966400248453536}
   m_Layer: 7
   m_Name: cm
   m_TagString: Untagged
@@ -1344,7 +1344,7 @@ MonoBehaviour:
   m_LegacyHeightOffset: 3.4028235e+38
   m_LegacyHeadingBias: 3.4028235e+38
   m_HeadingIsSlave: 1
---- !u!114 &7036585217068370155
+--- !u!114 &9048966400248453536
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1360,8 +1360,8 @@ MonoBehaviour:
   m_LookaheadTime: 0
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 0
-  m_HorizontalDamping: 0
-  m_VerticalDamping: 0
+  m_HorizontalDamping: 0.5
+  m_VerticalDamping: 0.5
   m_ScreenX: 0.5
   m_ScreenY: 0.5
   m_DeadZoneWidth: 0

@@ -52,6 +52,18 @@ namespace Possessable
         {
             _rigidbody = GetComponent<Rigidbody>();
             _collider = GetComponent<Collider>();
+            _meshRenderer = GetComponent<MeshRenderer>();
+
+            _networkInterpolator = GetComponent<NetworkInterpolator>();
+        }
+
+        public override void OnNetworkSpawn()
+        {
+            _networkInterpolator.AddVisualReferenceDependantFunction(() =>
+            {
+                _outline = _networkInterpolator.VisualReference.GetComponent<Outline>();
+                _outline.enabled = false;
+            });
         }
 
         void Update()
@@ -329,22 +341,14 @@ namespace Possessable
         private void InitializeClientRpc(ColorType color, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             _color = color;
+            _networkInterpolator.AddVisualReferenceDependantFunction(() =>
+            {
+                _networkInterpolator.VisualReference.GetComponent<MeshRenderer>().material = _meshRenderer.material = _materials[_color == ColorType.Blue ? 0 : 1];
+            });
 
             _rigidbody.MovePosition(position);
             _rigidbody.MoveRotation(rotation);
             transform.localScale = scale;
-
-            _networkInterpolator = GetComponent<NetworkInterpolator>();
-
-            _networkInterpolator.AddVisualReferenceDependantFunction(() =>
-            {
-                _meshRenderer = _networkInterpolator.VisualReference.GetComponent<MeshRenderer>();
-
-                _outline = _networkInterpolator.VisualReference.GetComponent<Outline>();
-                _outline.enabled = false;
-
-                _meshRenderer.material = _materials[(int)_color - 1];
-            });
 
             if (PlayerController.LocalPlayer)
             {

@@ -1,6 +1,7 @@
 using System;
 using Unity.Netcode;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,7 +13,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float _walkSpeed;    // 이동 속력
     [SerializeField] private float _jumpForce;     // 점프 속력
 
-    private const float GROUND_DETECTION_THRESHOLD = 1f;        // 접지 판정 범위
+    private const float GROUND_DETECTION_THRESHOLD = 2f;        // 접지 판정 범위
     private const float JUMP_REMEMBER_TIME = 0.64f;             // 점프 키 입력 기억 시간
     private const float MAXIMUM_REACH_DISTANCE = 16f;           // 상호작용 가능 범위
 
@@ -35,7 +36,6 @@ public class PlayerController : NetworkBehaviour
 
     private Vector3 _lastPosition;
     private Quaternion _lastRotation;
-    private Transform _spawnPoint;
 
     // 플레이어 조작 활성화 여부
     private static bool _isInputEnabled = true;
@@ -118,15 +118,6 @@ public class PlayerController : NetworkBehaviour
             _playerRenderer.Initialize();
 
             // 스폰 위치 배정
-            if (_color == ColorType.Blue)
-            {
-                _spawnPoint = GameObject.FindWithTag("Blue Spawn Point")?.transform;
-            }
-            else
-            {
-                _spawnPoint = GameObject.FindWithTag("Red Spawn Point")?.transform;
-            }
-
             RespawnLocalPlayer();
 
             _localPlayer = this;
@@ -282,7 +273,20 @@ public class PlayerController : NetworkBehaviour
 
             if (_moveInput.magnitude > 0f)
             {
-                _rigidbody.MoveRotation(Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 8));
+                Vector3 newAngularVelocity = rotation.eulerAngles - _rigidbody.rotation.eulerAngles;
+
+                if (newAngularVelocity.y > 180f)
+                {
+                    newAngularVelocity.y -= 360f;
+                }
+                if (newAngularVelocity.y < -180)
+                {
+                    newAngularVelocity.y += 360f;
+                }
+
+                newAngularVelocity.y = Mathf.Sign(newAngularVelocity.y) * Mathf.Sqrt(Mathf.Abs(newAngularVelocity.y));
+
+                _rigidbody.angularVelocity = newAngularVelocity;
             }
         }
     }
@@ -631,16 +635,27 @@ public class PlayerController : NetworkBehaviour
 
     private void RespawnLocalPlayer()
     {
-        if (!_spawnPoint)
+        Transform spawnPoint;
+
+        if (_color == ColorType.Blue)
+        {
+            spawnPoint = GameObject.FindWithTag("Blue Spawn Point")?.transform;
+        }
+        else
+        {
+            spawnPoint = GameObject.FindWithTag("Red Spawn Point")?.transform;
+        }
+
+        if (!spawnPoint)
         {
             Logger.Log($"The spawn Point for {_color} player doesn't exist!");
             return;
         }
 
-        _rigidbody.MovePosition(_spawnPoint.position);
-        _cameraController.ResetCamera(_spawnPoint.rotation.eulerAngles.y);
+        _rigidbody.MovePosition(spawnPoint.position);
+        _cameraController.ResetCamera(spawnPoint.rotation.eulerAngles.y);
 
-        _networkInterpolator.SetInstantTransform(_spawnPoint.position, _spawnPoint.rotation);
+        _networkInterpolator.SetInstantTransform(spawnPoint.position, spawnPoint.rotation);
     }
 
     [ServerRpc]
