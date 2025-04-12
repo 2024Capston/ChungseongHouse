@@ -18,28 +18,20 @@ namespace Possessable
             set => _color = value;
         }
 
-        /// <summary>
-        /// 렌더링에 쓰일 매터리얼. (파랑, 빨강 순)
-        /// </summary>
-        [SerializeField] private Material[] _materials;
-
         private Rigidbody _rigidbody;
         private Collider _collider;
-        private MeshRenderer _meshRenderer;
 
         private NetworkInterpolator _networkInterpolator;
+        private MeshRenderer[] _meshRenderers;
+
+        private Shader _possessableShader;      // 어떤 Material이 PossessableShader를 사용 중인지 확인할 때 쓸 변수
+        private float _transparentThreshold;    // 물체와 카메라의 거리가 이것보다 적으면 투명화 시작
 
         // 빙의한 플레이어에 대한 레퍼런스
         private PlayerController _interactingPlayer;
         private Rigidbody _interactingRigidbody;
         private PlayerRenderer _interactingPlayerRenderer;
         private CameraController _interactingCameraController;
-
-        // 빙의한 플레이어가 원래 가지고 있던 Mesh, Material
-        private Mesh _originalMesh;
-        private Material _originalMaterial;
-
-        private Rigidbody _platform;
 
         private Outline _outline;
         public Outline Outline
@@ -52,18 +44,16 @@ namespace Possessable
         {
             _rigidbody = GetComponent<Rigidbody>();
             _collider = GetComponent<Collider>();
-            _meshRenderer = GetComponent<MeshRenderer>();
+            _possessableShader = Shader.Find("Shader Graphs/PossessableShader");
 
             _networkInterpolator = GetComponent<NetworkInterpolator>();
-        }
-
-        public override void OnNetworkSpawn()
-        {
             _networkInterpolator.AddVisualReferenceDependantFunction(() =>
             {
                 _outline = _networkInterpolator.VisualReference.GetComponent<Outline>();
                 _outline.enabled = false;
             });
+
+            _transparentThreshold = (_collider.bounds.extents.x * transform.localScale.x + _collider.bounds.extents.z * transform.localScale.z) / 2f;
         }
 
         void Update()
@@ -78,6 +68,17 @@ namespace Possessable
             {
                 transform.position = _interactingPlayer.transform.position;
                 transform.rotation = _interactingPlayer.transform.rotation;
+
+                float distance = Vector3.Distance(transform.position, Camera.main.transform.position);
+
+                if (distance < _transparentThreshold)
+                {
+                    SetAlphaValue(distance / _transparentThreshold);
+                }
+                else
+                {
+                    SetAlphaValue(1.0f);
+                }
             }
         }
 
@@ -191,11 +192,32 @@ namespace Possessable
 
                 _interactingPlayer = null;
 
+                SetAlphaValue(1.0f);
+
                 return true;
             }
             else
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// 빙의 물체의 알파 값을 설정한다. [0, 1]
+        /// </summary>
+        /// <param name="alphaValue">알파 값</param>
+        private void SetAlphaValue(float alphaValue)
+        {
+            foreach (MeshRenderer meshRenderer in _meshRenderers)
+            {
+                Material[] materials = meshRenderer.materials;
+                foreach (Material material in materials)
+                {
+                    if (material.shader == _possessableShader)
+                    {
+                        material.SetFloat("_Alpha", alphaValue);
+                    }
+                }
             }
         }
 
@@ -343,7 +365,19 @@ namespace Possessable
             _color = color;
             _networkInterpolator.AddVisualReferenceDependantFunction(() =>
             {
-                _networkInterpolator.VisualReference.GetComponent<MeshRenderer>().material = _meshRenderer.material = _materials[_color == ColorType.Blue ? 0 : 1];
+                _meshRenderers =  _networkInterpolator.VisualReference.GetComponentsInChildren<MeshRenderer>();
+
+                foreach (MeshRenderer meshRenderer in _meshRenderers)
+                {
+                    Material[] materials = meshRenderer.materials;
+                    foreach (Material material in materials)
+                    {
+                        if (material.shader == _possessableShader)
+                        {
+                            material.SetObjectColor(color);
+                        }
+                    }
+                }
             });
 
             _rigidbody.MovePosition(position);

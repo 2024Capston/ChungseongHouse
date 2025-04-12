@@ -558,11 +558,13 @@ public class PlayerController : NetworkBehaviour
                 vertices[i].z = vertices[i].z * colliderScale.z / transform.localScale.z;
             }
 
+            mesh.vertices = vertices;
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();
 
             _collider = gameObject.AddComponent<MeshCollider>();
             (_collider as MeshCollider).sharedMesh = mesh;
+            (_collider as MeshCollider).convex = true;
         }
     }
 
