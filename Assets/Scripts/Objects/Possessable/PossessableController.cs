@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using System.Linq;
 
 namespace Possessable
 {
@@ -101,11 +102,13 @@ namespace Possessable
             for (int i = 0; i < 9; i++)
             {
                 Vector3 newPoint;
+                Collider[] colliders;
 
                 // 정면으로부터 0~180도 회전
                 newPoint = origin + Quaternion.Euler(0, i * 20, 0) * transform.forward * radius;
+                colliders = Physics.OverlapCapsule(newPoint + offset, newPoint - offset, PlayerController.INITIAL_CAPSULE_RADIUS * player.transform.localScale.x);
 
-                if (Physics.OverlapCapsule(newPoint + offset, newPoint - offset, PlayerController.INITIAL_CAPSULE_RADIUS * player.transform.localScale.x).Length == 0)
+                if (colliders.Length == 0 || colliders.All(collider => collider.isTrigger))
                 {
                     if (!Physics.Raycast(transform.position, newPoint - transform.position, (newPoint - transform.position).magnitude))
                     {
@@ -118,8 +121,9 @@ namespace Possessable
 
                 // 정면으로부터 -180~0도 회전
                 newPoint = origin + Quaternion.Euler(0, -i * 20, 0) * transform.forward * radius;
+                colliders = Physics.OverlapCapsule(newPoint + offset, newPoint - offset, PlayerController.INITIAL_CAPSULE_RADIUS * player.transform.localScale.x);
 
-                if (Physics.OverlapCapsule(newPoint + offset, newPoint - offset, PlayerController.INITIAL_CAPSULE_RADIUS * player.transform.localScale.x).Length == 0)
+                if (colliders.Length == 0 || colliders.All(collider => collider.isTrigger))
                 {
                     if (!Physics.Raycast(transform.position, newPoint - transform.position, (newPoint - transform.position).magnitude))
                     {

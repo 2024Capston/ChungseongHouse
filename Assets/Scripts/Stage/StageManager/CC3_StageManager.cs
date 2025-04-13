@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,8 +10,7 @@ namespace ColorChanger
 {
     public class CC3_StageManager : StageManager
     {
-        private PlateController[] _plateControllers;
-        private DoorController _exitDoorController;
+        private bool[] _plateStates;
 
         public override void EndGame()
         {
@@ -19,44 +19,91 @@ namespace ColorChanger
 
         public override void RestartGame()
         {
+            EventBus.Instance.ClearEventBus();
+
+            foreach (PlayerController playerController in FindObjectsOfType<PlayerController>())
+            {
+                playerController.RespawnPlayer();
+                playerController.ForceStopInteraction();
+            }
+
+            foreach (NetworkObjectSpawner networkObjectSpawner in FindObjectsOfType<NetworkObjectSpawner>())
+            {
+                networkObjectSpawner.SpawnObject();
+            }
+
+            StartGame();
         }
 
         public override void StartGame()
         {
-            EventBus.Instance.SubscribeEvent<UnityAction<PlateController, GameObject>>(EventType.EventA, OnPlatePressed);
+            _plateStates = new bool[4];
+
+            EventBus.Instance.SubscribeEvent<UnityAction<PlateController, GameObject>>(EventType.EventA, OnPlateUpdateA);
+            EventBus.Instance.SubscribeEvent<UnityAction<PlateController, GameObject>>(EventType.EventB, OnPlateUpdateB);
+            EventBus.Instance.SubscribeEvent<UnityAction<PlateController, GameObject>>(EventType.EventC, OnPlateUpdateC);
+            EventBus.Instance.SubscribeEvent<UnityAction<PlateController, GameObject>>(EventType.EventD, OnPlateUpdateD);
         }
 
-        private bool CheckClearCondition()
+        private void OnPlateUpdate(EventType callerEvent, PlateController plate)
         {
-            return true;
-            foreach (PlateController plateController in _plateControllers)
+            bool hasCube = false;
+
+            foreach (GameObject objectOnPlate in plate.ObjectsOnPlate)
             {
-                bool hasCube = false;
-
-                foreach (GameObject objectOnPlate in plateController.ObjectsOnPlate)
+                if (objectOnPlate.GetComponent<CubeController>() != null)
                 {
-                    if (objectOnPlate.GetComponent<CubeController>() != null)
-                    {
-                        hasCube = true;
-                        break;
-                    }
-                }
-
-                if (!hasCube)
-                {
-                    return false;
+                    hasCube = true;
+                    break;
                 }
             }
 
-            return true;
+            _plateStates[(int)callerEvent] = hasCube;
+
+            if (_plateStates[(int)callerEvent])
+            {
+                EventBus.Instance.InvokeEvent(callerEvent + 4, MonitorType.CheckMark);
+            }
+            else
+            {
+                EventBus.Instance.InvokeEvent(callerEvent + 4, MonitorType.CubeMark);
+            }
+
+            bool isClear = true;
+
+            foreach (bool plateState in _plateStates)
+            {
+                if (!plateState)
+                {
+                    isClear = false;
+                    break;
+                }
+            }
+
+            if (isClear)
+            {
+                EventBus.Instance.InvokeEvent(EventType.EventI);
+            }
         }
 
-        public void OnPlatePressed(PlateController plate, GameObject cubeOnPlate)
+        public void OnPlateUpdateA(PlateController plate, GameObject cubeOnPlate)
         {
-            if (CheckClearCondition())
-            {
-                EventBus.Instance.InvokeEvent(EventType.EventB);
-            }
+            OnPlateUpdate(EventType.EventA, plate);
+        }
+
+        public void OnPlateUpdateB(PlateController plate, GameObject cubeOnPlate)
+        {
+            OnPlateUpdate(EventType.EventB, plate);
+        }
+
+        public void OnPlateUpdateC(PlateController plate, GameObject cubeOnPlate)
+        {
+            OnPlateUpdate(EventType.EventC, plate);
+        }
+
+        public void OnPlateUpdateD(PlateController plate, GameObject cubeOnPlate)
+        {
+            OnPlateUpdate(EventType.EventD, plate);
         }
     }
 }
