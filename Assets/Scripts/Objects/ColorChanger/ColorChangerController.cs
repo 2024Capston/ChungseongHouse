@@ -10,10 +10,6 @@ namespace ColorChanger
     /// </summary>
     public class ColorChangerController : NetworkBehaviour
     {
-        /// <summary>
-        /// 변환 시간
-        /// </summary>
-        [SerializeField] private float _changeTime;
 
         /// <summary>
         /// ColorChangerUtil과 시간 표시 UI를 포함한 프리팹
@@ -22,6 +18,8 @@ namespace ColorChanger
 
         [SerializeField] private MeshRenderer _gaugeMeshRenderer;
         [SerializeField] private Material[] _materials;
+
+        private float _changeTime;  // 변환 시간
 
         private const float TRANSITION_TIME = 2f;
 

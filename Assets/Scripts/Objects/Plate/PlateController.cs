@@ -11,17 +11,17 @@ public class PlateController : NetworkBehaviour
     /// <summary>
     /// 발판 옆에 표시될 빛 색깔
     /// </summary>
-    [SerializeField] ColorType _color;
+    ColorType _color;
 
     /// <summary>
     /// 발판에 물체가 들어오면 호출할 이벤트
     /// </summary>
-    [SerializeField] EventType[] _publishOnEnter;
+    EventType[] _publishOnEnter;
 
     /// <summary>
     /// 발판에서 물체가 나가면 호출할 이벤트
     /// </summary>
-    [SerializeField] EventType[] _publishOnExit;
+    EventType[] _publishOnExit;
 
     /// <summary>
     /// 발판 옆의 빛에 대한 레퍼런스

@@ -21,12 +21,12 @@ public class PlatformController : NetworkBehaviour, IActivatable
     /// <summary>
     /// 목표 위치 (오름차순으로 순서대로 이동)
     /// </summary>
-    [SerializeField] private Target[] _targets;
+    private Target[] _targets;
 
     /// <summary>
     /// 이동 속력
     /// </summary>
-    [SerializeField] private float _moveSpeed;
+    private float _moveSpeed;
 
     private Rigidbody _rigidbody;
 

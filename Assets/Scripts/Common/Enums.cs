@@ -53,3 +53,8 @@ public enum ArmType
 {
     LeftArm, RightArm, BothArms
 }
+
+public enum MonitorType
+{
+    CheckMark, XMark, CubeMark
+}

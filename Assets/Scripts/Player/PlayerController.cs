@@ -15,7 +15,7 @@ public class PlayerController : NetworkBehaviour
 
     private const float GROUND_DETECTION_THRESHOLD = 2f;        // 접지 판정 범위
     private const float JUMP_REMEMBER_TIME = 0.64f;             // 점프 키 입력 기억 시간
-    private const float MAXIMUM_REACH_DISTANCE = 16f;           // 상호작용 가능 범위
+    private const float MAXIMUM_REACH_DISTANCE = 32f;           // 상호작용 가능 범위
 
     public static float INITIAL_CAPSULE_HEIGHT = 2f;             // 최초 Capsule Collider 높이
     public static float INITIAL_CAPSULE_RADIUS = 0.5f;           // 최초 Capsule Collider 반경 

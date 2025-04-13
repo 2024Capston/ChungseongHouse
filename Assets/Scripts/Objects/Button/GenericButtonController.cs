@@ -15,42 +15,32 @@ public class GenericButtonController : ButtonController
     /// <summary>
     /// 버튼 작동 방식
     /// </summary>
-    [SerializeField] private ButtonType _buttonType;
+    private ButtonType _buttonType;
 
     /// <summary>
     /// 작동 방식이 Temporary일 때 비활성화까지 걸리는 시간
     /// </summary>
-    [SerializeField] private float _temporaryCooldown;
+    private float _temporaryCooldown;
 
     /// <summary>
     /// 두 플레이어가 모두 근처에 위치해야 하는지 여부
     /// </summary>
-    [SerializeField] private bool _requiresBoth;
+    private bool _requiresBoth;
 
     /// <summary>
     /// Requires Both가 true일 때 인식 반경
     /// </summary>
-    [SerializeField] private float _detectionRadius;
+    private float _detectionRadius;
 
     /// <summary>
     /// 버튼을 눌렀을 때 호출할 이벤트
     /// </summary>
-    [SerializeField] private EventType[] _publishOnPress;
+    private EventType[] _publishOnPress;
 
     /// <summary>
     /// 버튼을 뗐을 때 호출할 이벤트
     /// </summary>
-    [SerializeField] private EventType[] _publishOnUnpress;
-
-    /// <summary>
-    /// 호출되면 버튼을 활성화할 이벤트
-    /// </summary>
-    [SerializeField] private EventType[] _subscribeForEnable;
-
-    /// <summary>
-    /// 호출되면 버튼을 비활성화할 이벤트
-    /// </summary>
-    [SerializeField] private EventType[] _subscribeForDisable;
+    private EventType[] _publishOnUnpress;
 
     private float _temporaryTime = 0f;  // Temporary용 타이머
 
@@ -217,15 +207,13 @@ public class GenericButtonController : ButtonController
 
         _publishOnPress = publishOnPress;
         _publishOnUnpress = publishOnUnpress;
-        _subscribeForEnable = subscribeForEnable;
-        _subscribeForDisable = subscribeForDisable;
 
-        foreach (EventType eventType in _subscribeForEnable)
+        foreach (EventType eventType in subscribeForEnable)
         {
             EventBus.Instance.SubscribeEvent<UnityAction>(eventType, EnableButton);
         }
 
-        foreach (EventType eventType in _subscribeForDisable)
+        foreach (EventType eventType in subscribeForDisable)
         {
             EventBus.Instance.SubscribeEvent<UnityAction>(eventType, DisableButton);
         }

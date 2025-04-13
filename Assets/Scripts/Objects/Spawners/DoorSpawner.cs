@@ -12,6 +12,8 @@ public class DoorSpawner : NetworkObjectSpawner
 
     [SerializeField] EventType[] _subscribeForActivation;
     [SerializeField] EventType[] _subscribeForDeactivation;
+    [SerializeField] EventType[] _subscribeForSetOpen;
+    [SerializeField] EventType[] _subscribeForSetClose;
 
     public override void SpawnObject()
     {
@@ -29,6 +31,6 @@ public class DoorSpawner : NetworkObjectSpawner
         _spawnedObject.transform.localScale = transform.lossyScale;
 
         _spawnedObject.GetComponent<NetworkObject>().Spawn();
-        _spawnedObject.GetComponent<DoorController>().Initialize(_isTrigerrable, _isOpen, _subscribeForActivation, _subscribeForDeactivation);
+        _spawnedObject.GetComponent<DoorController>().Initialize(_isTrigerrable, _isOpen, _subscribeForActivation, _subscribeForDeactivation, _subscribeForSetOpen, _subscribeForSetClose);
     }
 }

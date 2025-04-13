@@ -10,7 +10,7 @@ public class CubeController : NetworkBehaviour, IInteractable
     /// <summary>
     /// 큐브 색깔
     /// </summary>
-    [SerializeField] private ColorType _color;
+    private ColorType _color;
     public ColorType Color
     {
         get => _color;

@@ -11,7 +11,7 @@ namespace Possessable
         /// <summary>
         /// 물체의 색깔
         /// </summary>
-        [SerializeField] private ColorType _color;
+        private ColorType _color;
         public ColorType Color
         {
             get => _color;
@@ -24,7 +24,6 @@ namespace Possessable
         private NetworkInterpolator _networkInterpolator;
         private MeshRenderer[] _meshRenderers;
 
-        private Shader _possessableShader;      // 어떤 Material이 PossessableShader를 사용 중인지 확인할 때 쓸 변수
         private float _transparentThreshold;    // 물체와 카메라의 거리가 이것보다 적으면 투명화 시작
 
         // 빙의한 플레이어에 대한 레퍼런스
@@ -44,7 +43,6 @@ namespace Possessable
         {
             _rigidbody = GetComponent<Rigidbody>();
             _collider = GetComponent<Collider>();
-            _possessableShader = Shader.Find("Shader Graphs/PossessableShader");
 
             _networkInterpolator = GetComponent<NetworkInterpolator>();
             _networkInterpolator.AddVisualReferenceDependantFunction(() =>
@@ -213,7 +211,7 @@ namespace Possessable
                 Material[] materials = meshRenderer.materials;
                 foreach (Material material in materials)
                 {
-                    if (material.shader == _possessableShader)
+                    if (material.HasProperty("_Alpha"))
                     {
                         material.SetFloat("_Alpha", alphaValue);
                     }
@@ -372,10 +370,7 @@ namespace Possessable
                     Material[] materials = meshRenderer.materials;
                     foreach (Material material in materials)
                     {
-                        if (material.shader == _possessableShader)
-                        {
-                            material.SetObjectColor(color);
-                        }
+                        material.SetObjectColor(color);
                     }
                 }
             });

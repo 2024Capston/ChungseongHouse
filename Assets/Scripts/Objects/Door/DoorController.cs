@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Components;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -27,6 +28,16 @@ public class DoorController : NetworkBehaviour, IActivatable
     /// 호출되면 문을 닫을 이벤트
     /// </summary>
     [SerializeField] private EventType[] _subscribeForDeactivation;
+
+    /// <summary>
+    /// 호출되면 IsOpen을 true로 설정할 이벤트
+    /// </summary>
+    [SerializeField] private EventType[] _subscribeForSetOpen;
+
+    /// <summary>
+    /// 호출되면 IsOpen을을 false로 설정할 이벤트
+    /// </summary>
+    [SerializeField] private EventType[] _subscribeForSetClose;
 
     private Animator _animator;
     private float _playerCount = 0;
@@ -79,19 +90,36 @@ public class DoorController : NetworkBehaviour, IActivatable
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!IsServer)
+        {
+            return;
+        }
+
         if (other.GetComponent<PlayerController>() != null)
         {
             _playerCount++;
+        }
+    }
 
-            if (_isTriggerable)
-            {
-                OpenDoorServerRpc();
-            }
+    private void OnTriggerStay(Collider other)
+    {
+        if (!IsServer)
+        {
+            return;
+        }
+
+        if (_isTriggerable && _playerCount > 0)
+        {
+            OpenDoorServerRpc();
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
+        if (!IsServer)
+        {
+            return;
+        }
         if (other.GetComponent<PlayerController>() != null)
         {
             _playerCount--;
@@ -122,6 +150,16 @@ public class DoorController : NetworkBehaviour, IActivatable
         return true;
     }
 
+    public void SetOpen()
+    {
+        IsOpened = true;
+    }
+
+    public void SetClose()
+    {
+        IsOpened = false;
+    }
+
     /// <summary>
     /// 서버와 클라이언트의 초기 상태를 동기화한다. 이 함수는 서버와 클라이언트 모두에서 호출된다.
     /// </summary>
@@ -139,12 +177,14 @@ public class DoorController : NetworkBehaviour, IActivatable
     /// </summary>
     /// <param name="isTriggerable">주변에 가면 켜질지 여부</param>
     /// <param name="isOpen">열린 상태 여부</param>
-    public void Initialize(bool isTriggerable, bool isOpen, EventType[] subscribeForActivation, EventType[] subscribeForDeactivation)
+    public void Initialize(bool isTriggerable, bool isOpen, EventType[] subscribeForActivation, EventType[] subscribeForDeactivation, EventType[] subscribeForSetOpen, EventType[] subscribeForSetClose)
     {
         InitializeClientRpc(isTriggerable, isOpen);
 
         _subscribeForActivation = subscribeForActivation;
         _subscribeForDeactivation = subscribeForDeactivation;
+        _subscribeForSetOpen = subscribeForSetOpen;
+        _subscribeForSetClose = subscribeForSetClose;
 
         foreach (EventType eventType in _subscribeForActivation)
         {
@@ -154,6 +194,16 @@ public class DoorController : NetworkBehaviour, IActivatable
         foreach (EventType eventType in _subscribeForDeactivation)
         {
             EventBus.Instance.SubscribeEvent<UnityAction>(eventType, CloseDoorServerRpc);
+        }
+
+        foreach (EventType eventType in _subscribeForSetOpen)
+        {
+            EventBus.Instance.SubscribeEvent<UnityAction>(eventType, SetOpen);
+        }
+
+        foreach (EventType eventType in _subscribeForSetClose)
+        {
+            EventBus.Instance.SubscribeEvent<UnityAction>(eventType, SetClose);
         }
     }
     
