@@ -94,7 +94,10 @@ public class EscUI : BaseUI
             _settingPanel.RemoveFromHierarchy();
             _settingPanel = null;
         }
-        
+
+        PlayerController.IsInputEnabled = true;
+        CameraController.IsInputEnabled = true;
+
         base.CloseUI(isCloseAll);
     }
 

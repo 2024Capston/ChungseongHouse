@@ -9,6 +9,9 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class CameraController : NetworkBehaviour
 {
+    private const string FIRST_PERSON_INVERT_Y = "FirstPersonInvertY";
+    private const string THIRD_PERSON_INVERT_Y = "ThirdPersonInvertY";
+
     [SerializeField] CinemachineVirtualCamera _firstPersonCamera;
     [SerializeField] CinemachineFreeLook _thirdPersonCamera;
 
@@ -21,6 +24,9 @@ public class CameraController : NetworkBehaviour
 
     private Rigidbody _rigidbody;           // 플레이어의 Rigidbody
     private PlayerRenderer _playerRenderer; // 플레이어의 렌더러
+
+    private bool _firstPersonInvertY;
+    private bool _thirdPersonInvertY;
 
     private bool _isInitialized = false;    // 초기화 완료 여부
 
@@ -62,6 +68,12 @@ public class CameraController : NetworkBehaviour
         {
             if (_isFirstPerson)
             {
+                if ((PlayerPrefs.GetInt(FIRST_PERSON_INVERT_Y, 0) == 1) != _firstPersonInvertY)
+                {
+                    _firstPersonInvertY = !_firstPersonInvertY;
+                    _cinemachinePOV.m_VerticalAxis.m_InvertInput = !_firstPersonInvertY;
+                }
+
                 // Camera Holder를 플레이어 위치로 이동
                 _cameraHolder.transform.position = _visualReference.transform.position;
 
@@ -83,6 +95,12 @@ public class CameraController : NetworkBehaviour
             }
             else if (_isInputEnabled)
             {
+                if ((PlayerPrefs.GetInt(THIRD_PERSON_INVERT_Y, 0) == 1) != _thirdPersonInvertY)
+                {
+                    _thirdPersonInvertY = !_thirdPersonInvertY;
+                    _thirdPersonCamera.m_YAxis.m_InvertInput = !_thirdPersonInvertY;
+                }
+
                 _thirdPersonCamera.m_YAxis.m_InputAxisValue = _lookAroundInput.y;
                 _thirdPersonCamera.m_XAxis.m_InputAxisValue = _lookAroundInput.x;
             }
