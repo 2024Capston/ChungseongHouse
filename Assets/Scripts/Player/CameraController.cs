@@ -28,8 +28,6 @@ public class CameraController : NetworkBehaviour
     private bool _firstPersonInvertY;
     private bool _thirdPersonInvertY;
 
-    private bool _isInitialized = false;    // 초기화 완료 여부
-
     // 카메라 조작 활성화 여부
     private static bool _isInputEnabled = true;
     public static bool IsInputEnabled
@@ -45,11 +43,17 @@ public class CameraController : NetworkBehaviour
         get => _isFirstPerson;
     }
 
+    private static CameraController _localCamera;
+    public static CameraController LocalCamera
+    {
+        get => _localCamera;
+    }
+
     public override void OnNetworkSpawn()
     {
         if (IsOwner)
         {
-            if (!_isInitialized)
+            if (!_localCamera)
             {
                 Initialize();
             }
@@ -68,12 +72,6 @@ public class CameraController : NetworkBehaviour
         {
             if (_isFirstPerson)
             {
-                if ((PlayerPrefs.GetInt(FIRST_PERSON_INVERT_Y, 0) == 1) != _firstPersonInvertY)
-                {
-                    _firstPersonInvertY = !_firstPersonInvertY;
-                    _cinemachinePOV.m_VerticalAxis.m_InvertInput = !_firstPersonInvertY;
-                }
-
                 // Camera Holder를 플레이어 위치로 이동
                 _cameraHolder.transform.position = _visualReference.transform.position;
 
@@ -95,12 +93,6 @@ public class CameraController : NetworkBehaviour
             }
             else if (_isInputEnabled)
             {
-                if ((PlayerPrefs.GetInt(THIRD_PERSON_INVERT_Y, 0) == 1) != _thirdPersonInvertY)
-                {
-                    _thirdPersonInvertY = !_thirdPersonInvertY;
-                    _thirdPersonCamera.m_YAxis.m_InvertInput = !_thirdPersonInvertY;
-                }
-
                 _thirdPersonCamera.m_YAxis.m_InputAxisValue = _lookAroundInput.y;
                 _thirdPersonCamera.m_XAxis.m_InputAxisValue = _lookAroundInput.x;
             }
@@ -130,6 +122,8 @@ public class CameraController : NetworkBehaviour
 
         _isFirstPerson = _firstPersonCamera.m_Priority > _thirdPersonCamera.m_Priority;
 
+        ChangeInvertMode(PlayerPrefs.GetInt(FIRST_PERSON_INVERT_Y, 0) == 1, PlayerPrefs.GetInt(THIRD_PERSON_INVERT_Y, 0) == 1);
+
         _rigidbody = GetComponent<Rigidbody>();
         _playerRenderer = GetComponent<PlayerRenderer>();
 
@@ -145,7 +139,7 @@ public class CameraController : NetworkBehaviour
             _thirdPersonCamera.LookAt = networkInterpolator.VisualReference.transform;
         });
 
-        _isInitialized = true;
+        _localCamera = this;
     }
 
     public void OnLookAroundInput(InputValue value)
@@ -159,7 +153,7 @@ public class CameraController : NetworkBehaviour
     /// <param name="initialAngle">1인칭 회전 초기 각도</param>
     public void ResetCamera(float initialAngle = 0f)
     {
-        if (!_isInitialized)
+        if (!_localCamera)
         {
             Initialize();
         }
@@ -194,5 +188,16 @@ public class CameraController : NetworkBehaviour
             _firstPersonCamera.m_Priority = 0;
             _thirdPersonCamera.m_Priority = 10;
         }
+    }
+
+    /// <summary>
+    /// 카메라 상하반전 여부를 설정한다.
+    /// </summary>
+    /// <param name="firstPersonInvertY">1인칭 상하반전</param>
+    /// <param name="thirdPersonInvertY">3인칭 상하반전</param>
+    public void ChangeInvertMode(bool firstPersonInvertY, bool thirdPersonInvertY)
+    {
+        _cinemachinePOV.m_VerticalAxis.m_InvertInput = !firstPersonInvertY;
+        _thirdPersonCamera.m_YAxis.m_InvertInput = !thirdPersonInvertY;
     }
 }
