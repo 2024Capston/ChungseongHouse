@@ -31,7 +31,7 @@ public class AirlockButtonController : MonoBehaviour, IInteractable
 
     public bool StartInteraction(PlayerController player)
     {
-        _airlockController.OnClickAirlockButtonServerRpc(_buttonColor, _isInButton);
+        _airlockController.OnAirlockButtonPressedServerRpc(_buttonColor, _isInButton);
         return false;
     }
 

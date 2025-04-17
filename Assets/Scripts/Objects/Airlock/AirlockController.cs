@@ -3,13 +3,9 @@ using UnityEngine;
 
 public class AirlockController : NetworkBehaviour
 {
-    private enum AirlockState
-    {
-        Idle, SceneTransition
-    }
+    [SerializeField] private bool _isEntrance;
+    [SerializeField] private GameObject _stagePrefab;
 
-    private AirlockState _airlockState;
-    
     [SerializeField] private DoorController _doorIn;
     [SerializeField] private DoorController _doorOut;
     
@@ -18,130 +14,107 @@ public class AirlockController : NetworkBehaviour
     
     [Tooltip("0 : red In Mesh, 1 : red Out Mesh")]
     [SerializeField] private MeshRenderer[] _redInOutMeshRenderers = new MeshRenderer[2];
-    
-    // 두 값이 true일 땐 DoorIn이 개방, 두 값이 false일 땐 DoorOut이 개방
-    private bool _isBlueOpened = true;
-    private bool IsBlueOpened
-    {
-        get => _isBlueOpened;
-        set
-        {
-            _isBlueOpened = value;
-            SetButtonMaterialClientRpc(ColorType.Blue, _isBlueOpened);
-        }
-        
-    }
-    private bool _isRedOpened = true;
 
-    private bool IsRedOpened
+    private bool _isRedPressed = false;
+    private bool _isBluePressed = false;
+
+    private StageName _stageName;
+    public StageName StageName
     {
-        get => _isRedOpened;
-        set
-        {
-            _isRedOpened = value;
-            SetButtonMaterialClientRpc(ColorType.Red, _isRedOpened);
-        }
-    }
-    
-    
-    private bool _isInOpened;
-    /// <summary>
-    /// true일 때 Lobby쪽 문이 열려있다.
-    /// </summary>
-    private bool IsInOpened
-    {
-        get => _isInOpened;
-        set
-        {
-            _isInOpened = value;
-            _doorIn.IsOpened = _isInOpened && IsAirlockOpened;
-            _doorOut.IsOpened = !_isInOpened && IsAirlockOpened;
-        }
+        get => _stageName;
+        set => _stageName = value;
     }
 
     private bool _isAirlockOpened;
-    /// <summary>
-    /// true일 때 스테이지가 해금 되어 해당 문에 접근할 수 있다.
-    /// </summary>
     public bool IsAirlockOpened
     {
         get => _isAirlockOpened;
         set
         {
             _isAirlockOpened = value;
-            _doorIn.IsOpened = _isAirlockOpened && _isInOpened;
-            _doorOut.IsOpened = _isAirlockOpened && !_isInOpened;
+            _doorIn.IsOpened = value;
         }
     }
-    [field: SerializeField]
-    public StageName StageName { get; set; }
 
     public override void OnNetworkSpawn()
     {
-        base.OnNetworkSpawn();
+        if (!IsServer)
+        {
+            RequestInitialStateServerRpc();
+        }
 
-        StageName = StageName.Size;
-        IsAirlockOpened = true;
-        IsInOpened = true;
-        _airlockState = AirlockState.Idle;
-        
-        // Init
-        OnClickAirlockButtonServerRpc(ColorType.Blue, true);
-        OnClickAirlockButtonServerRpc(ColorType.Red, true);
+        _blueInOutMeshRenderers[0].material.SetObjectColor(ColorType.None);
+        _blueInOutMeshRenderers[1].material.SetObjectColor(ColorType.Blue);
+
+        _redInOutMeshRenderers[0].material.SetObjectColor(ColorType.None);
+        _redInOutMeshRenderers[1].material.SetObjectColor(ColorType.Red);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void OnClickAirlockButtonServerRpc(ColorType colorType, bool isInButton)
+    private void RequestInitialStateServerRpc()
     {
-        if (colorType == ColorType.Blue)
-        {
-            IsBlueOpened = isInButton;
-        }
-        else if (colorType == ColorType.Red)
-        {
-            IsRedOpened = isInButton;
-        }
-
-        // 일치하면 문 개방 방향이 변경된다.
-        if (IsBlueOpened == IsRedOpened)
-        {
-            IsInOpened = IsBlueOpened;
-        }
+        _doorIn.IsOpened = _doorIn.IsOpened;
+        _doorOut.IsOpened = _doorOut.IsOpened;
     }
 
-    [ClientRpc]
-    private void SetButtonMaterialClientRpc(ColorType colorType, bool isInButton)
+    [ClientRpc(RequireOwnership = false)]
+
+    private void UpdateInOutLightClientRpc(ColorType buttonColor, bool isIn)
     {
-        if (colorType == ColorType.Blue)
+        if (buttonColor == ColorType.Blue)
         {
-            _blueInOutMeshRenderers[isInButton ? 0 : 1].material.SetObjectColor(ColorType.Blue);
-            _blueInOutMeshRenderers[isInButton ? 1 : 0].material.SetObjectColor(ColorType.None);
+            _blueInOutMeshRenderers[0].material.SetObjectColor(isIn ? ColorType.Blue : ColorType.None);
+            _blueInOutMeshRenderers[1].material.SetObjectColor(isIn ? ColorType.None : ColorType.Blue);
         }
         else
         {
-            _redInOutMeshRenderers[isInButton ? 0 : 1].material.SetObjectColor(ColorType.Red);
-            _redInOutMeshRenderers[isInButton ? 1 : 0].material.SetObjectColor(ColorType.None);
+            _redInOutMeshRenderers[0].material.SetObjectColor(isIn ? ColorType.Red : ColorType.None);
+            _redInOutMeshRenderers[1].material.SetObjectColor(isIn ? ColorType.None : ColorType.Red);
         }
     }
 
-    /// <summary>
-    /// InGame Scene으로 넘어갈 수 있는 경우 LobbyManager에 InGame Scene으로 전환을 요청합니다.
-    /// </summary>
     [ServerRpc(RequireOwnership = false)]
-    private void RequestTransitionInGameSceneServerRpc()
+    public void OnAirlockButtonPressedServerRpc(ColorType buttonColor, bool isIn)
     {
-        // 아직 개방되지 않은 스테이지이거나, 아직 문이 열리지 않았거나, 이미 전환 중일때는 처리하지 않는다.
-        if (!IsAirlockOpened || IsInOpened || _airlockState == AirlockState.SceneTransition)
+        if (buttonColor == ColorType.Blue)
         {
-            return;
+            _isBluePressed = isIn;
+        }
+        else
+        {
+            _isRedPressed = isIn;
         }
 
-        _airlockState = AirlockState.SceneTransition;
-        LobbyManager.Instance.RequestTrasitionInGameScene(StageName);
-    }
-    
-    private void OnTriggerEnter(Collider other)
-    {
-        RequestTransitionInGameSceneServerRpc();
+        UpdateInOutLightClientRpc(buttonColor, isIn);
+
+        if (_isBluePressed & _isRedPressed)
+        {
+            if (_isEntrance)
+            {
+                LobbyManager.Instance.SpawnStage(_stagePrefab, transform.position, transform.rotation);
+
+                _isBluePressed = false;
+                _isRedPressed = false;
+
+                _doorIn.IsOpened = true;
+                _doorOut.IsOpened = false;
+            }
+            else
+            {
+                LobbyManager.Instance.SpawnLobby(transform.position, transform.rotation);
+            }
+        }
+        else if (_isBluePressed ^ _isRedPressed)
+        {
+            // 둘 다 잠근다
+            _doorIn.IsOpened = false;
+            _doorOut.IsOpened = false;
+        }
+        else
+        {
+            // 나간다
+            _doorIn.IsOpened = true;
+            _doorOut.IsOpened = false;
+        }
     }
 }

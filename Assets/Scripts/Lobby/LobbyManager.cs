@@ -15,6 +15,14 @@ public class LobbyManager : NetworkSingletonBehaviour<LobbyManager>
     [SerializeField] private Transform[] _spawnPoints = new Transform[2];
     [SerializeField] private AirlockController[] _airlockControllers = new AirlockController[6];
     public LobbyUIController LobbyUIController {  get; private set; }
+
+    [SerializeField] private NetworkObject _lobby;
+    public NetworkObject Lobby
+    {
+        get => _lobby;
+    }
+
+    [SerializeField] private NetworkObject _stage;
     
     protected override void Init()
     {
@@ -96,7 +104,7 @@ public class LobbyManager : NetworkSingletonBehaviour<LobbyManager>
         playerConfig.MyPlayer = playerController;
         //playerController.PlayerColor = playerConfig.IsBlue ? ColorType.Blue : ColorType.Red;
     }
-    
+
     /// <summary>
     /// 각 Airlock에 Stage를 할당하고, 해당 Stage Data에 맞게 Airlock 문을 개방합니다.
     /// </summary>
@@ -104,7 +112,7 @@ public class LobbyManager : NetworkSingletonBehaviour<LobbyManager>
     private void SetMapDataServerRpc(ServerRpcParams serverRpcParams = default)
     {
         PlayData data = SessionManager.Instance.SelectedData;
-        
+
         // 데이터 세팅을 요청한 ClientId를 저장합니다.
         ClientRpcParams clientRpcParams = new ClientRpcParams
         {
@@ -113,12 +121,12 @@ public class LobbyManager : NetworkSingletonBehaviour<LobbyManager>
                 TargetClientIds = new ulong[] { serverRpcParams.Receive.SenderClientId }
             }
         };
-        
+
         // 데이터를 요청한 Client에서 뿌려서 Airlock를 세팅합니다.
         for (int i = 0; i < 6; i++)
         {
             int index = (SessionManager.Instance.CurrentFloor - 1) * 6 + i;
-            
+
             SetAirlockDataClientRpc(i, (StageName)index, data.MapInfoList[index].ClearFlag != 0, clientRpcParams);
         }
     }
@@ -135,6 +143,78 @@ public class LobbyManager : NetworkSingletonBehaviour<LobbyManager>
     {
         _airlockControllers[index].StageName = stageName;
         _airlockControllers[index].IsAirlockOpened = isAirlockOpened;
+    }
+
+    [ClientRpc(RequireOwnership = false)]
+    public void SpawnStageClientRpc(NetworkObjectReference stageObject, Vector3 targetPosition, Quaternion targetRotation)
+    {
+        if (IsServer)
+        {
+            return;
+        }
+
+        if (stageObject.TryGet(out NetworkObject networkObject))
+        {
+            networkObject.transform.position = targetPosition;
+            networkObject.transform.rotation = targetRotation;
+
+            _lobby.gameObject.SetActive(false);
+            _stage = networkObject;
+        }
+    }
+
+    public void SpawnStage(GameObject stagePrefab, Vector3 targetPosition, Quaternion targetRotation)
+    {
+        GameObject stage = Instantiate(stagePrefab);
+        _stage = stage.GetComponent<NetworkObject>();
+        _stage.Spawn();
+
+        Transform stageTransform = stage.transform;
+        Transform stageChildTransform = GameObject.FindGameObjectWithTag("Airlock Enter Target").transform;
+
+        Debug.Log(stageChildTransform.position);
+
+        stageTransform.rotation = targetRotation * Quaternion.Inverse(stageChildTransform.localRotation);
+        stageTransform.position = targetPosition - (stageChildTransform.position - stageTransform.position);
+
+        Debug.Log(stageChildTransform.position);
+
+        _lobby.gameObject.SetActive(false);
+        SpawnStageClientRpc(_stage, stageTransform.position, stageTransform.rotation);
+    }
+
+    public void SpawnLobby(Vector3 targetPosition, Quaternion targetRotation)
+    {
+        _lobby.gameObject.SetActive(true);
+
+        Transform lobbyChildTransform = GameObject.FindGameObjectWithTag("Airlock Exit Target").transform;
+
+        _lobby.transform.rotation = targetRotation * Quaternion.Inverse(lobbyChildTransform.localRotation);
+        _lobby.transform.position = targetPosition - (lobbyChildTransform.position - _lobby.transform.position);
+
+        SpawnLobbyClientRpc(_lobby.transform.position, _lobby.transform.rotation);
+    }
+
+    [ClientRpc(RequireOwnership = false)]
+    public void SpawnLobbyClientRpc(Vector3 targetPosition, Quaternion targetRotation)
+    {
+        if (IsServer)
+        {
+            return;
+        }
+
+        _lobby.gameObject.SetActive(true);
+
+        _lobby.transform.position = targetPosition;
+        _lobby.transform.rotation = targetRotation;
+
+        SpawnLobbyServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SpawnLobbyServerRpc()
+    {
+        _stage.Despawn();
     }
 }
 

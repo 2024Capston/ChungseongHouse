@@ -7,6 +7,11 @@ TagManager:
   - Blue Spawn Point
   - Red Spawn Point
   - Platform
+  - Airlock Enter
+  - Airlock Enter Target
+  - Airlock Exit
+  - Airlock Exit Target
+  - Lobby
   layers:
   - Default
   - TransparentFX
