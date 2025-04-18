@@ -60,6 +60,26 @@ public class DoorController : NetworkBehaviour, IActivatable
     private void Awake()
     {
         _animator = GetComponent<Animator>();
+
+        foreach (EventType eventType in _subscribeForActivation)
+        {
+            EventBus.Instance.SubscribeEvent<UnityAction>(eventType, OpenDoorServerRpc);
+        }
+
+        foreach (EventType eventType in _subscribeForDeactivation)
+        {
+            EventBus.Instance.SubscribeEvent<UnityAction>(eventType, CloseDoorServerRpc);
+        }
+
+        foreach (EventType eventType in _subscribeForSetOpen)
+        {
+            EventBus.Instance.SubscribeEvent<UnityAction>(eventType, SetOpen);
+        }
+
+        foreach (EventType eventType in _subscribeForSetClose)
+        {
+            EventBus.Instance.SubscribeEvent<UnityAction>(eventType, SetClose);
+        }
     }
 
     private new void OnDestroy()
@@ -120,6 +140,7 @@ public class DoorController : NetworkBehaviour, IActivatable
         {
             return;
         }
+
         if (other.GetComponent<PlayerController>() != null)
         {
             _playerCount--;

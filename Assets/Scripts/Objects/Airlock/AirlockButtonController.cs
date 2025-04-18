@@ -26,7 +26,6 @@ public class AirlockButtonController : MonoBehaviour, IInteractable
     public bool IsInteractable(PlayerController player)
     {
         return true;
-        return player.Color == _buttonColor;
     }
 
     public bool StartInteraction(PlayerController player)

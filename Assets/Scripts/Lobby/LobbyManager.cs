@@ -165,6 +165,8 @@ public class LobbyManager : NetworkSingletonBehaviour<LobbyManager>
 
     public void SpawnStage(GameObject stagePrefab, Vector3 targetPosition, Quaternion targetRotation)
     {
+        EventBus.Instance.ClearEventBus();
+
         GameObject stage = Instantiate(stagePrefab);
         _stage = stage.GetComponent<NetworkObject>();
         _stage.Spawn();
@@ -172,14 +174,13 @@ public class LobbyManager : NetworkSingletonBehaviour<LobbyManager>
         Transform stageTransform = stage.transform;
         Transform stageChildTransform = GameObject.FindGameObjectWithTag("Airlock Enter Target").transform;
 
-        Debug.Log(stageChildTransform.position);
-
         stageTransform.rotation = targetRotation * Quaternion.Inverse(stageChildTransform.localRotation);
         stageTransform.position = targetPosition - (stageChildTransform.position - stageTransform.position);
 
-        Debug.Log(stageChildTransform.position);
-
         _lobby.gameObject.SetActive(false);
+
+        stage.GetComponent<StageManager>().StartGame();
+
         SpawnStageClientRpc(_stage, stageTransform.position, stageTransform.rotation);
     }
 
@@ -198,7 +199,7 @@ public class LobbyManager : NetworkSingletonBehaviour<LobbyManager>
     [ClientRpc(RequireOwnership = false)]
     public void SpawnLobbyClientRpc(Vector3 targetPosition, Quaternion targetRotation)
     {
-        if (IsServer)
+        if (IsServer && NetworkManager.Singleton.ConnectedClients.Count == 2)
         {
             return;
         }
@@ -208,6 +209,7 @@ public class LobbyManager : NetworkSingletonBehaviour<LobbyManager>
         _lobby.transform.position = targetPosition;
         _lobby.transform.rotation = targetRotation;
 
+        _stage.gameObject.SetActive(false);
         SpawnLobbyServerRpc();
     }
 

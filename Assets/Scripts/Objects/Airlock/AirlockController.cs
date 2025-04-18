@@ -91,13 +91,16 @@ public class AirlockController : NetworkBehaviour
         {
             if (_isEntrance)
             {
-                LobbyManager.Instance.SpawnStage(_stagePrefab, transform.position, transform.rotation);
-
                 _isBluePressed = false;
                 _isRedPressed = false;
 
+                UpdateInOutLightClientRpc(ColorType.Blue, false);
+                UpdateInOutLightClientRpc(ColorType.Red, false);
+
                 _doorIn.IsOpened = true;
                 _doorOut.IsOpened = false;
+
+                LobbyManager.Instance.SpawnStage(_stagePrefab, transform.position, transform.rotation);
             }
             else
             {

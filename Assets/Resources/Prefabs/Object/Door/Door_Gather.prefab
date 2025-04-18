@@ -165,6 +165,8 @@ MonoBehaviour:
   _isTriggerable: 1
   _subscribeForActivation: 
   _subscribeForDeactivation: 
+  _subscribeForSetOpen: 
+  _subscribeForSetClose: 
   _isOpened: 0
 --- !u!1001 &588159781769597497
 PrefabInstance:
