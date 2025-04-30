@@ -165,6 +165,11 @@ public class PlayerController : NetworkBehaviour
             SendPlayerState();
 
             // !TEST
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                StageManager.Instance.StartGame();
+            }
+
             if (Input.GetKeyDown(KeyCode.C))
             {
                 _cameraController.ChangeCameraMode(!_cameraController.IsFirstPerson);
