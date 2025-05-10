@@ -20,14 +20,8 @@ public class TempColorWall : MonoBehaviour
     {
         MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
 
-        if (_color == ColorType.Blue)
-        {
-            meshRenderer.material.color = new Color(0f, 0f, 1.0f, 0.5f);
-        }
-        else if (_color == ColorType.Red)
-        {
-            meshRenderer.material.color = new Color(1.0f, 0f, 0f, 0.5f);
-        }
+        meshRenderer.material.SetObjectColor(_color);
+        meshRenderer.material.SetPlayerColor(PlayerController.LocalPlayer.Color);
 
         if (_color == PlayerController.LocalPlayer.Color)
         {
